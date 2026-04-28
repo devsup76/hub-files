@@ -1,0 +1,19 @@
+# Lovable app repo — has its own git history
+repo/
+
+# Dev container and GitHub config (infrastructure, not project docs)
+.devcontainer/
+.github/
+
+# Pitch deck build dependencies
+docs/pitch/node_modules/
+docs/pitch/package-lock.json
+
+# Local Claude Code settings (machine-specific permissions config)
+.claude/settings.local.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
