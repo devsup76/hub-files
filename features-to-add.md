@@ -1,4 +1,4 @@
-# GrowthHub — Features To Add
+# woahh — Features To Add
 
 > Priority order: **App Functionality → 3rd Party Integrations**
 > Legal & Compliance items (Privacy Policy, ToS, GDPR flows, PCI, GST, Age Verification, etc.) have been moved to [`non-dev-implementations.md`](./non-dev-implementations.md) — resolve those operationally/legally first, then wire them into the app via the dev tasks below.
@@ -212,10 +212,10 @@
 **Status:** `[ ]`
 
 **What to build:**
-- Allow marketplace customers to pay merchants directly through GrowthHub (currently payments are handled outside the platform)
+- Allow marketplace customers to pay merchants directly through woahh (currently payments are handled outside the platform)
 - Each merchant completes Stripe Connect onboarding (Express account) — store `stripe_account_id` on `organizations`
-- On checkout, create a `PaymentIntent` with `transfer_data.destination = org.stripe_account_id` and GrowthHub takes a platform fee
-- Funds settle to the merchant's Stripe account; GrowthHub's fee is retained automatically
+- On checkout, create a `PaymentIntent` with `transfer_data.destination = org.stripe_account_id` and woahh takes a platform fee
+- Funds settle to the merchant's Stripe account; woahh's fee is retained automatically
 - Webhook: `payment_intent.succeeded` → mark order paid, trigger loyalty points, donation ledger entry
 
 **Watch out for:**
@@ -231,7 +231,7 @@
 - OAuth2 connect flow for Xero or QuickBooks in Operations > Integrations
 - Store `xero_tenant_id` / `xero_access_token` / `xero_refresh_token` on `organizations` (encrypted)
 - A "Sync to Xero" button (and optional nightly cron) that pushes completed orders as invoices and cash receipts
-- Map GrowthHub line items → Xero/QBO account codes (configurable per product category)
+- Map woahh line items → Xero/QBO account codes (configurable per product category)
 - Export summary: daily Z-report as a journal entry (total sales, total discounts, total tax collected, total tips)
 
 **Watch out for:**
@@ -273,7 +273,7 @@
 **Status:** `[ ]`
 
 **What to build:**
-- Physical loyalty cards with a QR code or NFC chip that encodes the customer's GrowthHub profile ID
+- Physical loyalty cards with a QR code or NFC chip that encodes the customer's woahh profile ID
 - QR: use the existing 6-digit in-person code system — print a QR that links to `/account?merchant=slug` where the code is auto-displayed
 - NFC: Web NFC API (Chrome Android only) — on a compatible kiosk tablet, tap the card to read the customer ID and auto-validate the loyalty session
 - Card generation: a PDF export from the customer CRM showing printable cards per customer
@@ -288,11 +288,11 @@
 **Status:** `[ ]`
 
 **What to build:**
-- Pull orders from Uber Eats and DoorDash directly into the GrowthHub Orders kanban
+- Pull orders from Uber Eats and DoorDash directly into the woahh Orders kanban
 - Use Uber Eats Order Management API and DoorDash Drive / Merchant API webhooks
-- Map incoming orders to GrowthHub's `orders` schema; tag with `source: 'uber_eats'` or `source: 'doordash'`
-- Menu sync: push GrowthHub product catalog updates to Uber Eats / DoorDash menus automatically
-- Reject from GrowthHub: a "Decline" in the kanban sends a rejection back to the aggregator
+- Map incoming orders to woahh's `orders` schema; tag with `source: 'uber_eats'` or `source: 'doordash'`
+- Menu sync: push woahh product catalog updates to Uber Eats / DoorDash menus automatically
+- Reject from woahh: a "Decline" in the kanban sends a rejection back to the aggregator
 
 **Watch out for:**
 - Both APIs require a formal merchant partnership / developer programme — not self-serve. Plan for a waitlist or manual onboarding step
@@ -304,7 +304,7 @@
 **Status:** `[ ]`
 
 **What to build:**
-- Pull Google Business Profile reviews via the Google My Business API and display them alongside GrowthHub native reviews in the marketplace profile
+- Pull Google Business Profile reviews via the Google My Business API and display them alongside woahh native reviews in the marketplace profile
 - Auto-respond to new Google reviews using a templated response (configurable in Branding/Operations)
 - TripAdvisor reviews (read-only API) — display in marketplace profile for restaurant orgs
 - Sentiment score: tag each imported review as positive/neutral/negative for the Analytics dashboard

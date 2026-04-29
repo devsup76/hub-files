@@ -1,10 +1,10 @@
-# CLAUDE.md — Growth Hub Failsafe Context
+# CLAUDE.md — woahh Failsafe Context
 
-> **SCOPE GUARD:** Only load and apply this context if the current conversation is about building, reviewing, or improving the Growth Hub app. If the user has opened this session for an unrelated purpose (e.g. a quick question, a different project, general help), skip this file entirely and do not reference it — do not waste tokens on irrelevant context.
+> **SCOPE GUARD:** Only load and apply this context if the current conversation is about building, reviewing, or improving the woahh app. If the user has opened this session for an unrelated purpose (e.g. a quick question, a different project, general help), skip this file entirely and do not reference it — do not waste tokens on irrelevant context.
 
-> This file is the single source of truth for Growth Hub development sessions.
+> This file is the single source of truth for woahh development sessions.
 > Update it whenever a feature is completed, a key decision is made, or significant progress occurs.
-> Last updated: 2026-04-26
+> Last updated: 2026-04-27
 
 ---
 
@@ -19,7 +19,9 @@
 
 ## What This App Is
 
-**Growth Hub** is a multi-tenant SaaS platform for small business owners (restaurants + retail shops).
+**Woahh** is a multi-tenant SaaS platform for small business owners (restaurants + retail shops).
+
+> **Brand casing rule:** UI / frontend = `Woahh` (capital W). Backend code, edge functions, email addresses, query keys, SMS bodies = `woahh` (lowercase).
 It is built and hosted on **Lovable** (AI app builder). The repo in this container is **read-only for review and planning** — all actual edits are made in Lovable.
 
 **Core value prop:** Give a small business owner a single dashboard to manage orders, products, customers, loyalty, promotions, and marketing — with a public-facing storefront, marketplace listing, and customer portal included.
@@ -278,7 +280,7 @@ Both follow the same pattern:
 ## Donation / Giving Model
 
 - **Fixed monthly donation** included in every subscription: Solo $10, Marketplace $25, Growth $40
-- **GMV donation**: 0.15% of every order processed through GrowthHub → charity; 0.15% → GrowthHub net
+- **GMV donation**: 0.15% of every order processed through woahh → charity; 0.15% → woahh net
 - **Voluntary rate**: merchant can increase their giving rate above the 0.1% floor via the Donate dashboard (slider)
 - **One-time donations**: available in Donate dashboard
 - **Promotion share**: sponsored listing fee split between charity and platform
