@@ -1,4 +1,4 @@
-# GrowthHub Pitch — Slide Structure & Setup Guide
+# Woahh Pitch — Slide Structure & Setup Guide
 
 ## Slide Structure (13 slides)
 
@@ -47,7 +47,7 @@ npm install pptxgenjs react react-dom react-icons sharp
 node generate-pitch.js
 
 # 3. Output
-# → GrowthHub-CoFounder-Pitch.pptx
+# → Woahh-CoFounder-Pitch.pptx
 ```
 
 ### Requirements

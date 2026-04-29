@@ -1,4 +1,4 @@
-# GrowthHub — Co-Founder Pitch: Speaker Script
+# Woahh — Co-Founder Pitch: Speaker Script
 
 ---
 
@@ -6,7 +6,7 @@
 
 > "Thanks for making the time. What I'm going to show you today is a product that already exists, unit economics that already work, and a mission I genuinely believe no other SaaS company has had the courage to build.
 
-> GrowthHub gives small businesses — the café on your corner, the family restaurant, the independent boutique — the complete digital infrastructure that billion-dollar chains have. For less than $10 a day.
+> Woahh gives small businesses — the café on your corner, the family restaurant, the independent boutique — the complete digital infrastructure that billion-dollar chains have. For less than $10 a day.
 
 > I'm not here to pitch you on an idea. I'm here because I want to find the right person to build this with me. Let me show you what that looks like."
 
@@ -36,7 +36,7 @@
 
 ## SLIDE 4 — The Solution
 
-> "GrowthHub gives a small business owner the same tech stack that Dominos spent millions building — for a flat monthly fee starting at $49.
+> "Woahh gives a small business owner the same tech stack that Dominos spent millions building — for a flat monthly fee starting at $49.
 
 > No transaction fees to us. No commission on orders. No per-device hardware costs. No developer required.
 
@@ -72,9 +72,9 @@
 
 > "Here's the part that most SaaS companies would bury in a footnote. We donate approximately 20% of total revenue to charity. Not as a campaign. Not as a marketing line. As a structural commitment.
 
-> Every plan includes a fixed monthly donation — $10 on Solo, $40 on Growth. Additionally, 0.15% of every transaction processed through GrowthHub goes to charity. GrowthHub keeps 0.15% net. The other 0.15% is routed to a charitable cause, fully publicly verifiable.
+> Every plan includes a fixed monthly donation — $10 on Solo, $40 on Growth. Additionally, 0.15% of every transaction processed through Woahh goes to charity. Woahh keeps 0.15% net. The other 0.15% is routed to a charitable cause, fully publicly verifiable.
 
-> A merchant processing $20,000 a month through GrowthHub donates roughly $30 to charity automatically. Their storefront displays an Impact Partner badge. Their customers can see it.
+> A merchant processing $20,000 a month through Woahh donates roughly $30 to charity automatically. Their storefront displays an Impact Partner badge. Their customers can see it.
 
 > At 5,000 merchants with average GMV of $20,000, that's over $1 million a year to charitable causes.
 
@@ -120,7 +120,7 @@
 > Uber Eats and DoorDash give you discovery. They take 30% and you never own the customer.
 > Nobody does both axes under one subscription.
 
-> But the moat isn't just the product. It's data lock-in. A merchant who has built their customer list in GrowthHub's CRM, run loyalty campaigns, integrated their delivery flow — they don't leave easily. The switching cost is their customer relationship itself.
+> But the moat isn't just the product. It's data lock-in. A merchant who has built their customer list in Woahh's CRM, run loyalty campaigns, integrated their delivery flow — they don't leave easily. The switching cost is their customer relationship itself.
 
 > And the giving model is a growth engine, not a cost centre. A café owner who tells three peers 'this platform donates to charity and costs less than my phone bill' is worth more than any Google ad."
 
@@ -132,7 +132,7 @@
 
 > Brisbane has a dense, independent hospitality and retail scene that is genuinely underserved by enterprise software. It's close enough to manage relationships directly at launch. It's large enough to generate real proof points — GMV data, case studies, press coverage — without the noise and cost of Sydney or Melbourne.
 
-> A GrowthHub with 200 Brisbane merchants, $4 million in monthly GMV, and a visible charitable impact story sells itself into the next market.
+> A Woahh with 200 Brisbane merchants, $4 million in monthly GMV, and a visible charitable impact story sells itself into the next market.
 
 > Phase two is East Coast expansion to 1,000+ merchants. Phase three is the national /eat marketplace launch and global localisation."
 

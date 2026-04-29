@@ -1,9 +1,9 @@
-# GrowthHub — Legal & Financial Staffing Expansion Guide
+# Woahh — Legal & Financial Staffing Expansion Guide
 
-> Who to hire (and when) to keep GrowthHub compliant as it grows.
+> Who to hire (and when) to keep Woahh compliant as it grows.
 > Written for a 3-person technical founding team with no formal legal or financial background.
 >
-> Last updated: 2026-04-25
+> Last updated: 2026-04-29
 
 ---
 
@@ -59,7 +59,7 @@ These are engagements, not hires. Do all of these before launch.
 - GST registration and BAS lodgment (quarterly)
 - Company income tax return (annual)
 - Payroll tax advice when you hire employees
-- Structure the charitable giving for tax purposes — GrowthHub's donations to DGR charities are tax-deductible business expenses that must be properly recorded
+- Structure the charitable giving for tax purposes — Woahh's donations to DGR charities are tax-deductible business expenses that must be properly recorded
 - Superannuation compliance setup
 
 **Cost:** A small business accountant handling BAS plus annual tax return typically costs **$3,000–$6,000/year** at your stage.

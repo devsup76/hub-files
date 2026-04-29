@@ -1,8 +1,8 @@
-# GrowthHub — Business Strategy & Financial Decisions
+# Woahh — Business Strategy & Financial Decisions
 
-> **Purpose:** This document captures key legal, financial, and strategic decisions made during the planning of GrowthHub. It is intended to be shared with advisors, investors, partners, or co-founders to provide context and rationale behind each decision.
+> **Purpose:** This document captures key legal, financial, and strategic decisions made during the planning of Woahh. It is intended to be shared with advisors, investors, partners, or co-founders to provide context and rationale behind each decision.
 >
-> Last updated: 2026-04-22
+> Last updated: 2026-04-29
 
 ---
 
@@ -21,33 +21,33 @@
 
 ## 1. Company Mission & Philosophy
 
-**What GrowthHub is:**
+**What Woahh is:**
 A multi-tenant SaaS platform for small business owners — restaurants and retail shops — providing two genuinely distinct value propositions under one flat monthly subscription:
 
 1. **"Your own digital presence"** — branded storefront, orders, kitchen display, CRM, loyalty, SMS/email campaigns, reservations, and tables. The full tech stack that Dominos and Shake Shack have, available to a café at $49/month.
 2. **"Discovery marketplace"** — the public `/eat` directory, zero-commission, where customers find new businesses. The alternative to Uber Eats that doesn't take 25–30% of every order.
 
-These two axes are priced as a natural upgrade path. Not every business needs both — a reservation-only fine dining restaurant doesn't want to be on a public discovery page. GrowthHub respects that distinction.
+These two axes are priced as a natural upgrade path. Not every business needs both — a reservation-only fine dining restaurant doesn't want to be on a public discovery page. Woahh respects that distinction.
 
 **Financial philosophy:**
 The goal is not maximum extraction from merchants. The intent is to build a sustainably profitable business that generates enough wealth to support the team and fund charitable causes, while genuinely helping small businesses grow. Pricing decisions reflect this — we do not charge per-transaction fees on top of subscriptions, and we do not impose volume caps that penalise business growth.
 
 **Charity model:**
-A percentage of platform-wide GMV (gross merchandise value processed through GrowthHub) will be donated to charitable causes. This is tracked automatically through our orders system. Every merchant's dashboard will show their individual contribution — e.g. "Your $28,400 in orders this month contributed $28 to [cause]". This is not a marketing gimmick; it is a structural commitment built into the platform from day one.
+A percentage of platform-wide GMV (gross merchandise value processed through Woahh) will be donated to charitable causes. This is tracked automatically through our orders system. Every merchant's dashboard will show their individual contribution — e.g. "Your $28,400 in orders this month contributed $28 to [cause]". This is not a marketing gimmick; it is a structural commitment built into the platform from day one.
 
 ---
 
 ## 2. Payment Processing
 
 ### Problem
-GrowthHub competes with Square, Toast, and Clover — all of which bundle payment processing with software. We needed to decide: do we become a payment processor, partner with one, or stay payment-agnostic?
+Woahh competes with Square, Toast, and Clover — all of which bundle payment processing with software. We needed to decide: do we become a payment processor, partner with one, or stay payment-agnostic?
 
 ### Options Evaluated
 
 | Option | Model | Pros | Cons |
 |---|---|---|---|
-| **Stripe Connect Express** | GrowthHub is a payment platform; takes a cut of every transaction | Revenue from 0.3% platform fee at scale; automated splits; Stripe handles KYC | AUSTRAC registration likely required; dispute liability exposure; operational burden at scale; platform account freeze risk if a merchant commits fraud |
-| **Stripe Standard** | Each merchant owns their Stripe account; GrowthHub is not in the payment flow | Zero regulatory exposure; zero compliance overhead; merchants handle all disputes | Cannot take a per-transaction fee; less integrated experience |
+| **Stripe Connect Express** | Woahh is a payment platform; takes a cut of every transaction | Revenue from 0.3% platform fee at scale; automated splits; Stripe handles KYC | AUSTRAC registration likely required; dispute liability exposure; operational burden at scale; platform account freeze risk if a merchant commits fraud |
+| **Stripe Standard** | Each merchant owns their Stripe account; Woahh is not in the payment flow | Zero regulatory exposure; zero compliance overhead; merchants handle all disputes | Cannot take a per-transaction fee; less integrated experience |
 | **Stripe Connect + 0.3% fee** | Platform model with platform fee built into every charge | Significant revenue at scale ($90k/month at 5,000 merchants) | Requires compliance hire, AUSTRAC filing, and legal review — unsuitable for a 5–8 person team in early stages |
 | **Tyro** (AU-specific) | Australian EFTPOS terminal integration | Dominant in Australian hospitality (~30% of restaurants); competitive local rates | In-person only; no online payment rails; harder developer experience |
 | **Adyen** | Enterprise interchange++ pricing | Cheapest at massive scale ($50M+ GMV/month) | Minimum volume requirements; months-long onboarding; not viable at startup stage |
@@ -61,7 +61,7 @@ A 5–8 person team cannot responsibly take on PayFac (payment facilitator) obli
 Stripe Standard means:
 - Merchants connect their own Stripe account
 - All payment disputes, chargebacks, and compliance are between the merchant and Stripe
-- GrowthHub has zero exposure to payment fraud or liability
+- Woahh has zero exposure to payment fraud or liability
 - No AUSTRAC obligation
 - Implementation takes 1–2 weeks vs 4–6 weeks for Connect
 
@@ -76,13 +76,13 @@ Stripe Standard means:
 | Online (card not present) | $30.00 | $1.17 (2.9% + 30¢) | $28.83 |
 | In-person (Stripe Terminal) | $30.00 | $0.86 (2.7% + 5¢) | $29.14 |
 
-**Comparison to Square:** Square charges 2.6% + 10¢ in-person ($0.88 on $30) and 2.9% + 30¢ online ($1.17 on $30). The difference is negligible — less than 2¢ per transaction. The meaningful difference is that Square charges additional monthly software fees on top, while GrowthHub's subscription covers all features at a flat rate.
+**Comparison to Square:** Square charges 2.6% + 10¢ in-person ($0.88 on $30) and 2.9% + 30¢ online ($1.17 on $30). The difference is negligible — less than 2¢ per transaction. The meaningful difference is that Square charges additional monthly software fees on top, while Woahh's subscription covers all features at a flat rate.
 
 ### Legal Considerations
 
 - **AUSTRAC:** Not required under Stripe Standard. Required if we move to Stripe Connect. When we make that transition, we will engage a compliance-as-a-service provider (e.g. AML Shield or Comply Advantage) and register with AUSTRAC.
 - **AFSL:** Stripe's own Australian Financial Services Licence covers platforms operating under Stripe Standard. Stripe Connect may require separate legal review — we will obtain this before Phase 2.
-- **Australian Privacy Act:** Applicable now. GrowthHub stores customer data (names, emails, order history) on behalf of merchants. Privacy policy and data processing agreements will be required.
+- **Australian Privacy Act:** Applicable now. Woahh stores customer data (names, emails, order history) on behalf of merchants. Privacy policy and data processing agreements will be required.
 
 ---
 
@@ -117,13 +117,13 @@ The Solo plan exists for a real market segment:
 - Private members clubs and invitation-only dining
 - Restaurants in small towns where everyone already knows them
 
-Forcing these businesses onto a public directory they don't want is a dealbreaker. Respecting this distinction is how GrowthHub wins those accounts.
+Forcing these businesses onto a public directory they don't want is a dealbreaker. Respecting this distinction is how Woahh wins those accounts.
 
 ### The "App of Your Own" Opportunity (Growth Tier)
 
 The Growth plan at $199/month unlocks what approximates a native app experience, without building native apps:
 
-1. **Custom domain support** — `order.bellasbistro.com.au` points to their GrowthHub storefront. Looks like their own website. This is what Shopify Plus charges thousands for.
+1. **Custom domain support** — `order.bellasbistro.com.au` points to their Woahh storefront. Looks like their own website. This is what Shopify Plus charges thousands for.
 2. **PWA (Progressive Web App)** — Customers can "Add to Home Screen" on iPhone/Android. Full-screen icon with their logo, works offline. This IS an app — customers can't tell the difference from a native app.
 3. **Push notifications** — Direct to customers who've installed their "app." "Your order from Bella's is ready."
 
@@ -134,9 +134,9 @@ Billion-dollar restaurant tech stack, available to a café at $199/month.
 Square for Restaurants charges $60–$165/month for software alone, before transaction fees. Uber Eats charges 25–30% commission per order with no storefront or CRM.
 
 **The pitch:**
-> "Square gives you a payment system. Uber Eats lists you in their directory and takes 30%. GrowthHub gives you your own full-stack presence — website, app, loyalty, CRM, kitchen display — AND lists you on our zero-commission marketplace where you keep every dollar. Starting at $49 a month."
+> "Square gives you a payment system. Uber Eats lists you in their directory and takes 30%. Woahh gives you your own full-stack presence — website, app, loyalty, CRM, kitchen display — AND lists you on our zero-commission marketplace where you keep every dollar. Starting at $49 a month."
 
-No competitor offers both axes. Square/Toast have no marketplace. Uber Eats/DoorDash have no merchant-owned storefront. GrowthHub bridges both.
+No competitor offers both axes. Square/Toast have no marketplace. Uber Eats/DoorDash have no merchant-owned storefront. Woahh bridges both.
 
 ---
 
@@ -175,15 +175,15 @@ No competitor offers both axes. Square/Toast have no marketplace. Uber Eats/Door
 **SMS is the dominant variable cost.** At scale, Clicksend volume pricing negotiation is a priority. SMS is only available on Growth tier and above, and each org has a monthly cap — limiting exposure.
 
 ### Phase 2 Revenue (Stripe Connect, future)
-When migrated to Stripe Connect Express with a 0.3% platform fee — of which 0.15% is donated to charity and 0.15% is retained by GrowthHub:
+When migrated to Stripe Connect Express with a 0.3% platform fee — of which 0.15% is donated to charity and 0.15% is retained by Woahh:
 
-| Platform GMV/month | 0.3% total fee | 0.15% to charity | 0.15% net to GrowthHub |
+| Platform GMV/month | 0.3% total fee | 0.15% to charity | 0.15% net to Woahh |
 |---|---|---|---|
 | $500k | $1,500/mo | $750/mo | $750/mo |
 | $5M | $15,000/mo | $7,500/mo | $7,500/mo |
 | $50M | $150,000/mo | $75,000/mo | $75,000/mo |
 
-The net 0.15% to GrowthHub becomes the dominant revenue stream at scale, exceeding subscription revenue — the same model used by Shopify and Toast. The matched 0.15% to charity means GrowthHub's transaction revenue growth is mirrored dollar-for-dollar by charitable impact growth.
+The net 0.15% to Woahh becomes the dominant revenue stream at scale, exceeding subscription revenue — the same model used by Shopify and Toast. The matched 0.15% to charity means Woahh's transaction revenue growth is mirrored dollar-for-dollar by charitable impact growth.
 
 ---
 
@@ -191,7 +191,7 @@ The net 0.15% to GrowthHub becomes the dominant revenue stream at scale, exceedi
 
 ### How Lovable Hosting Works
 
-GrowthHub is built on Lovable (an AI application builder). The frontend is a React single-page application compiled into static HTML, CSS, and JavaScript files. These are served from a CDN (content delivery network).
+Woahh is built on Lovable (an AI application builder). The frontend is a React single-page application compiled into static HTML, CSS, and JavaScript files. These are served from a CDN (content delivery network).
 
 **A CDN does not scale costs with user count.** Whether 10 or 100,000 users visit the storefront, the CDN cost is essentially flat. There are no "bigger servers" to provision as user traffic grows.
 
@@ -206,7 +206,7 @@ Supabase Pro at $25/month comfortably handles ~500 merchants. Beyond that, compu
 
 ### Multi-Product Scalability
 
-GrowthHub is architected for multiple product lines (e.g. shop mode, appointment mode, future verticals). If these run on the same Supabase project, they share infrastructure at no additional cost. Separate Supabase projects cost ~$25/month each — negligible at our scale.
+Woahh is architected for multiple product lines (e.g. shop mode, appointment mode, future verticals). If these run on the same Supabase project, they share infrastructure at no additional cost. Separate Supabase projects cost ~$25/month each — negligible at our scale.
 
 ---
 
@@ -214,11 +214,11 @@ GrowthHub is architected for multiple product lines (e.g. shop mode, appointment
 
 ### Structure
 
-Every order created through GrowthHub contains a monetary value. The cumulative monthly GMV per merchant is tracked automatically in the database — the same infrastructure already used to track SMS and email usage caps. No merchant reporting is required. No additional infrastructure needs to be built beyond a monthly counter and a reset function.
+Every order created through Woahh contains a monetary value. The cumulative monthly GMV per merchant is tracked automatically in the database — the same infrastructure already used to track SMS and email usage caps. No merchant reporting is required. No additional infrastructure needs to be built beyond a monthly counter and a reset function.
 
 ### Donation Model
 
-GrowthHub will donate a percentage of total platform-wide GMV to charitable causes. Proposed rate: **0.1% of platform GMV**.
+Woahh will donate a percentage of total platform-wide GMV to charitable causes. Proposed rate: **0.1% of platform GMV**.
 
 | Platform GMV/month | Monthly donation at 0.1% |
 |---|---|
@@ -229,22 +229,22 @@ GrowthHub will donate a percentage of total platform-wide GMV to charitable caus
 ### Merchant Visibility
 
 Each merchant's dashboard will display:
-- Their total GMV processed through GrowthHub this month
+- Their total GMV processed through Woahh this month
 - Their proportional charitable contribution ("Your orders this month contributed $X to [cause]")
 
 A public impact page will show aggregate platform GMV and total donated to date.
 
-Merchants will be able to display a "GrowthHub Impact Partner" badge on their storefront — connecting their customers to the charitable story.
+Merchants will be able to display a "Woahh Impact Partner" badge on their storefront — connecting their customers to the charitable story.
 
 ### Public Transparency Portal
 
-All charitable activity will be publicly verifiable — anyone can confirm GrowthHub's claims without taking our word for it. Planned in three phases:
+All charitable activity will be publicly verifiable — anyone can confirm Woahh's claims without taking our word for it. Planned in three phases:
 
 **Phase 1 — Public `/impact` dashboard (early priority)**
-A public page requiring no login. Shows real-time platform GMV, total donated to date, monthly and per-charity breakdowns, and charity receipt PDFs sourced from the receiving organisation (not GrowthHub). Includes a public feedback form for anyone who believes a figure is wrong — submissions are posted as issues to a public GitHub repository so both the concern and GrowthHub's response are on record.
+A public page requiring no login. Shows real-time platform GMV, total donated to date, monthly and per-charity breakdowns, and charity receipt PDFs sourced from the receiving organisation (not Woahh). Includes a public feedback form for anyone who believes a figure is wrong — submissions are posted as issues to a public GitHub repository so both the concern and Woahh's response are on record.
 
 **Phase 2 — Blockchain timestamping (within first year)**
-Each month, after donations are made, GrowthHub hashes the full donation ledger and publishes that hash to a public blockchain (Ethereum, Polygon, or Bitcoin OP_RETURN — costs cents per entry). The dashboard links every monthly record to its on-chain proof. Anyone can hash the displayed data themselves and confirm it matches the chain entry, proving the records are authentic and unaltered.
+Each month, after donations are made, Woahh hashes the full donation ledger and publishes that hash to a public blockchain (Ethereum, Polygon, or Bitcoin OP_RETURN — costs cents per entry). The dashboard links every monthly record to its on-chain proof. Anyone can hash the displayed data themselves and confirm it matches the chain entry, proving the records are authentic and unaltered.
 
 **Phase 3 — On-chain donation flow (at scale, $50k+/month)**
 Convert donation amounts to USDC and distribute directly to charity wallets via a public smart contract. Every transfer is visible on a block explorer — impossible to fake. Requires partner charities to accept crypto (via The Giving Block or equivalent) and legal review of AML implications.
@@ -257,11 +257,11 @@ No competitor (Square, Toast, Clover, Lightspeed) donates any portion of merchan
 - Genuine differentiation that cannot be easily copied without cultural commitment
 - Word-of-mouth acquisition — merchants tell other merchants
 - Press and partnership opportunities that a pure-software pitch cannot access
-- A reason for mission-aligned merchants (cafes, local restaurants, independent retailers) to actively prefer GrowthHub
+- A reason for mission-aligned merchants (cafes, local restaurants, independent retailers) to actively prefer Woahh
 
 ### Legal Structure (Charity)
 
-The charitable giving arm will operate as a structurally separate entity from the GrowthHub SaaS business. This avoids:
+The charitable giving arm will operate as a structurally separate entity from the Woahh SaaS business. This avoids:
 - Mixing for-profit and nonprofit payment flows (AML complexity)
 - ACNC registration requirements applying to the SaaS business
 - Tax implications of co-mingled revenue
@@ -278,18 +278,18 @@ Most small business owners use Square/Toast for their POS or Uber Eats/DoorDash 
 - **Square/Toast:** Great POS, no marketplace. Charges 2.6–2.9% per transaction plus monthly software. No discovery mechanism.
 - **Uber Eats/DoorDash:** Great discovery, no owned storefront. 25–30% commission per order. Merchant never owns the customer relationship.
 
-GrowthHub is two-axis: own presence + marketplace discovery, under one flat monthly subscription.
+Woahh is two-axis: own presence + marketplace discovery, under one flat monthly subscription.
 
 A restaurant doing $50,000/month in sales on Square pays approximately:
 - $1,310/month in transaction fees (2.6% + 10¢)
 - $165/month for Square for Restaurants Plus (loyalty, advanced features)
 - **Total: $1,475/month, scaling indefinitely as revenue grows**
 
-The same restaurant on GrowthHub's Marketplace plan pays **$99/month flat**, routes payments through their own Stripe account at standard Stripe rates, and also gets listed on `/eat` for zero commission.
+The same restaurant on Woahh's Marketplace plan pays **$99/month flat**, routes payments through their own Stripe account at standard Stripe rates, and also gets listed on `/eat` for zero commission.
 
-### GrowthHub's Two-Axis Position
+### Woahh's Two-Axis Position
 
-| Factor | Square / Toast | Uber Eats / DoorDash | GrowthHub |
+| Factor | Square / Toast | Uber Eats / DoorDash | Woahh |
 |---|---|---|---|
 | Transaction fees | 2.6–2.9% forever | N/A (they handle payment) | None (merchant uses Stripe directly) |
 | Software cost | $60–$165/month + add-ons | None | $49–$199/month, all features included |
@@ -302,19 +302,19 @@ The same restaurant on GrowthHub's Marketplace plan pays **$99/month flat**, rou
 | SMS campaigns | Not offered | None | Included on Solo+ |
 | Charity contribution | None | None | 0.1% of GMV donated |
 
-**The pitch:** "Square gives you a payment system. Uber Eats lists you in their directory and takes 30%. GrowthHub gives you your own full-stack presence — website, app, loyalty, CRM, kitchen display — AND lists you on our zero-commission marketplace where you keep every dollar. Starting at $49 a month."
+**The pitch:** "Square gives you a payment system. Uber Eats lists you in their directory and takes 30%. Woahh gives you your own full-stack presence — website, app, loyalty, CRM, kitchen display — AND lists you on our zero-commission marketplace where you keep every dollar. Starting at $49 a month."
 
 ### Migration Strategy (Three Phases)
 
-**Phase 1 — Run alongside (Solo, $49/month):** Merchant keeps Square for in-person payments, signs up to GrowthHub Solo for online orders, marketing, loyalty, and CRM. No disruption to existing operations. Demonstrates value risk-free.
+**Phase 1 — Run alongside (Solo, $49/month):** Merchant keeps Square for in-person payments, signs up to Woahh Solo for online orders, marketing, loyalty, and CRM. No disruption to existing operations. Demonstrates value risk-free.
 
-**Phase 2 — Add discovery (Marketplace, $99/month):** Once the merchant has seen GrowthHub value from their own storefront, they upgrade to Marketplace and list on `/eat`. The $50/month upgrade cost is covered the first time a single new customer places an order. Square is still taking payments but GrowthHub owns the customer.
+**Phase 2 — Add discovery (Marketplace, $99/month):** Once the merchant has seen Woahh value from their own storefront, they upgrade to Marketplace and list on `/eat`. The $50/month upgrade cost is covered the first time a single new customer places an order. Square is still taking payments but Woahh owns the customer.
 
-**Phase 3 — Full replacement:** Stripe Terminal added to GrowthHub. In-person payments move off Square. Square relationship ends. Monthly savings from eliminating Square software fees ($165/month) more than cover GrowthHub's cost ($99/month).
+**Phase 3 — Full replacement:** Stripe Terminal added to Woahh. In-person payments move off Square. Square relationship ends. Monthly savings from eliminating Square software fees ($165/month) more than cover Woahh's cost ($99/month).
 
 ### Hardware Reality
 
-The common objection: "We need 2–3 iPads to run Square." GrowthHub is browser-based. A $100 Android tablet running the kitchen display, a phone for order taking, and any screen for the dashboard. No proprietary hardware. No per-device fees.
+The common objection: "We need 2–3 iPads to run Square." Woahh is browser-based. A $100 Android tablet running the kitchen display, a phone for order taking, and any screen for the dashboard. No proprietary hardware. No per-device fees.
 
 ---
 
@@ -332,16 +332,16 @@ Most simply don't offer delivery, or accept marketplace terms as unavoidable.
 ### Decision: Delivery-as-a-Service via Uber Direct
 
 Uber Direct is the white-label version of Uber's driver network. The merchant:
-- Keeps the customer on their own GrowthHub storefront
+- Keeps the customer on their own Woahh storefront
 - Charges the customer directly via their own Stripe account
 - Pays Uber a **flat fee per delivery** (~$8–12 AUD), not a commission
 - Keeps 100% of customer data — email, order history, dietary preferences, loyalty
 
-GrowthHub orchestrates the API calls using the merchant's Uber Direct credentials. We never touch the money.
+Woahh orchestrates the API calls using the merchant's Uber Direct credentials. We never touch the money.
 
 ### Why This Beats Being on Uber Eats — Single Order
 
-| | Uber Eats (marketplace) | Uber Direct (via GrowthHub) |
+| | Uber Eats (marketplace) | Uber Direct (via Woahh) |
 |---|---|---|
 | Customer pays | $38 | $38 |
 | Uber's cut | $9.50 (25% commission) | $9 (flat delivery fee) |
@@ -363,7 +363,7 @@ Assume a customer places 12 orders/year at $38 each.
 - If the customer stops ordering, merchant has no way to win them back
 - Customer experiences Uber's branding, not the merchant's
 
-**Via GrowthHub + Uber Direct:**
+**Via Woahh + Uber Direct:**
 - Merchant receives 12 × $27.83 = **$334/year** directly
 - Customer is in the merchant's CRM — email, phone, preferences, full history
 - Merchant can send email/SMS campaigns ("new menu item", "loyalty reward", "we miss you")
@@ -377,24 +377,24 @@ The $8/year per-customer "loss" in raw margin becomes a **$48/year gain** once m
 
 At 100 active delivery customers:
 
-| Metric | Uber Eats | GrowthHub + Uber Direct |
+| Metric | Uber Eats | Woahh + Uber Direct |
 |---|---|---|
 | Annual revenue from those 100 | $34,200 | $33,400 base + ~$5,600 loyalty lift = **$39,000** |
 | Marketing asset value | $0 (Uber's list) | CRM of 100 customers — reusable for every campaign |
 | Protection from competitors | None — Uber promotes rivals | Total — competitors can't reach them |
 | Cost to re-engage a churned customer | Can't — no contact | Free — email/SMS |
 
-This is Shopify's entire pitch to e-commerce merchants: "don't rent your customers from Amazon, own them yourself." GrowthHub's delivery pitch is the identical argument applied to food.
+This is Shopify's entire pitch to e-commerce merchants: "don't rent your customers from Amazon, own them yourself." Woahh's delivery pitch is the identical argument applied to food.
 
-### Where GrowthHub Sits in the Money Flow
+### Where Woahh Sits in the Money Flow
 
 Nowhere. Identical to the Stripe Standard stance:
 
 - Merchant signs up directly with Uber Direct — their own account, their own billing
-- Merchant's Uber Direct API credentials live encrypted in their GrowthHub org settings
+- Merchant's Uber Direct API credentials live encrypted in their Woahh org settings
 - Our edge function calls Uber Direct's API *using the merchant's credentials*
 - Uber invoices the merchant directly (weekly or monthly batched billing)
-- GrowthHub sees zero dollars from delivery
+- Woahh sees zero dollars from delivery
 
 This keeps us outside:
 - Payment facilitator regulation (AUSTRAC obligations)
@@ -409,8 +409,8 @@ We are software. The merchant's relationship with Uber is their own.
 
 1. Merchant signs up at `direct.uber.com` (or equivalent — DoorDash Drive, Sherpa, Lalamove)
 2. Receives API key + webhook secret from Uber
-3. Pastes both into GrowthHub → Operations → Delivery Integration
-4. GrowthHub stores credentials encrypted (row-level encryption via a dedicated `courier_credentials` table with strict RLS)
+3. Pastes both into Woahh → Operations → Delivery Integration
+4. Woahh stores credentials encrypted (row-level encryption via a dedicated `courier_credentials` table with strict RLS)
 5. Done. Future delivery orders auto-dispatch a courier when the kitchen starts preparing.
 
 ### Phased Rollout
@@ -424,7 +424,7 @@ We are software. The merchant's relationship with Uber is their own.
 - A credible delivery offering without requiring merchants to use Uber Eats
 - The "ditch the marketplace" pitch becomes concrete and easy to execute
 - Merchants can show their customers "order direct and save us 25% vs Uber Eats" messaging — customer-facing differentiation
-- GrowthHub becomes the central nervous system of the merchant's business: orders, customers, marketing, loyalty, kitchen, and now delivery — all under one flat subscription
+- Woahh becomes the central nervous system of the merchant's business: orders, customers, marketing, loyalty, kitchen, and now delivery — all under one flat subscription
 
 ---
 

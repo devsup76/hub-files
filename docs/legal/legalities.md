@@ -1,10 +1,10 @@
-# GrowthHub — Australian Legal Compliance Checklist
+# Woahh — Australian Legal Compliance Checklist
 
 > Covers everything required before launch and on an ongoing basis. Organised by law/obligation area.
 >
 > **This is not legal advice** — have an Australian commercial lawyer review your specific documents before launch.
 >
-> Last updated: 2026-04-25
+> Last updated: 2026-04-29
 
 ---
 
@@ -45,13 +45,13 @@
 
 **ABN:** Register for an **Australian Business Number** via the ATO (free, via ABR portal). Required for tax invoices, GST, and most business dealings.
 
-**Business Name:** If trading as "GrowthHub" and it differs from the registered company name, you must register the business name with ASIC (~$42/year). Check availability first at ASIC's business name register.
+**Business Name:** If trading as "Woahh" and it differs from the registered company name, you must register the business name with ASIC (~$42/year). Check availability first at ASIC's business name register.
 
 **Action items:**
 - [ ] Incorporate Pty Ltd via ASIC Connect or a company registration service
 - [ ] Register ABN via abn.business.gov.au
-- [ ] Register business name "GrowthHub" with ASIC
-- [ ] Register `growthhub.com.au` via a registrar (requires ABN/ACN — auDA policy)
+- [ ] Register business name "Woahh" with ASIC
+- [ ] Register `woahh.com.au` via a registrar (requires ABN/ACN — auDA policy)
 
 ---
 
@@ -93,7 +93,7 @@ Under the *Tax Administration Act 1953*, business and GST records must be kept f
 
 ### 3.1 Trade Mark Registration (IP Australia)
 
-Register "GrowthHub" as a trade mark in at least:
+Register "Woahh" as a trade mark in at least:
 - **Class 35:** Advertising, business management, SaaS
 - **Class 42:** Technology/software services, web hosting
 - **Class 38:** Telecommunications services (relevant to SMS features)
@@ -104,15 +104,15 @@ Cost: ~$250 per class per application. The process takes 7–13 months but prote
 
 - `.com.au` requires a matching registered business name, company name, or trade mark — register ABN/company first
 - Register `.com`, `.com.au`, `.app`, and `.io` defensively
-- Register common misspellings (e.g., growthhub, growth-hub)
+- Register common misspellings (e.g., woahh, growth-hub)
 
 ### 3.3 Copyright
 
-Automatically applies to code, content, and design under the *Copyright Act 1968* — no registration needed in Australia. However, ensure all employment and contractor agreements include an **IP assignment clause** so GrowthHub owns all code written by team members and contractors.
+Automatically applies to code, content, and design under the *Copyright Act 1968* — no registration needed in Australia. However, ensure all employment and contractor agreements include an **IP assignment clause** so Woahh owns all code written by team members and contractors.
 
 **Action items:**
-- [ ] File trade mark application for "GrowthHub" (Classes 35, 42, 38) at IP Australia
-- [ ] Register growthhub.com.au, .com, and defensive variants
+- [ ] File trade mark application for "Woahh" (Classes 35, 42, 38) at IP Australia
+- [ ] Register woahh.com.au, .com, and defensive variants
 - [ ] Add IP assignment clauses to all employment and contractor agreements
 - [ ] Check existing code contributions by contractors for IP ownership gaps
 
@@ -124,7 +124,7 @@ Not legally required in most cases but strongly recommended before taking on pay
 
 | Insurance type | Why you need it |
 |---|---|
-| **Professional Indemnity** | If GrowthHub causes a merchant financial loss (e.g., order system outage, missed reservations) — covers legal costs and damages |
+| **Professional Indemnity** | If Woahh causes a merchant financial loss (e.g., order system outage, missed reservations) — covers legal costs and damages |
 | **Cyber Liability** | Data breach coverage — covers notification costs, forensics, customer claims, regulatory defence |
 | **Public Liability** | If someone is harmed in connection with the business (standard even for pure SaaS) |
 | **Directors & Officers (D&O)** | Protects directors personally from claims arising from management decisions |
@@ -139,11 +139,11 @@ Not legally required in most cases but strongly recommended before taking on pay
 
 ### 5.1 Applicability
 
-The Act applies to entities with annual turnover exceeding **$3 million**, OR that trade in personal information, OR that handle sensitive information. GrowthHub stores customer data (names, emails, order histories, dietary preferences, addresses, birthdays, loyalty balances) on behalf of thousands of merchants, and trades in personal information as part of its core CRM offering. **Treat this as applicable from day one regardless of revenue.**
+The Act applies to entities with annual turnover exceeding **$3 million**, OR that trade in personal information, OR that handle sensitive information. Woahh stores customer data (names, emails, order histories, dietary preferences, addresses, birthdays, loyalty balances) on behalf of thousands of merchants, and trades in personal information as part of its core CRM offering. **Treat this as applicable from day one regardless of revenue.**
 
-### 5.2 GrowthHub's Dual Role
+### 5.2 Woahh's Dual Role
 
-GrowthHub operates in two roles simultaneously:
+Woahh operates in two roles simultaneously:
 - **Data Controller** — for its own data (merchant email, payment info, usage data)
 - **Data Processor** — on behalf of merchants for their customers' data (end-customer names, emails, orders, preferences, birthdays)
 
@@ -151,15 +151,15 @@ This dual role requires separate legal instruments covering both sides.
 
 ### 5.3 The 13 Australian Privacy Principles (APPs)
 
-| APP | Obligation | What this means for GrowthHub |
+| APP | Obligation | What this means for Woahh |
 |---|---|---|
 | APP 1 | Open and transparent management | Publish a clear, accessible Privacy Policy — update it whenever practices change |
 | APP 2 | Anonymity/pseudonymity | Where practicable, let users interact without identifying themselves — the public `/eat` marketplace already does this |
 | APP 3 | Collection of solicited info | Only collect what is reasonably necessary — the birthday field, dietary prefs, and saved addresses all need justification in the Privacy Policy |
 | APP 4 | Unsolicited information | If personal info is received that was not requested, either destroy it or treat it as collected under APP 3 |
 | APP 5 | Notification of collection | At the point of collection, tell people: who you are, what you're collecting, why, who you'll disclose to, and how they can access or correct it. This **collection notice** is required on every sign-up form, checkout, and account creation flow |
-| APP 6 | Use and disclosure | Cannot use data beyond the purpose for which it was collected without consent. Merchant customer data cannot be used by GrowthHub for its own marketing |
-| APP 7 | Direct marketing | Individuals must be able to easily opt out of direct marketing. Merchant customers must be able to opt out of both merchant marketing and any GrowthHub platform communications |
+| APP 6 | Use and disclosure | Cannot use data beyond the purpose for which it was collected without consent. Merchant customer data cannot be used by Woahh for its own marketing |
+| APP 7 | Direct marketing | Individuals must be able to easily opt out of direct marketing. Merchant customers must be able to opt out of both merchant marketing and any Woahh platform communications |
 | APP 8 | Cross-border disclosure | **Critical.** Supabase (US), Resend (US), Clicksend (AU but US infrastructure), Stripe (US), Uber Direct — all overseas recipients. Must either take reasonable steps to ensure they uphold Australian privacy standards (via DPAs) or get explicit consent |
 | APP 9 | Government identifiers | Do not use TFN, Medicare, or driver licence numbers as system identifiers |
 | APP 10 | Data quality | Maintain accuracy of personal information — provide mechanisms for customers to update their records |
@@ -169,18 +169,18 @@ This dual role requires separate legal instruments covering both sides.
 
 ### 5.4 Notifiable Data Breaches (NDB) Scheme
 
-If GrowthHub has an eligible data breach (unauthorised access to personal information that is likely to cause serious harm to individuals):
+If Woahh has an eligible data breach (unauthorised access to personal information that is likely to cause serious harm to individuals):
 1. Notify the **OAIC (Office of the Australian Information Commissioner)** as soon as practicable
 2. Notify **affected individuals**
 3. A 30-day assessment window applies from the time you become aware of a suspected breach
 4. Penalties for failure to notify: up to **$50 million** (corporate) under the 2022 amendments
 
-A written **Data Breach Response Plan** must exist before GrowthHub takes any customer data.
+A written **Data Breach Response Plan** must exist before Woahh takes any customer data.
 
 ### 5.5 Privacy Act Reforms — 2024 Amendments
 
 The *Privacy and Other Legislation Amendment Act 2024* introduced:
-- Statutory tort for serious invasions of privacy — individuals can now sue GrowthHub directly
+- Statutory tort for serious invasions of privacy — individuals can now sue Woahh directly
 - Enhanced transparency requirements
 - New children's privacy protections
 - Stronger direct marketing opt-out obligations
@@ -204,7 +204,7 @@ All third-party services that touch personal data are overseas and each requires
 - [ ] Draft and publish a **Privacy Policy** covering all 13 APPs — publicly accessible before launch
 - [ ] Draft separate **Collection Notices** for: merchant sign-up, customer checkout, customer account creation, and `/eat` marketplace browsing
 - [ ] Execute **DPAs** with Supabase, Resend, Clicksend, Stripe, and Uber Direct
-- [ ] Draft a **Merchant DPA** — merchants (as data controllers) must have a DPA with GrowthHub (as data processor) for their customers' data. Embed this in the Merchant Terms of Service
+- [ ] Draft a **Merchant DPA** — merchants (as data controllers) must have a DPA with Woahh (as data processor) for their customers' data. Embed this in the Merchant Terms of Service
 - [ ] Write a **Data Breach Response Plan** covering: detection, assessment, containment, OAIC notification, individual notification, and post-incident review
 - [ ] Build a **Data Subject Request process** — access and correction requests must be responded to within 30 days
 - [ ] Document a **data retention policy** — how long customer data is kept after a merchant churns or closes their account
@@ -215,7 +215,7 @@ All third-party services that touch personal data are overseas and each requires
 
 ## 6. Spam Act 2003 (Cth)
 
-This is one of the highest-risk areas for GrowthHub. The core product includes tools to send commercial messages to end-customers at scale on behalf of merchants.
+This is one of the highest-risk areas for Woahh. The core product includes tools to send commercial messages to end-customers at scale on behalf of merchants.
 
 ### 6.1 Scope
 
@@ -230,7 +230,7 @@ Does **not** apply to voice calls (those are governed by the *Do Not Call Regist
 
 ### 6.2 The Three Mandatory Requirements
 
-Every commercial message sent through GrowthHub's infrastructure must satisfy all three:
+Every commercial message sent through Woahh's infrastructure must satisfy all three:
 
 **1. Consent**
 
@@ -238,11 +238,11 @@ Either:
 - **Express consent:** The recipient explicitly agreed to receive commercial messages from this sender (e.g., checked "Yes, I'd like marketing emails from Bella's Bistro" at checkout)
 - **Inferred consent:** Based on an existing business relationship (e.g., a customer who placed an order within the last 6 months) OR conspicuous publication of an electronic address
 
-The consent record must be kept — who consented, when, and how. GrowthHub's platform must facilitate consent collection and storage.
+The consent record must be kept — who consented, when, and how. Woahh's platform must facilitate consent collection and storage.
 
 **2. Identification**
 
-Every commercial message must clearly identify the sender. For merchant campaigns, the merchant's trading name and contact details must appear in the message — not GrowthHub's identity. GrowthHub's infrastructure sends on behalf of the merchant; the merchant's name must be visible to the recipient.
+Every commercial message must clearly identify the sender. For merchant campaigns, the merchant's trading name and contact details must appear in the message — not Woahh's identity. Woahh's infrastructure sends on behalf of the merchant; the merchant's name must be visible to the recipient.
 
 **3. Unsubscribe Mechanism**
 
@@ -259,17 +259,17 @@ The existing `email-webhook` and `sms-webhook` edge functions and the `/unsubscr
 3. The unsubscribe link appears in **every** campaign email without exception
 4. SMS campaigns include "Reply STOP to unsubscribe" in the message body
 
-### 6.3 GrowthHub's Liability as a Platform
+### 6.3 Woahh's Liability as a Platform
 
-The Spam Act creates liability for **facilitators** as well as senders. GrowthHub can be held liable if it:
+The Spam Act creates liability for **facilitators** as well as senders. Woahh can be held liable if it:
 - Provides address lists to merchants who use them to spam
 - Sends or authorises the sending of spam on behalf of merchants
 - Is involved in address harvesting
 
 Platform-level obligations:
-- Merchant Terms of Service must **expressly prohibit** sending spam through GrowthHub
+- Merchant Terms of Service must **expressly prohibit** sending spam through Woahh
 - A confirmation step in the campaign send flow requiring merchants to confirm recipient consent (a checkbox is the minimum — stored records are better)
-- A complaints and abuse reporting mechanism for customers who receive spam via GrowthHub-powered campaigns
+- A complaints and abuse reporting mechanism for customers who receive spam via Woahh-powered campaigns
 
 ### 6.4 ACMA Enforcement
 
@@ -280,7 +280,7 @@ The Australian Communications and Media Authority (ACMA) enforces the Spam Act. 
 
 ### 6.5 SMS Sender ID Registration
 
-From 2024, ACMA has been implementing an **SMS Sender ID Registry** to prevent SMS phishing. Businesses using alphanumeric Sender IDs (e.g., "BellasBistro" instead of a phone number) must register those IDs through their carrier or SMS provider (Clicksend in this case). GrowthHub should:
+From 2024, ACMA has been implementing an **SMS Sender ID Registry** to prevent SMS phishing. Businesses using alphanumeric Sender IDs (e.g., "BellasBistro" instead of a phone number) must register those IDs through their carrier or SMS provider (Clicksend in this case). Woahh should:
 - Inform merchants of this requirement during SMS onboarding
 - Surface Sender ID registration in the Operations settings
 - Default to Clicksend's compliant Sender ID system or numeric numbers until merchant registration is confirmed
@@ -306,12 +306,12 @@ From 2024, ACMA has been implementing an **SMS Sender ID Registry** to prevent S
 
 The most broadly applied consumer protection provision in Australia. It is **strict liability** — intent does not matter, only whether conduct was objectively misleading.
 
-GrowthHub's marketing copy has specific risk areas:
+Woahh's marketing copy has specific risk areas:
 
 | Claim | Risk | Mitigation |
 |---|---|---|
 | "Zero commission marketplace" | If any charge tied to marketplace sales is ever added, this claim is at risk | Be precise: "No per-order commission on /eat marketplace orders" — document it in Terms |
-| "Keep every dollar" | Stripe's processing fees still apply — these are the merchant's fees, not GrowthHub's, but could still mislead someone unfamiliar with how Stripe works | Clarify: "Keep every dollar GrowthHub would otherwise take" — Stripe fees always applied regardless of GrowthHub |
+| "Keep every dollar" | Stripe's processing fees still apply — these are the merchant's fees, not Woahh's, but could still mislead someone unfamiliar with how Stripe works | Clarify: "Keep every dollar Woahh would otherwise take" — Stripe fees always applied regardless of Woahh |
 | "0.1% of GMV donated to charity" | Must actually happen, must be accurate, must be verifiable | The public `/impact` page and transparent `donation_ledger` are the right response — maintain records and publish charity receipts |
 | Competitor comparisons (Square 2.6–2.9%, Uber Eats 25–30%) | The comparison must be accurate at time of publication | Review regularly; add "as of [date]" or "rates may vary" to all published comparisons |
 | "Impact Partner" badge on merchant storefronts | Implies genuine impact — if the donation calculation is wrong or delayed, this becomes misleading | Automated real-time calculation via database triggers (already implemented) is the right approach |
@@ -319,11 +319,11 @@ GrowthHub's marketing copy has specific risk areas:
 
 ### 7.2 Unfair Contract Terms (UCT) Regime
 
-From November 2023, it is now **illegal** (not just void) to include an unfair term in a standard form contract with a small business (under $10M turnover or under 20 employees — which describes most GrowthHub merchants). Civil penalties apply.
+From November 2023, it is now **illegal** (not just void) to include an unfair term in a standard form contract with a small business (under $10M turnover or under 20 employees — which describes most Woahh merchants). Civil penalties apply.
 
 Terms that are presumptively unfair in a SaaS merchant agreement:
-- Allowing GrowthHub to unilaterally change the service without notice or a right for the merchant to exit
-- Broad disclaimer clauses excluding GrowthHub from all liability regardless of fault
+- Allowing Woahh to unilaterally change the service without notice or a right for the merchant to exit
+- Broad disclaimer clauses excluding Woahh from all liability regardless of fault
 - Automatic renewal clauses without clear prior notice
 - Right to terminate without cause and without refund for prepaid periods
 - Preventing the merchant from cancelling with reasonable notice
@@ -350,7 +350,7 @@ Subscription services carry implied guarantees that they will be:
 - Fit for the purpose as described
 - Supplied within a reasonable time
 
-If a GrowthHub outage prevents a merchant from taking orders during a dinner service, the merchant may have a claim for consequential losses. A limitation of liability clause in the Terms will apply, but it cannot be so broad as to constitute an unfair term.
+If a Woahh outage prevents a merchant from taking orders during a dinner service, the merchant may have a claim for consequential losses. A limitation of liability clause in the Terms will apply, but it cannot be so broad as to constitute an unfair term.
 
 **Action items:**
 - [ ] Define an SLA (uptime commitment) in the Terms — even 99.5% uptime with a service credit remedy is better than silence
@@ -379,15 +379,15 @@ Clickthrough Terms of Service (checkbox "I agree") are legally binding contracts
 
 ### 9.1 AFSL (Australian Financial Services Licence)
 
-**Phase 1 (Stripe Standard):** Stripe holds its own AFSL covering payment processing for platforms operating under Stripe Standard. GrowthHub is not a financial services provider under this model. No AFSL required.
+**Phase 1 (Stripe Standard):** Stripe holds its own AFSL covering payment processing for platforms operating under Stripe Standard. Woahh is not a financial services provider under this model. No AFSL required.
 
-**Phase 2 (Stripe Connect Express):** When merchant payment flows are routed through GrowthHub, GrowthHub potentially becomes a financial services provider. Stripe Connect platforms may benefit from Stripe's AFSL coverage under a provider exemption, but this requires explicit written confirmation from Stripe Australia. **Obtain this in writing before moving to Phase 2.**
+**Phase 2 (Stripe Connect Express):** When merchant payment flows are routed through Woahh, Woahh potentially becomes a financial services provider. Stripe Connect platforms may benefit from Stripe's AFSL coverage under a provider exemption, but this requires explicit written confirmation from Stripe Australia. **Obtain this in writing before moving to Phase 2.**
 
 ### 9.2 AUSTRAC (Anti-Money Laundering and Counter-Terrorism Financing Act 2006)
 
-**Phase 1:** Not required. Merchants own their Stripe relationship and GrowthHub touches no payment flows.
+**Phase 1:** Not required. Merchants own their Stripe relationship and Woahh touches no payment flows.
 
-**Phase 2 (Stripe Connect):** When GrowthHub takes a 0.3% platform fee on every transaction, AUSTRAC registration as a **remittance dealer or payment facilitator** will almost certainly be required. This involves:
+**Phase 2 (Stripe Connect):** When Woahh takes a 0.3% platform fee on every transaction, AUSTRAC registration as a **remittance dealer or payment facilitator** will almost certainly be required. This involves:
 - Registering with AUSTRAC
 - Appointing an AML/CTF Compliance Officer
 - Developing a written AML/CTF Program document
@@ -395,7 +395,7 @@ Clickthrough Terms of Service (checkbox "I agree") are legally binding contracts
 - Annual compliance reporting to AUSTRAC
 - Staff AML/CTF training
 
-**Phase 3 (Crypto/USDC donations):** Exchanging fiat to USDC and sending to charity wallets via a smart contract makes GrowthHub a **Digital Currency Exchange (DCE) provider** under the AML/CTF Act. This triggers:
+**Phase 3 (Crypto/USDC donations):** Exchanging fiat to USDC and sending to charity wallets via a smart contract makes Woahh a **Digital Currency Exchange (DCE) provider** under the AML/CTF Act. This triggers:
 - AUSTRAC registration as a DCE — **mandatory before the first crypto transaction, not after**
 - Full AML/CTF program applicable to DCE providers
 - KYC (Know Your Customer) verification of charity wallet owners
@@ -424,7 +424,7 @@ Loyalty points redeemable for discounts can, in some structures, constitute a fi
 
 ### 10.1 Marketing Representations — ACL
 
-Every claim GrowthHub makes about charitable giving is subject to ACL s18 (misleading conduct):
+Every claim Woahh makes about charitable giving is subject to ACL s18 (misleading conduct):
 - "Your orders contributed $X to charity" on the merchant dashboard
 - "0.1% of GMV donated" in all marketing materials
 - Totals and breakdowns on the public `/impact` page
@@ -437,11 +437,11 @@ These claims create legal liability if inaccurate. The `donation_ledger` table, 
 
 ### 10.2 Fundraising Laws — State by State
 
-Fundraising laws in Australia are state-based and inconsistent. The key question is whether GrowthHub is legally "fundraising" when it donates 0.1% of GMV from its own revenue.
+Fundraising laws in Australia are state-based and inconsistent. The key question is whether Woahh is legally "fundraising" when it donates 0.1% of GMV from its own revenue.
 
-**If GrowthHub donates purely from its own revenue:** Generally not "fundraising" — it is a business donation. No permits typically required.
+**If Woahh donates purely from its own revenue:** Generally not "fundraising" — it is a business donation. No permits typically required.
 
-**The grey area:** The voluntary donation rate slider in `Donate.tsx`, combined with the "Impact Partner" badge displayed to end-customers, may be interpreted as GrowthHub facilitating public fundraising on behalf of merchants. This is the grey zone in:
+**The grey area:** The voluntary donation rate slider in `Donate.tsx`, combined with the "Impact Partner" badge displayed to end-customers, may be interpreted as Woahh facilitating public fundraising on behalf of merchants. This is the grey zone in:
 
 | State | Law | Risk level |
 |---|---|---|
@@ -454,12 +454,12 @@ Fundraising laws in Australia are state-based and inconsistent. The key question
 | ACT | Charitable Collections Act 2003 | Medium |
 | NT | No equivalent legislation | Lower |
 
-**Safest structural approach** (consistent with what the strategy document outlines): GrowthHub retains the GMV donation amounts within the company P&L and transfers them to registered charities on a fixed schedule. GrowthHub is donating its own money — not collecting donations from anyone. The voluntary merchant contribution rate slider needs specific legal review.
+**Safest structural approach** (consistent with what the strategy document outlines): Woahh retains the GMV donation amounts within the company P&L and transfers them to registered charities on a fixed schedule. Woahh is donating its own money — not collecting donations from anyone. The voluntary merchant contribution rate slider needs specific legal review.
 
 ### 10.3 Only Donate to DGR-Status Charities
 
 Only donate to charities with **DGR (Deductible Gift Recipient) status** from the ATO:
-- Relevant for the tax deductibility of GrowthHub's donations as a business expense
+- Relevant for the tax deductibility of Woahh's donations as a business expense
 - Lends credibility to the giving claims
 - Check DGR status at the ATO's ABN Lookup tool before sending any donation
 
@@ -473,7 +473,7 @@ When setting up a separate charitable entity:
 
 **Action items:**
 - [ ] Engage a charity law specialist before launch to confirm whether the voluntary donation rate slider triggers state fundraising registration requirements
-- [ ] If it does: register in each relevant state before launch, or simplify the model to purely GrowthHub-funded donations to avoid the issue
+- [ ] If it does: register in each relevant state before launch, or simplify the model to purely Woahh-funded donations to avoid the issue
 - [ ] Only donate to charities with confirmed DGR status
 - [ ] Retain and publish charity receipts for all donations (already planned in the strategy — implement it)
 - [ ] Implement the public GitHub issue tracker for donation concerns before the `/impact` page goes live
@@ -501,18 +501,18 @@ The `reviews` table drives `organizations.marketplace_rating`. Under ACCC guidel
 - Reviews must be genuine customer reviews
 - Merchants cannot be incentivised to produce reviews in a way that inflates ratings (e.g., "leave a 5-star review and receive 50 bonus loyalty points" is problematic — tying rewards to "leaving a review" not "leaving a 5-star review" is the safe version)
 - Merchants cannot delete negative reviews (they can respond but not remove)
-- If GrowthHub moderates reviews, the moderation policy must be publicly disclosed
+- If Woahh moderates reviews, the moderation policy must be publicly disclosed
 
 **Action items:**
 - [ ] Add a review authenticity policy to the Terms of Service
-- [ ] Remove the technical ability for merchants to delete customer reviews (flag for GrowthHub moderation only)
+- [ ] Remove the technical ability for merchants to delete customer reviews (flag for Woahh moderation only)
 - [ ] If loyalty rewards are tied to reviews, ensure they reward the act of reviewing — not the star rating
 
 ### 11.3 Liquor Sales
 
 If restaurants on the platform sell alcohol via the order flow:
 - Merchants are solely responsible for their own liquor licence compliance
-- GrowthHub as the facilitating platform may have age verification obligations
+- Woahh as the facilitating platform may have age verification obligations
 - Add an "I am 18 or over" confirmation checkbox to the checkout flow for orders containing alcohol
 - Include in Merchant Terms: merchants selling alcohol are responsible for age verification compliance under applicable state liquor laws
 
@@ -526,7 +526,7 @@ Food safety compliance under the *Food Standards Australia New Zealand Act 1991*
 
 ### 12.1 Security Obligations Under the Privacy Act (APP 11)
 
-GrowthHub must take "reasonable steps" to protect personal information. At this data sensitivity level, "reasonable steps" means:
+Woahh must take "reasonable steps" to protect personal information. At this data sensitivity level, "reasonable steps" means:
 - Encryption at rest and in transit — verify Supabase encryption settings are active
 - Row Level Security on all customer and order tables (already implemented — verify no bypasses exist)
 - Employee access controls — log who can query production data and when
@@ -536,9 +536,9 @@ GrowthHub must take "reasonable steps" to protect personal information. At this 
 
 ### 12.2 PCI DSS
 
-GrowthHub does not process cards directly, so PCI DSS scope is minimal — likely **SAQ A** (the simplest self-assessment questionnaire). However:
-- Never log, store, or transmit raw card numbers or CVVs anywhere in GrowthHub's system
-- Confirm no card data ever touches GrowthHub's servers or database
+Woahh does not process cards directly, so PCI DSS scope is minimal — likely **SAQ A** (the simplest self-assessment questionnaire). However:
+- Never log, store, or transmit raw card numbers or CVVs anywhere in Woahh's system
+- Confirm no card data ever touches Woahh's servers or database
 - Complete an annual SAQ A self-assessment
 
 ### 12.3 Courier Credentials Security
@@ -563,7 +563,7 @@ The `courier_credentials` table stores merchant Uber Direct API keys. These are 
 
 ### 13.1 Employee vs. Contractor Classification
 
-Following the High Court decisions in *CFMMEU v Personnel Contracting* [2022] and *ZG Operations v Jamsek* [2022], the test for employment vs. contractor is now a **totality of the contract terms** test. If GrowthHub uses freelancers or contractors, review their contracts carefully. Misclassification results in liability for:
+Following the High Court decisions in *CFMMEU v Personnel Contracting* [2022] and *ZG Operations v Jamsek* [2022], the test for employment vs. contractor is now a **totality of the contract terms** test. If Woahh uses freelancers or contractors, review their contracts carefully. Misclassification results in liability for:
 - Unpaid superannuation
 - Leave entitlements
 - PAYG withholding obligations
@@ -622,10 +622,10 @@ All of the following must be drafted, reviewed by an Australian commercial lawye
 
 | Document | Who it governs | Where published |
 |---|---|---|
-| **Merchant Terms of Service** | GrowthHub ↔ merchants | Shown at signup, linked in dashboard footer |
-| **Merchant Data Processing Agreement** (can be embedded in ToS) | GrowthHub as processor of merchant customer data | Embedded in or linked from Merchant ToS |
+| **Merchant Terms of Service** | Woahh ↔ merchants | Shown at signup, linked in dashboard footer |
+| **Merchant Data Processing Agreement** (can be embedded in ToS) | Woahh as processor of merchant customer data | Embedded in or linked from Merchant ToS |
 | **Consumer/Customer Privacy Policy** | End customers using storefronts and `/eat` | Footer of all public pages |
-| **Merchant Privacy Policy** | Merchant personal data held by GrowthHub | Signup flow and dashboard footer |
+| **Merchant Privacy Policy** | Merchant personal data held by Woahh | Signup flow and dashboard footer |
 | **Cookie Policy** | Any website visitor | Site footer and cookie consent banner |
 | **Acceptable Use Policy** | Merchants — prohibits spam, illegal activity, false reviews | Linked from Merchant ToS |
 | **Refund and Cancellation Policy** | Merchants | Linked from Merchant ToS |

@@ -1,4 +1,4 @@
-# GrowthHub — Co-Founder Pitch
+# Woahh — Co-Founder Pitch
 
 ---
 
@@ -48,7 +48,7 @@ The tools that would let them compete — CRM, loyalty programs, SMS campaigns, 
 
 ## We Bridge That Gap for Less Than $10 a Day
 
-GrowthHub gives a small business owner the complete digital infrastructure that billion-dollar brands have — for a flat monthly fee starting at $49.
+Woahh gives a small business owner the complete digital infrastructure that billion-dollar brands have — for a flat monthly fee starting at $49.
 
 No transaction fees to us. No commission on orders. No per-device hardware costs. No developer required.
 
@@ -69,7 +69,7 @@ The same tech stack. A fraction of the cost. Available to anyone.
 
 ## The Numbers Hold Up at Every Scale
 
-GrowthHub is a multi-tenant SaaS platform. Every merchant operates in complete isolation — their data, their customers, their branding. We build once and serve many.
+Woahh is a multi-tenant SaaS platform. Every merchant operates in complete isolation — their data, their customers, their branding. We build once and serve many.
 
 **Cost to serve each merchant per month (average usage):**
 
@@ -83,9 +83,9 @@ Infrastructure scales at near-zero marginal cost. Adding merchant #500 costs alm
 
 **The Giving Model — Structural, Not a Campaign**
 
-Every plan includes a fixed monthly charitable donation — $10 (Solo), $25 (Marketplace), $40 (Growth). Additionally, 0.15% of every transaction goes directly to charity. GrowthHub keeps 0.15% net; the other 0.15% is routed to a charitable cause, fully publicly verifiable.
+Every plan includes a fixed monthly charitable donation — $10 (Solo), $25 (Marketplace), $40 (Growth). Additionally, 0.15% of every transaction goes directly to charity. Woahh keeps 0.15% net; the other 0.15% is routed to a charitable cause, fully publicly verifiable.
 
-A merchant processing $20,000/month through GrowthHub donates ~$30 to charity automatically — and their storefront displays an Impact Partner badge that tells that story to every customer.
+A merchant processing $20,000/month through Woahh donates ~$30 to charity automatically — and their storefront displays an Impact Partner badge that tells that story to every customer.
 
 We donate approximately 20% of total revenue to charity. No competitor is within an order of magnitude of this commitment.
 
@@ -117,7 +117,7 @@ We donate approximately 20% of total revenue to charity. No competitor is within
 **1. No competitor does both axes.**
 Square and Toast give you operational tools but no marketplace discovery.
 Uber Eats and DoorDash give you discovery but take 30% and you never own the customer.
-GrowthHub does both — your own full-stack presence AND zero-commission marketplace listing — under one subscription.
+Woahh does both — your own full-stack presence AND zero-commission marketplace listing — under one subscription.
 
 **2. The mission drives acquisition.**
 Word of mouth is the primary customer acquisition channel for small businesses. A café owner who tells three other café owners "this platform donates to charity and costs less than my phone bill" is worth more than any Google ad. The giving model is not a cost centre — it is a growth engine.
@@ -128,7 +128,7 @@ At 1,000 merchants: $149,000/month MRR, ~$298,000/year going to charity.
 At 5,000 merchants: $745,000/month MRR, ~$1.49M/year in charitable impact.
 
 **4. Churn is structurally low.**
-A merchant who has built their customer list in GrowthHub's CRM, run loyalty campaigns, and integrated their delivery flow does not leave easily. The switching cost is their customer data, their loyalty history, and their brand presence — all of which live inside GrowthHub.
+A merchant who has built their customer list in Woahh's CRM, run loyalty campaigns, and integrated their delivery flow does not leave easily. The switching cost is their customer data, their loyalty history, and their brand presence — all of which live inside Woahh.
 
 ---
 
@@ -142,7 +142,7 @@ Most co-founder conversations start with "here's the idea." This one starts with
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  GrowthHub  ·  Bella's Bistro                        Demo Mode 🔶   │
+│  Woahh  ·  Bella's Bistro                        Demo Mode 🔶   │
 │─────────────────────────────────────────────────────────────────────│
 │                                                                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────┐ │
@@ -192,7 +192,7 @@ Every order moves across the board in real time. Kitchen sees it. Owner sees it.
 
 ### Customer Storefront — Public-Facing, Branded
 
-What a customer sees. Fully branded to the merchant. Zero GrowthHub branding visible.
+What a customer sees. Fully branded to the merchant. Zero Woahh branding visible.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -315,7 +315,7 @@ The moment we decide — together — the domain goes live and email infrastruct
 
 ## The /eat Marketplace Changes Everything
 
-The `/eat` marketplace is GrowthHub's second product, and it shifts the competitive landscape entirely.
+The `/eat` marketplace is Woahh's second product, and it shifts the competitive landscape entirely.
 
 Today, a customer who wants to find a new local restaurant opens Uber Eats. The restaurant pays 25–30% to be discovered. Uber keeps the customer relationship.
 
@@ -333,7 +333,7 @@ Brisbane is the right first market.
 
 Dense, independent hospitality and retail scene. Underserved by enterprise software. Close enough to manage relationships directly at launch. Large enough to generate real proof points — GMV data, case studies, press — without the noise and cost of Sydney or Melbourne.
 
-A GrowthHub with 200 Brisbane merchants, $4M/month in GMV, and a visible charitable impact story sells itself into the next market.
+A Woahh with 200 Brisbane merchants, $4M/month in GMV, and a visible charitable impact story sells itself into the next market.
 
 Phase 1: Brisbane launch — 200 merchants, prove the model.
 Phase 2: East Coast expansion — 1,000+ merchants.
@@ -363,9 +363,9 @@ We're not looking for someone to execute a plan. We're looking for someone who l
 
 The gap between a small business and a billion-dollar chain is not capability — it is access. The tech that Dominos uses to keep customers coming back is not magic. It is a loyalty database, an SMS trigger, and a well-timed message.
 
-GrowthHub makes that accessible to anyone.
+Woahh makes that accessible to anyone.
 
-But beyond the product: the giving model creates something no SaaS company has built before. At 5,000 merchants processing an average of $20,000/month in orders, GrowthHub channels over $1,000,000 per year to charitable causes — automatically, publicly, verifiably.
+But beyond the product: the giving model creates something no SaaS company has built before. At 5,000 merchants processing an average of $20,000/month in orders, Woahh channels over $1,000,000 per year to charitable causes — automatically, publicly, verifiably.
 
 Every time a customer orders a coffee from Bella's Bistro, a fraction of a cent goes to a cause that matters. The merchant knows it. The customer can see it. The world is slightly better.
 
@@ -373,7 +373,7 @@ That story compounds. It reaches press. It attracts mission-aligned merchants. I
 
 ---
 
-*GrowthHub — Built for the people who built the neighbourhood.*
+*Woahh — Built for the people who built the neighbourhood.*
 
 ---
 

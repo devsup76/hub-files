@@ -1,4 +1,4 @@
-# Growerr — Co-Founders Agreement
+# Woahh — Co-Founders Agreement
 
 **Date:** 26 April 2026
 
@@ -18,13 +18,13 @@ The Founding Member is also referred to throughout this agreement as the **"IP O
 
 ## BACKGROUND
 
-**A.** The Founding Member independently conceived, designed, and developed the concept, business model, name, and underlying intellectual property for a software platform known as **Growerr** — a multi-tenant SaaS platform for small business owners providing digital presence management, a zero-commission marketplace, CRM, loyalty, marketing, and related tools.
+**A.** The Founding Member independently conceived, designed, and developed the concept, business model, name, and underlying intellectual property for a software platform known as **Woahh** — a multi-tenant SaaS platform for small business owners providing digital presence management, a zero-commission marketplace, CRM, loyalty, marketing, and related tools.
 
 **B.** The Founding Member has invested significant time, creative effort, and resources into developing this concept prior to the date of this agreement, including the design of the product architecture, business strategy, pricing model, charitable giving model, and all associated materials.
 
-**C.** On **26 April 2026**, the Founding Member formally presented and disclosed the Growerr concept to Co-Founder 1 and Co-Founder 2 for the first time, with a view to them joining as co-founders of the venture.
+**C.** On **26 April 2026**, the Founding Member formally presented and disclosed the Woahh concept to Co-Founder 1 and Co-Founder 2 for the first time, with a view to them joining as co-founders of the venture.
 
-**D.** The Founders now wish to set out the terms on which they will work together to build and operate the Growerr business, and to record their mutual agreement regarding intellectual property ownership, decision-making authority, confidentiality, and related matters.
+**D.** The Founders now wish to set out the terms on which they will work together to build and operate the Woahh business, and to record their mutual agreement regarding intellectual property ownership, decision-making authority, confidentiality, and related matters.
 
 ---
 
@@ -34,22 +34,22 @@ The Founding Member is also referred to throughout this agreement as the **"IP O
 
 Each of Co-Founder 1 and Co-Founder 2 individually and irrevocably acknowledges and confirms that:
 
-(a) The Growerr concept, business model, product design, name, branding, charitable giving model, pricing structure, and all associated ideas and materials were **conceived, created, and developed solely by the Founding Member** prior to and including 26 April 2026;
+(a) The Woahh concept, business model, product design, name, branding, charitable giving model, pricing structure, and all associated ideas and materials were **conceived, created, and developed solely by the Founding Member** prior to and including 26 April 2026;
 
-(b) The Growerr concept was **first disclosed to them by the Founding Member on 26 April 2026**, and they had no prior knowledge of, involvement in, or contribution to the concept before that date;
+(b) The Woahh concept was **first disclosed to them by the Founding Member on 26 April 2026**, and they had no prior knowledge of, involvement in, or contribution to the concept before that date;
 
-(c) The Founding Member is the **sole original author and creator** of the Growerr concept and all intellectual property associated with it as it existed on 26 April 2026;
+(c) The Founding Member is the **sole original author and creator** of the Woahh concept and all intellectual property associated with it as it existed on 26 April 2026;
 
-(d) They have **not contributed** to the development of any intellectual property, concept, or materials relating to Growerr prior to the date of this agreement; and
+(d) They have **not contributed** to the development of any intellectual property, concept, or materials relating to Woahh prior to the date of this agreement; and
 
-(e) They will **not at any time** represent to any person, entity, investor, partner, media, or court that they were a co-creator, co-inventor, or original author of the Growerr concept or any pre-existing intellectual property.
+(e) They will **not at any time** represent to any person, entity, investor, partner, media, or court that they were a co-creator, co-inventor, or original author of the Woahh concept or any pre-existing intellectual property.
 
 ### 1.2 Record of Disclosure
 
 The Founding Member discloses the following materials and information to Co-Founder 1 and Co-Founder 2 on 26 April 2026 as part of the founding pitch:
 
-- The Growerr business strategy document
-- The Growerr product concept and feature set
+- The Woahh business strategy document
+- The Woahh product concept and feature set
 - The subscription pricing model and tier structure
 - The charitable giving and GMV donation model
 - The competitive positioning strategy
@@ -63,13 +63,13 @@ The Co-Founders acknowledge receipt of this disclosure on the date of this agree
 
 ### 2.1 Pre-Existing IP Belongs to the Founding Member
 
-All intellectual property created or developed by the Founding Member prior to the date of this agreement — including but not limited to the Growerr concept, name, brand, business model, product design, code, documentation, strategy documents, database schema, and any other materials — remains the **sole and exclusive property of the Founding Member**.
+All intellectual property created or developed by the Founding Member prior to the date of this agreement — including but not limited to the Woahh concept, name, brand, business model, product design, code, documentation, strategy documents, database schema, and any other materials — remains the **sole and exclusive property of the Founding Member**.
 
 The Co-Founders have no claim, right, title, or interest in any pre-existing intellectual property.
 
 ### 2.2 Assignment to the Company
 
-Upon incorporation of the company through which the Founders will operate the Growerr business (the **"Company"**), the Founding Member agrees to assign or license the pre-existing intellectual property to the Company on terms to be agreed between the Founding Member and the Company, provided that:
+Upon incorporation of the company through which the Founders will operate the Woahh business (the **"Company"**), the Founding Member agrees to assign or license the pre-existing intellectual property to the Company on terms to be agreed between the Founding Member and the Company, provided that:
 
 (a) the terms of any such assignment or licence are fair and agreed in writing; and
 
@@ -77,7 +77,7 @@ Upon incorporation of the company through which the Founders will operate the Gr
 
 ### 2.3 New IP Created After This Agreement
 
-All intellectual property created by any Founder **in the course of working on the Growerr business** after the date of this agreement shall be owned by the Company once incorporated. Each Founder agrees to promptly disclose and assign to the Company all such intellectual property, and to execute any documents reasonably required to perfect that assignment.
+All intellectual property created by any Founder **in the course of working on the Woahh business** after the date of this agreement shall be owned by the Company once incorporated. Each Founder agrees to promptly disclose and assign to the Company all such intellectual property, and to execute any documents reasonably required to perfect that assignment.
 
 ### 2.4 Moral Rights
 
@@ -85,7 +85,7 @@ To the extent permitted by Australian law, each Founder agrees not to assert any
 
 ### 2.5 No Competing IP
 
-No Founder may create, develop, register, or claim ownership of any intellectual property that is substantially similar to, derived from, or in competition with the Growerr concept without the prior written consent of the Founding Member.
+No Founder may create, develop, register, or claim ownership of any intellectual property that is substantially similar to, derived from, or in competition with the Woahh concept without the prior written consent of the Founding Member.
 
 ---
 
@@ -93,7 +93,7 @@ No Founder may create, develop, register, or claim ownership of any intellectual
 
 ### 3.1 Intended Company Structure
 
-The Founders intend to incorporate an Australian Proprietary Limited company (**"Pty Ltd"**) to operate the Growerr business. The Company name, ACN, and share structure shall be confirmed in writing once incorporation is complete. This agreement governs the relationship between the Founders in the period before incorporation, and shall continue to govern the relationship after incorporation to the extent it is not superseded by a formal Shareholders Agreement.
+The Founders intend to incorporate an Australian Proprietary Limited company (**"Pty Ltd"**) to operate the Woahh business. The Company name, ACN, and share structure shall be confirmed in writing once incorporation is complete. This agreement governs the relationship between the Founders in the period before incorporation, and shall continue to govern the relationship after incorporation to the extent it is not superseded by a formal Shareholders Agreement.
 
 ### 3.2 Share Structure and Voting Rights
 
@@ -255,7 +255,7 @@ Upon departure, a Co-Founder:
 
 ### 7.1 Confidential Information
 
-**"Confidential Information"** means all information relating to the Growerr business, concept, strategy, technology, customers, merchants, financials, code, database design, marketing plans, pricing, partnership terms, and any other information that a reasonable person would regard as confidential — whether disclosed orally, in writing, or by any other means.
+**"Confidential Information"** means all information relating to the Woahh business, concept, strategy, technology, customers, merchants, financials, code, database design, marketing plans, pricing, partnership terms, and any other information that a reasonable person would regard as confidential — whether disclosed orally, in writing, or by any other means.
 
 ### 7.2 Obligation of Confidentiality
 
@@ -265,7 +265,7 @@ Each Founder agrees that they will:
 
 (b) Not disclose Confidential Information to any third party without the prior written consent of the Founding Member;
 
-(c) Use Confidential Information only for the purposes of building and operating the Growerr business;
+(c) Use Confidential Information only for the purposes of building and operating the Woahh business;
 
 (d) Take all reasonable steps to protect Confidential Information from unauthorised access or disclosure; and
 
@@ -285,29 +285,29 @@ The confidentiality obligations in clause 7.2 do not apply to information that:
 
 During the period they are a Founder and for **24 months** after ceasing to be a Founder (for any reason), each Co-Founder agrees that they will not, without the prior written consent of the Founding Member:
 
-(a) Establish, join, invest in, advise, or work for any business that is **substantially similar to or directly competitive** with Growerr — specifically, any platform providing SaaS tools for food and retail merchants including storefront management, order management, loyalty, SMS/email marketing, or a zero-commission marketplace;
+(a) Establish, join, invest in, advise, or work for any business that is **substantially similar to or directly competitive** with Woahh — specifically, any platform providing SaaS tools for food and retail merchants including storefront management, order management, loyalty, SMS/email marketing, or a zero-commission marketplace;
 
-(b) Solicit, attempt to solicit, or accept business from any merchant, customer, or partner of Growerr with whom they came into contact during their time as a Founder;
+(b) Solicit, attempt to solicit, or accept business from any merchant, customer, or partner of Woahh with whom they came into contact during their time as a Founder;
 
 (c) Solicit or attempt to hire any employee, contractor, or advisor of the Company; or
 
-(d) Use the Growerr name, brand, or any confusingly similar name or brand in connection with any other business.
+(d) Use the Woahh name, brand, or any confusingly similar name or brand in connection with any other business.
 
 ### 7.5 Reasonableness
 
-The Founders acknowledge that the restrictions in clause 7.4 are reasonable in scope, duration, and geography given the nature of the Growerr business and the confidential information to which Co-Founders have access. If any court finds a restriction unreasonable, it shall be modified to the minimum extent necessary to make it enforceable rather than void.
+The Founders acknowledge that the restrictions in clause 7.4 are reasonable in scope, duration, and geography given the nature of the Woahh business and the confidential information to which Co-Founders have access. If any court finds a restriction unreasonable, it shall be modified to the minimum extent necessary to make it enforceable rather than void.
 
 ### 7.6 No Passing Off
 
 Each Co-Founder agrees that they will not, at any time:
 
-(a) Pass off any product, service, or business as Growerr or as associated with Growerr;
+(a) Pass off any product, service, or business as Woahh or as associated with Woahh;
 
-(b) Represent to any person that they were the sole or primary creator of Growerr or the concept behind it;
+(b) Represent to any person that they were the sole or primary creator of Woahh or the concept behind it;
 
-(c) Claim authorship or inventorship of any Growerr intellectual property before a court, investor, media outlet, or any other party; or
+(c) Claim authorship or inventorship of any Woahh intellectual property before a court, investor, media outlet, or any other party; or
 
-(d) Take any action that damages, dilutes, or misrepresents the Growerr brand or the Founding Member's reputation as its originator.
+(d) Take any action that damages, dilutes, or misrepresents the Woahh brand or the Founding Member's reputation as its originator.
 
 ---
 
@@ -398,21 +398,21 @@ By signing below, each Founder confirms that:
 
 ---
 
-## SCHEDULE A — Description of Pre-Existing Growerr Intellectual Property
+## SCHEDULE A — Description of Pre-Existing Woahh Intellectual Property
 
 The following materials were created solely by the Founding Member prior to and including 26 April 2026 and constitute the pre-existing IP referred to in clause 2.1:
 
 | Item | Description |
 |---|---|
-| Business name | "Growerr" |
+| Business name | "Woahh" |
 | Business concept | Multi-tenant SaaS platform for small business owners (restaurants and retail) providing digital storefront, order management, CRM, loyalty, SMS/email campaigns, and a zero-commission public marketplace |
 | Business strategy document | Full written strategy including pricing model, revenue projections, competitive positioning, payment processing decisions, delivery integration model, and charitable giving model |
 | Charitable giving model | GMV-based donation structure, voluntary merchant rate, public `/impact` dashboard concept, blockchain transparency roadmap |
-| Product architecture | All page/component design, database schema, feature set, and technical decisions documented in planning documents and the Growerr Lovable project |
+| Product architecture | All page/component design, database schema, feature set, and technical decisions documented in planning documents and the Woahh Lovable project |
 | Pricing and tier structure | Solo ($49), Marketplace ($99), Growth ($199), Enterprise (custom) — with all feature gating decisions |
-| Branding | The "Growerr" name and any logo, colour palette, and brand assets created prior to and including 26 April 2026 |
+| Branding | The "Woahh" name and any logo, colour palette, and brand assets created prior to and including 26 April 2026 |
 | Domain names and registrations | Any domains registered by the Founding Member prior to and including 26 April 2026 |
-| Code | All code written by the Founding Member prior to and including 26 April 2026, including code in the Growerr Lovable project and associated repositories |
+| Code | All code written by the Founding Member prior to and including 26 April 2026, including code in the Woahh Lovable project and associated repositories |
 
 ---
 
