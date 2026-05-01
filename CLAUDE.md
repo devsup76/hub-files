@@ -4,7 +4,7 @@
 
 > This file is the single source of truth for woahh development sessions.
 > Update it whenever a feature is completed, a key decision is made, or significant progress occurs.
-> Last updated: 2026-04-27
+> Last updated: 2026-04-30
 
 ---
 
@@ -177,7 +177,7 @@ supabase/
 ```
 free_trial  → full marketplace-tier access until trial_ends_at (60 days)
 solo        → email campaigns, promote (sponsored listings)
-marketplace → + CRM, Loyalty, SMS Campaigns, marketplace listing
+marketplace → + CRM, Loyalty, SMS Campaigns, marketplace listing, customer order notifications
 growth      → + higher SMS/email caps, priority placement, custom domain/PWA
 enterprise  → unlimited everything
 ```
@@ -193,7 +193,7 @@ SMS/email caps are set automatically by `apply_tier_caps()` trigger:
 Top-up credits: `sms_topup_credits` and `email_topup_credits` on organizations. No rollover — zeroed by monthly reset functions.
 
 TierGate in `App.tsx`:
-- `loyalty`, `customers`, `sms` → `minTier="marketplace"`
+- `loyalty`, `customers`, `sms`, `notifications` → `minTier="marketplace"`
 - `email`, `promote` → `minTier="solo"`
 - `donate` → no gate (all tiers)
 
@@ -241,6 +241,9 @@ TierGate in `App.tsx`:
 | KDS keyboard shortcuts | ✅ Complete | Pool + kanban mode-aware navigation (↑↓←→ + bump/recall); owner-customisable via KitchenSettings KeyCapture UI; shortcuts deep-merged into kds.shortcuts in settings |
 | Staff PIN login | ✅ Complete | 6-digit PIN only (no password for staff); pin_hash = SHA-256(pin:userId); staff-pin-login edge function; 5-attempt lockout + 15-min cooldown; constant-time comparison; owner reset_lockout action; PIN keypad in Auth.tsx; owner sets/resets PIN in Staff.tsx |
 | Merchant onboarding & compliance | ✅ Complete | Legal minimum + industry level: business type, owner full legal name, legal entity type, phone (OTP verified via Clicksend), ABN (checksum validated + unique), business address, ToS acceptance timestamp + version, Spam Act acknowledgement; owner-verify edge function; OnboardingChecklist component (5-step progress card); PhoneVerifyDialog (InputOTP); SMS/Promote guards; Business Details section in Operations |
+| Customer order notifications | ✅ Complete | Email (Resend) + Web Push (VAPID RFC 8291); `push_subscriptions` + `order_notification_log` tables; `order-notify` edge function (accepts owner JWT or service-role key; fixed auth bug); service worker at public/sw.js; PushOptIn Bell on /order/:id; auto-trigger + manual Bell in Orders + KDS; NotificationSettings page (triggers, channels, email footer); dine-in excluded; marketplace tier+ |
+| Staff shift availability | ✅ Complete | ShiftAvailabilityPanel in KDS + Orders; toggle product sold-out/available (stock 0/99); toggle extras on/off in JSONB; manager + service roles only; Realtime subscription |
+| Account recovery | ✅ Complete | /recover page; security questions (SHA-256 hashed); max 3 attempts/hour; account_recovery_log; owner phone change flow (PhoneChangeDialog + OTP); customer dual-verification prompt |
 
 ---
 
@@ -277,15 +280,31 @@ Both follow the same pattern:
 
 ---
 
-## Donation / Giving Model
+## Pricing & Giving Model
 
-- **Fixed monthly donation** included in every subscription: Solo $10, Marketplace $25, Growth $40
-- **GMV donation**: 0.15% of every order processed through woahh → charity; 0.15% → woahh net
-- **Voluntary rate**: merchant can increase their giving rate above the 0.1% floor via the Donate dashboard (slider)
+**Subscriptions** (50% to charity, 50% to Woahh):
+- Solo: $49/month — 1 location
+- Marketplace: $89/month — up to 3 locations
+- Growth: $150/month — up to 7 locations
+- Enterprise: custom — unlimited locations
+
+**Commission per order** (half each to charity and Woahh):
+- **Online orders:** 4% merchant fee + 2% customer service fee → 3% charity, 3% Woahh
+- **In-person orders (dine-in, counter, POS):** 4% merchant fee only → 2% charity, 2% Woahh; no customer-facing service fee shown; merchant absorbs the commission
+
+The 2% customer service fee is collected via `application_fee_amount` on online Stripe charges only. In-person terminal charges use a reduced `application_fee_amount` (4% only).
+
+**Stripe Connect model (phased):**
+- **Founding merchants:** Connect Express, `application_fee_amount: 0` — zero commission, pass-through, works at launch
+- **All paying merchants:** Connect Custom — Woahh holds funds, T+1/T+2 payout delay for disputes, full charity allocation control; operates under Stripe AU AFSL (written confirmation required before go-live with Custom)
+
+**Other giving sources:**
+- **Voluntary rate**: merchant can increase their giving rate above the floor via the Donate dashboard (slider)
 - **One-time donations**: available in Donate dashboard
 - **Promotion share**: sponsored listing fee split between charity and platform
 - All donations recorded in `donation_ledger` (public RLS — anyone can read for transparency)
 - Public `/impact` page shows totals, leaderboard, by-cause breakdown
+- **Founding merchants (first 20–25)**: zero commission permanently; still pay subscriptions
 
 ---
 

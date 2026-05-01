@@ -35,10 +35,10 @@ Woahh is a full-stack SaaS platform for small business owners — restaurants, r
 2. **Discovery marketplace** — the public `/eat` directory, zero-commission, where customers find and order from local businesses. The alternative to Uber Eats that doesn't take 25–30% of every order.
 
 **Financial philosophy:**
-The goal is not maximum extraction from merchants. The intent is to build a sustainably profitable business that generates wealth to support the team and fund charitable causes, while genuinely helping small businesses grow. Pricing reflects this — no per-transaction fees on top of subscriptions, no volume caps that penalise growth.
+The goal is not maximum extraction from merchants. The intent is to build a sustainably profitable business that generates wealth to support the team and fund charitable causes, while genuinely helping small businesses grow. Pricing reflects this — commission is set at 4% (vs. 30% industry standard), no volume caps that penalise growth, and half of all commission goes directly to charity.
 
 **The giving model:**
-0.15% of every order processed through Woahh goes to charity. 0.15% is retained by Woahh as a platform fee. Every merchant's dashboard shows their individual charitable contribution. A public `/impact` page shows the full donation ledger — transparent, auditable, and verifiable by anyone. No competitor does this. It is a structural commitment built into the platform from day one, not a marketing gimmick.
+4% merchant commission + 1% customer service fee on every order. Half of each goes to charity. Half to Woahh. At scale this means 2.5% of every dollar processed through Woahh goes to charity — automatically, publicly, and verifiably. Every merchant's dashboard shows their individual charitable contribution. A public `/impact` page shows the full donation ledger. No competitor does this at any percentage. It is a structural commitment built into the transaction layer from day one, not a marketing gimmick.
 
 **Expanding verticals:**
 - Restaurants and retail: live at launch
@@ -114,52 +114,83 @@ The product is near-launch ready. The following features are fully built and tes
 
 ## 4. Payment Processing
 
-### Decision: Stripe Connect Express (Pass-Through Model)
+### Decision: Phased Stripe Connect Approach
 
-**How it works:**
-- Customer pays at checkout via Stripe
-- Woahh automatically splits the charge: 0.15% platform fee to Woahh, remainder to the merchant
-- Merchant receives their share immediately — Woahh never holds funds
-- All disputes, chargebacks, and compliance remain between the merchant and Stripe
-- No AFSL required — Woahh does not hold or transmit funds, it facilitates a split at point of charge
+Two distinct phases. The model changes once the platform has proven itself with founding merchants — not before, and not after.
 
-This is distinct from a "payment facilitator" or "marketplace payout" model where Woahh holds funds and batches payouts. The pass-through model keeps Woahh outside AFSL and AUSTRAC scope at launch.
+**Phase 1 — Founding merchants: Stripe Connect Express (pass-through)**
+- Customer pays at checkout — Woahh never holds funds
+- `application_fee_amount: 0` for founding merchants = zero commission, always
+- Merchant receives their share immediately; Stripe handles disputes
+- No AFSL or AUSTRAC engagement required
+- Works today, zero implementation complexity beyond basic Connect integration
+
+**Phase 1 paid launch onwards — Stripe Connect Custom (fund-holding)**
+- Woahh holds the full payment in merchant connected accounts before disbursing
+- Configurable payout delay (T+1 or T+2) creates a dispute/refund buffer
+- Woahh controls charity allocation timing and recipient selection
+- Application fees flow into Woahh's Stripe balance; transferred to charity on a weekly or monthly schedule
+- Woahh owns the payout UX — merchants see their balance in the dashboard, not a Stripe dashboard
+- **Does NOT require Woahh's own AFSL** — Woahh operates under Stripe Payments Australia Pty Ltd's AFSL as a platform. Written confirmation from Stripe Australia required before go-live.
+- Requires: Stripe Connect Custom application + Stripe review (allow 2–4 weeks); backend connected account creation per merchant; payout webhook handling
+
+**Implementation timeline:**
+- Week 2 (launch sprint): Integrate Connect Express, test end-to-end with founding merchants
+- In parallel: Apply for Connect Custom; request written AFSL coverage confirmation from Stripe Australia
+- Phase 1 paid launch: All new paying merchants on Connect Custom; founding merchants stay on Express with `application_fee_amount: 0` forever
 
 ### Options Evaluated
 
 | Option | Model | Pros | Cons |
 |---|---|---|---|
-| **Stripe Connect Express (pass-through)** ✓ | Split at charge — merchant receives instantly | 0.15% platform fee revenue; no fund holding; Stripe handles KYC; automated splits | Requires AUSTRAC engagement at scale when fee volume becomes significant |
-| **Stripe Standard** | Each merchant owns their Stripe account; Woahh not in payment flow | Zero regulatory exposure | Cannot take a platform fee; no revenue from transactions |
-| **Fund-holding marketplace model** | Woahh holds customer payment, batches payouts to merchants | Control over payout timing | Requires AFSL — a 12+ month, $50k+ process; not viable at launch |
+| **Stripe Connect Express (founding merchants)** ✓ | Pass-through split at charge | Works immediately; no AFSL; Stripe handles KYC + disputes | No fund control; can't delay payouts; charity allocation reactive not proactive |
+| **Stripe Connect Custom (paying merchants)** ✓ | Woahh holds + disburses | Full payout control; dispute buffer; charity allocation on schedule; Woahh owns UX | 2–4 week Stripe approval; backend work required; need Stripe AU written AFSL confirmation |
+| **Stripe Standard** | Merchant owns Stripe account | Zero regulatory exposure | Cannot take a platform fee at all |
+| **Full AFSL fund-holding** | Woahh licensed financial service | Total control | 12+ months, $50k+ legal process — not viable until significant scale |
 | **Tyro** (AU-specific) | EFTPOS terminal integration | ~30% of AU restaurants already on Tyro | In-person only; no online rails; optional add-on only |
 | **Adyen** | Enterprise interchange++ pricing | Cheapest at $50M+ GMV/month | Minimum volumes; months-long onboarding |
 | **Square / Braintree** | Competitor / PayPal product | — | Square is a direct competitor; creates dependency on a rival |
 
 ### Fee Breakdown on a $30 Order
 
-| Payment type | Customer pays | Stripe fee | Woahh platform fee (0.15%) | Merchant receives |
-|---|---|---|---|---|
-| Online (card not present) | $30.00 | $1.17 (2.9% + 30¢) | $0.045 | $28.79 |
-| In-person (Stripe Terminal) | $30.00 | $0.86 (2.7% + 5¢) | $0.045 | $29.10 |
+**The 2% customer service fee applies to online orders only — not in-person (dine-in, counter pickup, POS walk-in). Customers at the counter see no service fee. The merchant absorbs only their 4% commission.**
 
-**Comparison to Square:** Square charges 2.6% + 10¢ in-person ($0.88 on $30) and 2.9% + 30¢ online ($1.17 on $30). Woahh's platform fee is effectively invisible by comparison. The meaningful difference is Square charges monthly software fees on top of every transaction; Woahh's flat subscription covers everything.
+| | Customer pays | Stripe fee | Woahh gross | → Charity | → Woahh net | Merchant receives |
+|---|---|---|---|---|---|---|
+| Online (domestic card) | $30.60 | $0.84 (1.75% + 30¢) | $1.80 (6%) | $0.90 (3%) | $0.90 (3%) | $28.56 |
+| In-person (Stripe Terminal) | $30.00 | $0.55 (0.8% + 10¢) | $1.20 (4%) | $0.60 (2%) | $0.60 (2%) | $28.25 |
+
+*Online: customer pays $30 + $0.60 service fee; merchant commission = $1.20; service fee = $0.60; Woahh gross = $1.80; half each to charity and Woahh net.*
+
+*In-person: customer pays $30 only; merchant commission = $1.20; no customer service fee; Woahh gross = $1.20; half each to charity and Woahh net.*
+
+**Comparison to Uber Eats (same $30 order):**
+Uber Eats takes 30% = $9.00. Merchant receives $21.00 and owns zero customer data.
+Woahh takes $0.90 net. Merchant receives $28.56 and owns the customer forever.
+**Woahh is 90% cheaper than Uber Eats on every single order.**
+
+**Comparison to Square:** Square charges 2.2% online ($0.66 on $30) + $165/month software. Woahh's $0.90 net per transaction is slightly higher than Square's pure processing fee — but includes a marketplace, CRM, loyalty, campaigns, and a $0.90 automatic charitable contribution that Square cannot match.
 
 ### Legal Considerations
 
-- **AUSTRAC:** Not required at launch under the pass-through model. Required when platform fee volume becomes significant — engage AML Shield or Comply Advantage 3–6 months before that threshold.
-- **AFSL:** Stripe's own AFSL covers platforms operating under Stripe Connect. Written confirmation from Stripe Australia to be obtained before launch.
-- **Australian Privacy Act:** Applicable now. Woahh stores customer data on behalf of merchants. Privacy policy and DPAs required before launch.
+- **AFSL:** Stripe Payments Australia Pty Ltd holds the AFSL. Woahh operates as a platform under it — no separate AFSL required for either Connect Express or Connect Custom, provided Woahh stays within Stripe's permitted platform use case. **Action required: obtain written confirmation from Stripe Australia before first live transaction under Connect Custom.**
+- **AUSTRAC:** Not required at launch. Pass-through model (Express) is clearly outside remittance dealer scope. Connect Custom (platform holding funds pending payout) should be reviewed by a payments lawyer before scale — engage 3–6 months before AUSTRAC's digital currency threshold is relevant. Start with AML Shield or Comply Advantage.
+- **Australian Privacy Act:** Applicable now. Woahh stores customer data on behalf of merchants. Privacy policy and Data Processing Agreements required before launch.
+- **Founding merchant zero-commission:** Enforced via `application_fee_amount: 0` in Stripe — not a separate legal construct. The signed one-page agreement is the binding document; Stripe config is just the technical expression of it.
 
-### Phase 2 (Stripe Connect — Platform Fee Revenue at Scale)
+### Commission + Subscription Revenue at Scale
 
-| Platform GMV/month | 0.3% total fee | 0.15% to charity | 0.15% net to Woahh |
-|---|---|---|---|
-| $500k | $1,500/mo | $750/mo | $750/mo |
-| $5M | $15,000/mo | $7,500/mo | $7,500/mo |
-| $50M | $150,000/mo | $75,000/mo | $75,000/mo |
+| Platform GMV/month | 6% gross commission | → Charity (3%) | → Woahh net (3%) | Sub MRR (half to Woahh) | **Total Woahh revenue/mo** | **Total charity/mo** |
+|---|---|---|---|---|---|---|
+| $500k (10 merchants) | $30,000 | $15,000 | $15,000 | ~$440 | **~$15,440** | **~$15,440** |
+| $5M (100 merchants) | $300,000 | $150,000 | $150,000 | ~$4,400 | **~$154,400** | **~$154,400** |
+| $25M (500 merchants) | $1,500,000 | $750,000 | $750,000 | ~$22,000 | **~$772,000** | **~$772,000** |
+| $50M (1,000 merchants) | $3,000,000 | $1,500,000 | $1,500,000 | ~$44,500 | **~$1,544,500** | **~$1,544,500** |
+| $250M (5,000 merchants) | $15,000,000 | $7,500,000 | $7,500,000 | ~$222,500 | **~$7,722,500** | **~$7,722,500** |
 
-The net 0.15% to Woahh becomes the dominant revenue stream at scale — the same model used by Shopify and Toast. The matched 0.15% to charity means Woahh's transaction revenue growth is mirrored dollar-for-dollar by charitable impact.
+*GMV assumption: $50k/month per merchant. Blended subscription avg ~$89/month; half (~$44.50) to Woahh, half to charity. Commission is the dominant revenue stream — same model as Stripe and Shopify Payments. At 5,000 merchants: **$92.7M/year to charity.***
+
+**Founding merchant carve-out:** First 20–25 merchants locked at zero commission permanently. On $50k/month GMV each, this forgoes $1,500/month net per founding merchant (~$30–37.5k/month total). Founding merchants still pay subscriptions — half of which goes to charity. The deliberate cost of the early adoption strategy.
 
 ---
 
@@ -171,12 +202,12 @@ GMV caps were removed entirely. Penalising a merchant for a busy Christmas perio
 
 ### Tier Structure
 
-| Plan | Monthly Price | Target customer | What's included |
-|---|---|---|---|
-| **Solo** | $49/month | Single-location business wanting full-stack presence without marketplace listing | Orders, KDS, products, CRM, loyalty, email campaigns, reservations, tables, branding, analytics, staff management. Single location. Not listed on `/eat`. |
-| **Marketplace** | $99/month | Business wanting discovery alongside their own presence | Everything in Solo + listed on `/eat` (zero commission), Impact badge, sponsored listings, up to 3 locations |
-| **Growth** | $199/month | Scaling or multi-location operator | Everything in Marketplace + unlimited locations, priority `/eat` placement, advanced analytics, custom domain (PWA), API access |
-| **Enterprise** | Custom | Chains, franchises, multi-location groups | White-label, dedicated support, volume pricing, negotiated terms |
+| Plan | Monthly Price | Charity split | Target customer | What's included |
+|---|---|---|---|---|
+| **Solo** | $49/month | $24.50 to charity, $24.50 to Woahh | Single-location business wanting full-stack presence without marketplace listing | Orders, KDS, products, email campaigns, reservations, tables, branding, analytics, staff management. 1 location. Not listed on `/eat`. |
+| **Marketplace** | $89/month | $44.50 to charity, $44.50 to Woahh | Business wanting discovery alongside their own presence | Everything in Solo + listed on `/eat`, Impact badge, sponsored listings, CRM, loyalty, SMS campaigns, customer notifications. Up to 3 locations. |
+| **Growth** | $150/month | $75 to charity, $75 to Woahh | Multi-location operator | Everything in Marketplace + up to 7 locations, priority `/eat` placement, higher SMS/email caps, custom domain (PWA) |
+| **Enterprise** | Custom | 50% to charity | Chains, franchises, multi-location groups | Unlimited locations, white-label, dedicated support, volume pricing, negotiated terms |
 
 **Free trial:** 60 days of full Marketplace-tier access. No credit card required to start.
 
@@ -194,41 +225,46 @@ Forcing these onto a public directory is a dealbreaker. Respecting this distinct
 
 ### The "App of Your Own" Opportunity (Growth Tier)
 
-The Growth plan at $199/month delivers a near-native app experience without building native apps:
+The Growth plan at $150/month delivers a near-native app experience without building native apps:
 
 1. **Custom domain** — `order.bellasbistro.com.au` points to their Woahh storefront. Looks like their own website. Shopify Plus charges thousands for this.
 2. **PWA** — Customers "Add to Home Screen" on iPhone/Android. Full-screen icon with their logo. Indistinguishable from a native app.
-3. **Push notifications** — Direct to customers who've installed their "app."
+3. **7 locations** — Ideal for small chains and franchisees growing past a single site.
 
-Billion-dollar restaurant tech stack, available to a café at $199/month.
+Billion-dollar restaurant tech stack, available to a café at $150/month.
 
 ### The Pitch
 
-> "Square gives you a payment system. Uber Eats lists you in their directory and takes 30%. Woahh gives you your own full-stack presence — website, app, loyalty, CRM, kitchen display — AND lists you on our zero-commission marketplace where you keep every dollar. Starting at $49 a month."
+> "On every order, everyone chips in. Merchants pay 4% — half to charity. Customers pay 2% — half to charity. Half your subscription goes to charity too. That's 3% of every dollar processed through Woahh going to causes that matter. Not a feature. The whole model. Uber Eats takes 30% and gives nothing back. Starting at $49 a month."
 
 ---
 
 ## 6. Revenue Projections
 
 ### Assumptions
-- Tier distribution: 45% Solo ($49), 40% Marketplace ($99), 10% Growth ($199), 5% Enterprise (~$300 blended)
-- Weighted average revenue per merchant: ~$95/month
-- Subscription revenue only — excludes platform fee revenue
+- Tier distribution: 45% Solo ($49), 40% Marketplace ($89), 10% Growth ($150), 5% Enterprise (~$300 blended)
+- Weighted average subscription per merchant: ~$89/month (blended)
+- Subscription split: 50% to charity, 50% to Woahh (~$44.50 Woahh, ~$44.50 charity)
+- Average GMV per merchant per month: $50,000 (conservative — ~37 digital orders/day at $45 AOV)
+- Commission net to Woahh: 3% of GMV (half of 6% gross)
+- Commission to charity: 3% of GMV
 - Infrastructure costs are estimates; SMS is the primary variable cost
 
-### Subscription Profit Table
+### Combined Revenue Projection (Subscription + Commission)
 
-| Active merchants | Gross revenue/month | Infrastructure costs/month | Estimated profit/month | Estimated profit/year |
-|---|---|---|---|---|
-| 50 | $4,750 | ~$180 | $4,570 | $54,840 |
-| 100 | $9,500 | ~$320 | $9,180 | $110,160 |
-| 250 | $23,750 | ~$650 | $23,100 | $277,200 |
-| 500 | $47,500 | ~$1,400 | $46,100 | $553,200 |
-| 1,000 | $95,000 | ~$2,800 | $92,200 | $1,106,400 |
-| 2,000 | $190,000 | ~$5,500 | $184,500 | $2,214,000 |
-| 5,000 | $475,000 | ~$13,000 | $462,000 | $5,544,000 |
+| Active merchants | Sub MRR (Woahh half) | Commission net (3%) | **Total Woahh revenue** | Infra costs | **Net profit/month** | **ARR** |
+|---|---|---|---|---|---|---|
+| 50 | ~$2,200 | $75,000 | **$77,200** | ~$180 | **$77,020** | **$924k** |
+| 100 | ~$4,400 | $150,000 | **$154,400** | ~$320 | **$154,080** | **$1.85M** |
+| 250 | ~$11,000 | $375,000 | **$386,000** | ~$650 | **$385,350** | **$4.6M** |
+| 500 | ~$22,000 | $750,000 | **$772,000** | ~$1,400 | **$770,600** | **$9.3M** |
+| 1,000 | ~$44,500 | $1,500,000 | **$1,544,500** | ~$2,800 | **$1,541,700** | **$18.5M** |
+| 2,000 | ~$89,000 | $3,000,000 | **$3,089,000** | ~$5,500 | **$3,083,500** | **$37M** |
+| 5,000 | ~$222,500 | $7,500,000 | **$7,722,500** | ~$13,000 | **$7,709,500** | **$92.5M** |
 
-**Net margin: 94–97%.** Infrastructure costs are near-flat (CDN hosting) or scale in small steps (Supabase), not proportionally with merchant count.
+**Net margin: 97–99%.** Infrastructure costs remain near-flat. Commission revenue scales purely with merchant GMV — no additional infrastructure required.
+
+*Note: Founding merchants (20–25) are zero-commission. All projections above assume full commission applies — founding merchant carve-out reduces early numbers slightly. Charity receives an equal amount to Woahh at every scale milestone.*
 
 ### Infrastructure Cost Breakdown
 
@@ -279,9 +315,12 @@ The `donation_ledger` table records every charitable contribution: source (GMV-m
 
 | Source | Rate | Notes |
 |---|---|---|
-| GMV (every order) | 0.15% → charity, 0.15% → Woahh | Built into every transaction automatically |
-| Voluntary rate | Merchant-configurable above 0.1% floor | Slider in Donate dashboard |
-| Subscription | Fixed monthly donation included per tier | Solo $10, Marketplace $25, Growth $40 |
+| Merchant commission | 4% per order → 2% Woahh, 2% charity | Online + in-person. Automatic on every order |
+| Customer service fee | 2% per order → 1% Woahh, 1% charity | **Online orders only.** Added at checkout, disclosed as "Platform service fee". In-person orders carry no customer fee. |
+| **Online order total** | **3% of GMV → charity, 3% → Woahh** | Half of every online transaction dollar to charity |
+| **In-person order total** | **2% of GMV → charity, 2% → Woahh** | Merchant commission only; no customer-facing fee |
+| Subscription | 50% to charity, 50% to Woahh | Solo $49 ($24.50 each), Marketplace $89 ($44.50 each), Growth $150 ($75 each) |
+| Voluntary rate | Merchant-configurable above floor | Slider in Donate dashboard |
 | Promoted listings | 70% → charity, 30% → Woahh | Promotion fee split on `/eat` sponsored listings |
 | One-time donations | Merchant-initiated | Available in Donate dashboard |
 
@@ -337,21 +376,43 @@ Woahh is both: owned operations stack + zero-commission marketplace, under one f
 
 ### The Full Competitive Table
 
-| Factor | Square / Toast | Uber Eats / DoorDash | me&u / Bopple | Woahh |
+| Factor | Square / Toast | Uber Eats / DoorDash | me&u / Bopple | **Woahh** |
 |---|---|---|---|---|
-| Transaction fees | 2.6–2.9% forever | N/A | None / low | 0.15% platform fee only |
-| Software cost | $60–$165/month + add-ons | None | $99–$299/month | $49–$199/month, all features |
-| Marketplace / discovery | None | Yes (30% commission) | Limited | Yes (zero commission) |
-| Owned storefront | Basic | None | Yes | Full-featured, branded |
-| Customer data ownership | Partial | Never | Partial | Full — merchant's CRM |
-| Loyalty program | Paid add-on | None | Basic | Built in, Solo+ |
-| Email + SMS campaigns | Add-on or not offered | None | Not offered | Built in, Solo+ |
-| Staff management | Basic | None | None | Full — PIN auth, roles, KDS |
-| Kitchen display | Paid add-on | None | None | Built in, all tiers |
-| Reservations | Paid add-on | None | None | Built in, all tiers |
-| Appointment booking | No | No | No | Coming Phase 2 |
-| Charity contribution | None | None | None | 0.15% of every order |
-| Hardware | Proprietary, expensive | N/A | Any browser | Any browser — tablet, phone, laptop |
+| Commission per order | 2.2–2.9% (processing only) | 15–30% | None / low | **4% merchant + 2% customer** |
+| Monthly platform cost ($80k GMV) | ~$1,925 | ~$12,000–24,000 | ~$299–600 | **$3,289** |
+| Marketplace / discovery | None | Yes (30% commission) | Limited | **Yes (zero commission)** |
+| Owned storefront | Basic | None | Yes | **Full-featured, branded** |
+| Customer data ownership | Partial | Never | Partial | **Full — merchant's CRM** |
+| Loyalty program | Paid add-on | None | Basic | **Built in, all tiers** |
+| Email + SMS campaigns | Add-on or not offered | None | Not offered | **Built in, all tiers** |
+| Staff management | Basic | None | None | **Full — PIN auth, roles, KDS** |
+| Kitchen display | Paid add-on | None | None | **Built in, all tiers** |
+| Reservations | Paid add-on | None | None | **Built in, all tiers** |
+| Multi-courier dispatch | No | N/A | None | **Uber Direct + DoorDash + Sherpa** |
+| Push notifications (no app) | No | App only | No | **Yes — web push** |
+| Unified customer identity | No | No | No | **Yes — cross-merchant account** |
+| Appointment booking | No | No | No | **Phase 1 roadmap** |
+| Charity contribution | None | None | None | **3% of every order + 50% of subscription** |
+| Public giving transparency | None | None | None | **Yes — /impact page** |
+| Hardware required | Yes (proprietary) | Smartphone | Tablet | **Any browser** |
+
+### Marketing-Ready Cost Comparison (for Sales and Investor Decks)
+
+**Headline:** "On every order, everyone chips in. Merchants pay 4% — half to charity. Customers pay 2% — half to charity. Half your subscription goes to charity too. Uber Eats takes 30% and gives nothing back."
+
+| Competitor | Their model | Monthly cost on $80k GMV | Annual cost | vs. Woahh annual saving |
+|---|---|---|---|---|
+| Uber Eats | 30% commission | $24,000 | $288,000 | **$248,532 saved** |
+| DoorDash Premier | 30% commission | $24,000 | $288,000 | **$248,532 saved** |
+| DoorDash Basic | 15% commission | $12,000 | $144,000 | **$104,532 saved** |
+| Square Online + Plus | 2.2% + $165 sub | $1,925 | $23,100 | *Woahh costs $16,368 more — but includes marketplace, CRM, loyalty, and $1,644.50/yr to charity* |
+| me&u | ~$500 sub | $500 | $6,000 | *Woahh costs $33,468 more — but includes full feature stack + marketplace + charity model* |
+| Bopple | ~$299 sub, 0% | $299 | $3,588 | *Woahh costs $35,880 more — but includes marketplace, CRM, campaigns, loyalty, and charity giving* |
+| **Woahh** | **4% + 2% customer + $89 sub** | **$3,289** | **$39,468** | — |
+
+*$1,644.50/year of every Woahh merchant's spend goes to charity — none of the competitors above contribute a cent.*
+
+*Key investor talking point: Woahh is categorically cheaper than the platforms that dominate merchant discovery (Uber Eats, DoorDash). Compared to software-only tools (Square, Bopple), Woahh costs slightly more but delivers a marketplace, CRM, loyalty engine, and a charity model that software-only tools cannot replicate at any price.*
 
 ### Merchant Migration Path
 

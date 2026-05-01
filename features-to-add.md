@@ -3,7 +3,7 @@
 > Organised by status: what's done, what's core, and what's optional.
 > Legal & compliance operational tasks are tracked in [`non-dev-implementations.md`](./non-dev-implementations.md).
 > Sprint plan and phase timelines are in [`docs/business/MASTER_PLAN.md`](./docs/business/MASTER_PLAN.md).
-> Last updated: 2026-04-29
+> Last updated: 2026-04-30
 
 ---
 
@@ -32,6 +32,9 @@ Everything below is fully built and live.
 - Combos — bundle products at fixed price, sale windows, `combo_items` junction
 
 ### Customers & Marketing
+- Customer-facing order notifications — email (Resend) + web push (VAPID RFC 8291); `push_subscriptions` + `order_notification_log` tables; `order-notify` edge function (accepts owner JWT or service-role key); service worker; status stepper on `/order/:id`; PushOptIn Bell; auto-trigger + manual Bell in Orders + KDS; `NotificationSettings` page (triggers, channels, email footer customisation); dine-in excluded; **marketplace tier+**
+- Account recovery — `/recover` page; security questions (hashed); owner phone number change flow (`PhoneChangeDialog`); customer dual-verification prompt; `account-recover` edge function
+- Staff shift availability — `ShiftAvailabilityPanel` in KDS + Orders; toggle product sold-out/available; toggle extras on/off; manager + service roles only
 - Customer CRM — list, manage, dietary prefs, saved addresses, birthday, opt-in tracking (marketplace tier+)
 - Loyalty rewards — points + milestone, birthday rewards, in-person rotating 6-digit codes; `loyalty_code_sessions` table + upsert/validate RPCs (marketplace tier+)
 - SMS campaigns — full UI, Clicksend batch API, delivery tracking, opt-out, top-up credits; scheduled sends with timezone label (marketplace tier+)
@@ -104,17 +107,125 @@ Features that are essential to the business working properly. Build these before
 
 ### Phase 1 — First 4 Months Post-Launch
 
-#### Customer-Facing Order Notifications
+#### ~~Customer-Facing Order Notifications~~ ✅ Built
+#### ~~Account Recovery~~ ✅ Built
+#### ~~Staff Menu Editing (Availability + Add-on Toggle)~~ ✅ Built
+
+---
+
+#### Customer-Facing Order Notifications — built, kept for reference
 **Why:** Customers need to know their order status without refreshing the page.
 
 **What to build:**
-- Email: extend `email-send` edge function with `type: 'order_status'` — transactional template for confirmed, preparing, ready, declined
-- SMS: extend `sms-send` similarly for opted-in customers
-- Web push: service worker on `/order/:id`, VAPID keys, `push_subscriptions` table, `web-push` in edge function
+- `push_subscriptions` table: customer_id, org_id, endpoint, p256dh, auth (unique per customer+org+endpoint)
+- `order_notification_log` table: order_id, channel, event — idempotency guard to prevent duplicate sends
+- `order-notify` edge function: accepts `{ order_id, event }` (service-role only); sends email via Resend + web push via VAPID; delivery/takeaway orders only (`dine_in = false`)
+- Service worker at `public/sw.js` — push event handler + notification click → open `/order/:id`
+- Push subscription opt-in UI on `/order/:id` — "Get notified" Bell button; only shows if customer is identified and `dine_in = false`
+- Status stepper progress bar on `/order/:id` — Confirmed → Preparing → Out for Delivery / Ready for Pickup → Done; declined state shows denial_reason
+- Live tracking button on `/order/:id` when `courier_tracking_url` is set
+- Auto-trigger in Orders.tsx and KDS on status change to preparing/ready/declined
+- Manual "Notify customer" Bell button on order cards in Orders.tsx and KDS
+
+**Tier decision:** Customer notifications (Bell button, auto-trigger, push, NotificationSettings page) require marketplace tier or above. Email channel alone remains functional at all tiers via the edge function's `emailEnabled` flag. Transactional notifications never count against the marketing SMS/email cap.
 
 **Watch out for:**
-- Always check `customers.sms_opt_out` and `customers.email_opt_out` before sending
-- Order status messages are transactional — do not require marketing consent
+- Always check `customers.email_opt_out` before sending (transactional don't require marketing consent but do respect hard opt-outs)
+- Idempotency is critical — Realtime can trigger multiple updates; `order_notification_log` unique constraint prevents duplicate sends
+- VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT env secrets required in Supabase dashboard
+
+---
+
+#### AI Features
+**Why:** AI dramatically reduces merchant onboarding friction and gives the /eat marketplace a search experience no AU competitor has. All calls go server-side via Supabase edge functions — `ANTHROPIC_API_KEY` never touches the frontend.
+
+**Model choice:** Claude Haiku 4.5 for real-time/chat tasks (~$0.001/call); Claude Sonnet 4.6 for vision + complex generation (~$0.02/call). Cost per feature is negligible at early scale.
+
+---
+
+##### Menu Import from Photo / PDF *(Phase 1 — highest priority)*
+**Why:** Typing 40 products into a web form is the #1 onboarding drop-off point. Toast, Square, and Clover are all racing to build this. Woahh should have it at launch.
+
+**What to build:**
+- Upload button on the Menu page: "Import menu from photo or PDF"
+- Edge function `ai-menu-import`: accepts base64 image or PDF, calls Claude Sonnet 4.6 with vision + structured output prompt, returns JSON matching the `products` + `menu_categories` schema
+- Merchant sees a pre-filled review screen — confirm, edit, or discard each item
+- One-click confirm saves all to DB
+- Supports: photo of physical menu, PDF menu, handwritten menus, multi-column layouts
+
+**Watch out for:**
+- Validate prices are numbers before saving (Claude may OCR "$12.50" as "12.50" — handle both)
+- Cap file size at 10MB; show error for multi-page PDFs > 20 pages
+- Always require merchant review before saving — never auto-insert without confirmation
+
+---
+
+##### Onboarding Assistant (Dashboard Chat) *(Phase 1)*
+**Why:** Replaces WhatsApp support at scale. An AI assistant in the dashboard sidebar handles 80% of setup questions before a human needs to get involved.
+
+**What to build:**
+- Persistent chat widget in `DashboardLayout.tsx` sidebar (collapsed by default, expand on click)
+- Reads current org state on each message: what's set up, what's missing, current tier
+- Streaming response via edge function `ai-assistant` calling Claude Haiku 4.5
+- Can answer platform questions, suggest next setup steps, write storefront descriptions
+- System prompt includes: org state, business type, tier, what features are available
+- Escalation: if it can't answer, offers "Contact support" link
+
+**Watch out for:**
+- Never expose sensitive org data (payment credentials, customer PII) in the system prompt
+- Rate limit: max 20 messages/hour per org to prevent abuse
+
+---
+
+##### Campaign Copy Generator *(Phase 1)*
+**Why:** Removes the blank-page problem — the biggest reason merchants don't send campaigns.
+
+**What to build:**
+- "Generate with AI" button in `SMSCampaigns.tsx` and `EmailCampaigns.tsx`
+- Merchant selects: goal (promo / win-back / loyalty reward / new item / event) + tone (casual / professional / urgent)
+- Edge function `ai-campaign` calls Claude Haiku with campaign context + audience type
+- SMS output: ≤160 chars with opt-out reminder; Email output: subject line + body + CTA text
+- Merchant edits or uses directly
+
+---
+
+##### Marketplace AI Search *(Phase 1)*
+**Why:** "Find me cheap Thai food open now" beats a cuisine dropdown. No AU competitor has this.
+
+**What to build:**
+- `pgvector` extension migration on Supabase (single SQL line)
+- `merchant_embeddings` table: org_id, embedding vector, updated_at
+- Nightly pg_cron job: regenerate embeddings for orgs with updated menus (concatenate name + cuisine_tags + description + top menu items → embed via Claude or text-embedding-3-small)
+- Edge function `ai-search`: embed query → pgvector similarity search → Claude Haiku re-ranks top 10 → returns results with a one-line match explanation
+- Replace/augment existing cuisine filter on `/eat` with a natural language search box
+- Graceful degradation: if AI search fails, fall back to existing SQL search
+
+**Watch out for:**
+- pgvector requires the extension to be enabled in Supabase dashboard (Settings → Extensions)
+- Embedding generation cost: ~$0.0001 per merchant per nightly run — negligible
+
+---
+
+##### Analytics Insights Narrator *(Phase 1)*
+**Why:** Charts show numbers. Merchants need to know what to do about them.
+
+**What to build:**
+- On `Analytics.tsx` page load, stream a 3–4 sentence AI insight from Claude Haiku
+- Reads: last 30 days revenue trend, top products, peak hours, new vs. returning customer ratio
+- Produces: specific, actionable observation — "Your Tuesday lunch drops 40% vs. weekly average — consider a Tuesday promotion"
+- Cached per org per day (store result in `localStorage` with a date key) — don't re-call on every page load
+- Show as a subtle card at the top of the analytics page with a sparkle icon
+
+---
+
+##### AI Decline Reason Suggestions *(Phase 1— quick win)*
+**Why:** Most merchants type nothing when declining an order. Customers get confused. This fixes it in 10 seconds.
+
+**What to build:**
+- When the decline dialog opens in `Orders.tsx`, show 3 pre-written suggested reasons (generated by Claude Haiku based on the order contents and time of day)
+- Merchant taps one or types their own
+- Suggested reasons: ingredient shortage, capacity, early closing, etc.
+- Single Haiku call, ~100 tokens, instant
 
 ---
 
@@ -161,13 +272,15 @@ Features that are essential to the business working properly. Build these before
 ---
 
 #### Table QR Code Ordering (Dine-in Self-Service)
-**Why:** Customers scan their table QR, browse the menu, and order from their phone — no staff needed.
+**Why:** Customers scan a single QR code per restaurant, input their own table number, and order from their phone — no staff needed. One QR per venue eliminates the cost of printing and replacing per-table codes.
 
 **What to build:**
-- Public route `/table/:orgSlug/:tableNumber` — loads storefront in dine-in mode, pre-fills `table_number` + `dine_in: true` at checkout
-- Validate `table_number` against the org's actual `tables` table — prevent URL manipulation
+- Public route `/table/:orgSlug` — loads storefront in dine-in mode; customer enters their table number on a prompt screen before browsing
+- Validate entered `table_number` against the org's `tables` table — reject unknown numbers with a friendly error
+- Pre-fills `table_number` + `dine_in: true` at checkout once confirmed
 - Orders enter normal queue; KDS and kanban already show `table_number`
 - "Pay at table" option: Stripe Payment Link shown when order status reaches `ready`
+- QR code generation in `Tables.tsx`: single QR linking to `/table/:slug` (not per-table URLs)
 
 ---
 
@@ -236,9 +349,65 @@ Features that are essential to the business working properly. Build these before
 
 ---
 
+#### Account Recovery
+**Why:** Both owners and customers need a reliable path back into their account if they lose access to their primary login method.
+
+**What to build:**
+- **Dual verification at all times — owner:** Ensure both email + phone are always on record and verified. If one is lost, the other can be used to recover. Phone number change flow: owner enters new number → OTP sent to new number → updates `owner_phone` + resets `phone_verified`.
+- **Dual verification at all times — customer:** On the customer Account page, prompt to add both email and phone if only one is present. Magic link covers email recovery; if phone is also on record, allow SMS OTP as an alternative sign-in path.
+- **Owner security questions:** During onboarding (or in Account Settings), owner sets 2–3 security questions. Stored hashed (SHA-256). Recovery flow: enter email → answer security questions → reset session. If security questions also fail: account is permanently unrecoverable — no support bypass.
+- **Customer unrecoverable state:** If customer loses both email and phone access, account is unrecoverable by design. Display a clear warning on the Account page about keeping contact info up to date.
+- `security_questions` JSONB column on `organizations` (hashed answers); `account_recovery_log` table for audit trail.
+
+**Watch out for:**
+- Security question answers must be hashed before storage — never store plaintext
+- Constant-time comparison on answer verification (same pattern as staff PIN)
+- Rate-limit recovery attempts: max 3 tries per hour per email
+
+---
+
+#### Staff Menu Editing (Availability + Add-on Toggle)
+**Why:** During a shift, items run out and add-ons become unavailable. Staff need to update this in real time without accessing full menu CRUD.
+
+**What to build:**
+- In `KDS.tsx` and `Orders.tsx`, add a "Menu Availability" quick-access panel (accessible to manager + service roles; not kitchen role)
+- Product list with a toggle per item: Available / Sold Out — updates `products.stock` to 0 (sold out) or restores to a non-zero value (back in stock)
+- Extras/add-ons toggle per product: each extra in the `extras` JSONB array gets an `available: boolean` flag — staff can flip it off for the session
+- Changes are live immediately: storefront hides sold-out items and greyed-out extras in real time (Realtime subscription on products table already exists)
+- Staff cannot see or edit price, description, or any other fields — availability only
+- Owner retains full menu CRUD via the Menu dashboard page
+
+**Watch out for:**
+- Extra availability stored in `extras` JSONB: extend each extra object with `"available": true` (default); filter on storefront before rendering add-on options
+- Stock restore on "mark available" should not blindly set a number — use a sensible default (e.g. 99) or prompt staff for a count
+
+---
+
 ## 💡 Optional Features — Future Phases
 
 Add these after the core product is stable. Most are Phase 2+ or post-Series A.
+
+---
+
+### Pricing Model Evolution
+
+#### Commission-Based Pricing (Future Consideration)
+**Confirmed model — implement with Stripe billing.**
+
+- **4% merchant commission** on each order → 2% to charity, 2% to Woahh
+- **2% customer service fee** added at checkout → 1% to charity, 1% to Woahh
+- **Total per order: 3% of GMV to charity, 3% net to Woahh**
+- **Subscriptions: Solo $49 / Marketplace $89 / Growth $150 (7 locations) / Enterprise custom — 50% to charity, 50% to Woahh**
+- Founding merchants (first 20–25): locked at zero commission permanently; still pay subscriptions
+
+**Why:**
+- Aligns Woahh revenue entirely with merchant success
+- 87% cheaper than Uber Eats / DoorDash (30%+)
+- Charity grows to $18.5M/year at 1,000 merchants — equal to Woahh's own revenue
+- Customer 2% is fully transparent and disclosed at checkout; half goes to charity
+- "On every order, everyone chips in. Merchants pay 4% — half to charity. Customers pay 2% — half to charity. Half your subscription goes to charity too."
+
+**When to implement:** Stripe billing (next critical build). Requires ToS re-gate before activation.
 
 ---
 

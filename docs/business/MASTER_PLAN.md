@@ -1,6 +1,6 @@
 # Woahh — Master Business & Sprint Plan
 
-> Last updated: 2026-04-29
+> Last updated: 2026-04-30
 > Status: Active — update whenever a phase is completed, a key decision changes, or a milestone is hit.
 
 ---
@@ -25,19 +25,22 @@
 ## 1. The Business
 
 **What it is:**
-Woahh is a full-stack SaaS platform for small business owners — restaurants, retail, and services. It gives independent merchants the tools that only large chains or high-commission platforms have had access to: direct ordering, loyalty, CRM, email/SMS campaigns, marketplace listing, and a built-in giving model — all in one place, no commissions.
+Woahh is a full-stack SaaS platform for small business owners — restaurants, retail, and services. It gives independent merchants the tools that only large chains or high-commission platforms have had access to: direct ordering, loyalty, CRM, email/SMS campaigns, marketplace listing, and a built-in giving model — at 87% lower cost than the industry's dominant discovery platforms.
 
 **Core value prop:**
-Give a small business owner a single dashboard to manage orders, products, customers, loyalty, promotions, and marketing — with a public-facing storefront, marketplace listing, and customer portal included. No commissions, no lock-in, no complexity.
+Give a small business owner a single dashboard to manage orders, products, customers, loyalty, promotions, and marketing — with a public-facing storefront, marketplace listing, and customer portal included. 4% commission vs. 30% industry standard. No lock-in. No complexity.
 
 **Differentiator:**
-The giving model is the hook no competitor has. Every order processed through Woahh contributes to charity. Every merchant gets a transparent public impact ledger and an Impact Partner badge. This is both a genuine social value and a PR engine that compounds over time.
+The giving model is the hook no competitor has. Every order processed through Woahh contributes to charity — 3% of every dollar of GMV automatically. Half of every subscription goes to charity too. Every merchant gets a transparent public impact ledger and an Impact Partner badge. This is both a genuine social value and a PR engine that compounds over time. At 1,000 merchants: $18.5M/year to charity.
 
 **Revenue model:**
-- Monthly SaaS subscriptions: solo → marketplace → growth → enterprise
-- 0.3% GMV fee per order (0.15% to charity, 0.15% net to Woahh)
+- Monthly SaaS subscriptions: Solo ($49) → Marketplace ($89) → Growth ($150, 7 locations) → Enterprise (custom) — 50% of each to charity, 50% to Woahh
+- **Online orders:** 4% merchant commission + 2% customer service fee per order — half of each to charity, half to Woahh (3% net to each)
+- **In-person orders:** 4% merchant commission only — no customer-facing fee; 2% net to charity, 2% net to Woahh
 - Optional hardware lease (Phase 2+)
-- Pass-through payments via Stripe Connect — no AFSL required
+- **Phase 1 (founding merchants):** Stripe Connect Express — `application_fee_amount: 0`; pass-through; no fund holding
+- **Phase 1 paid launch+:** Stripe Connect Custom — Woahh holds funds, T+1/T+2 payout delay, full charity allocation control; operates under Stripe AU's AFSL (written confirmation required before go-live)
+- Founding merchants (first 20–25): zero commission permanently — locked via signed agreement
 
 **Starting point:** Brisbane, personal connections → national → US + UK
 
@@ -103,7 +106,9 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 - [ ] Draft merchant Terms of Service using AI — book a single lawyer session for review before money flows
 
 **Tech Lead (CEO):**
-- [ ] Stripe Connect fully integrated and tested end-to-end
+- [ ] Stripe Connect Express integrated and tested end-to-end (founding merchant flow, `application_fee_amount: 0`)
+- [ ] Apply for Stripe Connect Custom — submit platform description, await Stripe review (2–4 weeks)
+- [ ] Email Stripe Australia support requesting written AFSL coverage confirmation for Connect Custom platform operations
 - [ ] Security review: manual walkthrough of all auth flows, check all RLS policies, verify no exposed secrets, run OWASP ZAP automated scan
 - [ ] Full end-to-end test: merchant signup → menu setup → customer order → payment → payout
 - [ ] Fix all bugs identified in testing
@@ -149,10 +154,11 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 
 - Capped at **20-25 merchants** — do not exceed this or the benefit becomes diluted
 - 2 months free trial, startup costs waived
-- After trial: locked in at the lowest available rate permanently — "Founding Merchant" status
-- Communicated and documented as: *"Founding Merchant — your rate is locked at [amount] permanently"* — not "free for life" language, which creates unstructured legal liability
-- In writing via a signed one-page agreement
+- After trial: locked in at the lowest available subscription rate permanently — **and zero commission forever**
+- Communicated and documented as: *"Founding Merchant — your subscription rate and commission rate are locked permanently"* — not "free for life" language, which creates unstructured legal liability
+- In writing via a signed one-page agreement before any orders are processed
 - What Woahh gets in return: testimonials, referrals, case studies, direct product feedback, social proof for investors
+- **Cost of this commitment:** At $50k/month GMV per founding merchant, zero commission = ~$1,250/month foregone per merchant = ~$25–31k/month total at 20–25 merchants. This is the deliberate price of the early acquisition strategy — justified by referral and brand value.
 
 ---
 
@@ -210,9 +216,10 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 - ATO R&D Tax Incentive claim at tax time
 
 **Target metrics:**
-- 50+ active merchants
-- $10k+ GMV/month
-- $3–8k MRR
+- 50+ active merchants (20–25 founding + 25–30 paying commission)
+- $2.5M+ GMV/month across all merchants
+- $77k+ total monthly revenue (commission ~$75k + sub Woahh share ~$2.2k)
+- Equal amount going to charity (~$77k/month)
 - Merchant monthly retention >85%
 
 ---
@@ -231,7 +238,9 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 
 **Target metrics:**
 - 300+ active merchants nationally
-- $25–40k MRR
+- $15M+ GMV/month
+- $450k+ total monthly revenue (commission ~$450k + sub Woahh share ~$13k) ≈ **$5.6M ARR**
+- Equal amount going to charity (~$463k/month)
 - Strong case studies across restaurant and retail verticals
 - Series A conversations ready
 
@@ -251,7 +260,9 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 
 **Target metrics:**
 - 1,000+ merchants globally
-- $100k+ MRR
+- $50M+ GMV/month
+- $1.54M+ total monthly revenue (commission ~$1.5M + sub Woahh share ~$44.5k) ≈ **$18.5M ARR**
+- Equal going to charity = **$18.5M/year in charitable impact**
 - Series A closed
 
 ---
@@ -269,10 +280,10 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 
 **What investors will want to see before writing a cheque:**
 - Clear CEO with defined team and signed co-founder agreement ✓
-- Active merchants with real GMV flowing
+- Active merchants with real GMV flowing — even 10 merchants at $50k GMV = $125k/month commission revenue
 - Merchant retention data (month 2 retention is the key number)
-- The giving model story — lead every investor conversation with it
-- A clear path to $1M ARR
+- The giving model + commission story — lead every investor conversation with it: "4% vs. 30%, and half goes to charity"
+- A clear path to $1M ARR — achievable at ~75 non-founding merchants at $50k GMV each
 
 **Key investor targets (Australia):**
 - Blackbird Ventures — largest AU VC, invests from pre-seed
@@ -367,7 +378,7 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 - Founding Merchant offer messaging locked in and tested
 
 ### Launch
-- Lead with the giving model: *every order on Woahh contributes to something bigger* — no competitor has this and it is genuinely true
+- Lead with the giving model: *"4% vs. 30% — and half of our fee goes to charity"* — no competitor can match either number, and both are genuinely true
 - Real merchant faces and real businesses — not stock photos, not mockups
 - Brisbane-first positioning: built here, for here
 - Urgency: founding merchant spots are capped, first-come
@@ -396,18 +407,20 @@ Target launch date: mid-May 2026. Soft launch to personal connections and foundi
 
 Track these from day one. Review weekly during Phase 0–1, monthly from Phase 2.
 
-| Metric | Why It Matters |
-|---|---|
-| MRR (Monthly Recurring Revenue) | Health of the subscription business |
-| GMV (Gross Merchandise Value) | Scale of orders flowing through the platform |
-| Active merchant count | Growth rate |
-| Merchant monthly retention rate | Most important number — product stickiness |
-| CAC per merchant | Cost to acquire — target under 3 months of their subscription revenue |
-| LTV per merchant | Long-term value — target 24+ month average lifespan |
-| Orders per merchant per week | Are they actually using it actively? |
-| Customer repeat order rate | Value of the platform to end consumers |
-| Time to first order per merchant | Onboarding efficiency — shorter = better product |
-| NPS (merchants + customers) | Leading indicator of retention and referrals |
+| Metric | Why It Matters | Target |
+|---|---|---|
+| MRR (subscription) | Floor revenue — health of the subscription business | $10k by end of Phase 1 |
+| Commission revenue | Ceiling revenue — scales with merchant GMV; dominant at scale | $125k/month at 100 merchants |
+| Total platform GMV/month | Scale of orders flowing through — drives both commission and charity | $5M by end of Phase 1 |
+| Active merchant count | Growth rate | 50+ end Phase 1, 300+ end Phase 2 |
+| Merchant monthly retention | Most important number — product stickiness | >85% |
+| CAC per merchant | Cost to acquire — target under 3 months combined revenue | <$400 Phase 1 |
+| LTV per merchant | Subscription + commission over lifespan — target 24+ months | $30k+ at $50k GMV merchant |
+| Orders per merchant per week | Are they actively using it? | >50/week |
+| Customer repeat order rate | Value of the platform to end consumers | >40% within 30 days |
+| Time to first order per merchant | Onboarding efficiency | <48 hours from signup |
+| Monthly charitable impact ($) | The mission metric — tells the giving story to press and investors | $125k/month at 100 merchants |
+| NPS (merchants + customers) | Leading indicator of retention and referrals | >50 merchant NPS |
 
 ---
 
