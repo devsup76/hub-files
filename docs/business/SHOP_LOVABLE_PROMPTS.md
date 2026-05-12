@@ -209,7 +209,7 @@ Locked-item tooltip text: "Available on [Tier] plan — Upgrade"
 ---
 
 ## Prompt 3b — Fix POS permission + DashboardLayout race condition
-> Status: [ ] Not started
+> Status: ✅ Done
 
 ```
 Two fixes. No migration needed.
@@ -280,7 +280,7 @@ or any existing AppSidebar behaviour.
 ---
 
 ## Prompt 5 — ShopDashboardOverview.tsx (new page)
-> Status: [ ] Not started
+> Status: ✅ Done — three issues fixed by Prompt 5b below
 
 ```
 Create src/pages/dashboard/ShopDashboardOverview.tsx — the home screen for retail
@@ -324,49 +324,222 @@ component that reads org.business_type and renders ShopDashboardOverview for
 
 ---
 
-## Prompt 6 — ShopInventory.tsx (new page)
+## Prompt 5b — Fix overview scalability + label + colour issues
+> Status: [ ] Not started
+
+```
+Three fixes to src/pages/dashboard/ShopDashboardOverview.tsx and
+src/services/api.ts. No migration needed.
+
+FIX 1 — src/services/api.ts
+Extend orderApi.list() to accept an optional second argument for server-side
+filtering. Existing callers pass no second argument and behaviour is unchanged.
+
+Change the signature from:
+  async list(orgId: string): Promise<...>
+to:
+  async list(orgId: string, opts?: { from?: string; limit?: number }): Promise<...>
+
+In the Supabase query, apply:
+  - If opts.from is provided: .gte("created_at", opts.from)
+  - If opts.limit is provided: .limit(opts.limit)  (before the existing .order())
+  - If neither is provided: query is identical to current behaviour
+
+Also update the demo branch: if opts.limit is set, slice the result array to
+that length. If opts.from is set, filter by created_at >= opts.from.
+
+FIX 2 — src/pages/dashboard/ShopDashboardOverview.tsx
+Replace the single orders query with two separate queries:
+
+Query A — today's orders only (for revenue, fulfillment mix, top products):
+  queryKey: ["orders-today", orgId]
+  queryFn: () => orderApi.list(orgId!, { from: new Date().setHours(0,0,0,0)
+    converted to ISO string })
+  Use this for: todayOrders, revenueToday, fulfillmentData, topProductsData
+
+Query B — recent orders only (for the Recent Orders table):
+  queryKey: ["orders-recent", orgId]
+  queryFn: () => orderApi.list(orgId!, { limit: 10 })
+  Use this for: recentOrders (no longer needs the .sort().slice(0,10) step
+  since the server returns them already ordered by created_at desc and limited)
+
+Remove the old single "orders" query. Update all downstream useMemo calls to
+reference todayOrders (from Query A) or recentOrders (from Query B).
+Also update pendingCount to use Query B (recent 10) OR add a third
+Query C: queryKey: ["orders-pending", orgId], queryFn: () =>
+orderApi.list(orgId!, { from: new Date().setHours(0,0,0,0) ISO })
+and filter for pending/awaiting_confirmation statuses client-side on that result.
+
+FIX 3 — src/pages/dashboard/ShopDashboardOverview.tsx
+Replace the FULFILLMENT_LABELS map and chart colours with the same semantic
+map used in Analytics.tsx for visual consistency across the dashboard.
+
+Replace FULFILLMENT_LABELS with:
+  const FULFILLMENT_LABELS: Record<string, string> = {
+    pickup: "Pickup",
+    delivery: "Delivery",
+    shipping: "Shipping",
+    in_store_pickup: "In-Store",
+    dine_in: "Dine-In",
+  };
+
+Replace the positional CHART_COLORS array with a semantic map keyed by
+fulfillment_type (same values as Analytics.tsx):
+  const FULFILLMENT_COLORS: Record<string, string> = {
+    delivery: "#6366f1",
+    pickup: "#f59e0b",
+    in_store_pickup: "#10b981",
+    dine_in: "#f97316",
+    shipping: "#06b6d4",
+  };
+
+In the PieChart, change the Cell fill from:
+  fill={CHART_COLORS[i % CHART_COLORS.length]}
+to look up by fulfillment_type key:
+  fill={FULFILLMENT_COLORS[fulfillmentData[i]?.key ?? ""] ?? "#94a3b8"}
+
+Update fulfillmentData to carry the raw key alongside the display name:
+  return Object.entries(counts).map(([k, v]) => ({
+    key: k,
+    name: FULFILLMENT_LABELS[k] ?? k,
+    value: v,
+  }));
+```
+
+---
+
+## Prompt 6a — ShopInventory: image upload + table + product form
 > Status: [ ] Not started
 
 ```
 Create src/pages/dashboard/ShopInventory.tsx — inventory management for retail merchants.
-Wire to /dashboard/menu: when org.business_type === 'retail', render ShopInventory;
-otherwise render the existing Menu component. Use lazy() for ShopInventory.
 
-PRODUCT TABLE
-Columns: Image | Name | Category | SKU | Price (with unit, e.g. "$4.50 / kg") |
-Stock | Status badge | Edit + Delete actions.
-Sort options: Name A–Z, Stock (low first).
-Search bar: filter by name or SKU.
-Filter dropdown: Category | Status (All / Active / Low Stock / Sold Out).
-Status badge: green Active / amber Low Stock (stock <= threshold) / red Sold Out (stock=0).
+WIRING: Lazy-import ShopInventory in App.tsx. In the /dashboard/menu route element,
+branch: org.business_type === 'retail' → ShopInventory, else → existing Menu.
 
-ADD/EDIT PRODUCT — side Sheet
-Fields:
-- Name (required), Description (textarea)
-- Images (multi-image upload, same pattern as existing Menu.tsx)
-- Category (select, with "Manage categories" sub-link)
-- SKU (text), Barcode (text, EAN/UPC)
-- Price type radio: Per unit | Per kg | Per 100g | Per litre
-  Selecting a weight unit shows a note: "Customers enter estimated weight at checkout"
-- Price field (label changes with price type: "Price ($)" or "Price per kg ($)" etc.)
-- Sale price + sale start/end date window
-- Stock on hand (integer), Low stock threshold (integer, placeholder = org default)
-- Supplier (text), Cost price (text, labelled "Cost price — internal only")
-- Tags (multi-select chips: Organic, Local, Gluten-free, Vegan, Halal, Nut-free)
-- Visibility: Active / Hidden toggle
+Add productApi.uploadImage to src/services/api.ts inside the productApi object:
+  async uploadImage(orgId: string, file: File): Promise<string> {
+    const ext = file.name.split('.').pop() ?? 'jpg';
+    const path = `${orgId}/products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage
+      .from('product-images').upload(path, file, { upsert: false, contentType: file.type });
+    if (error) throw error;
+    return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl;
+  }
+Demo mode: return a placeholder picsum URL without uploading.
 
-VARIANTS (collapsible section in the product form):
-Header: "Variants (optional) — e.g. sizes, colours"
-A table with columns: Label | SKU | Price ($) | Stock | Remove.
-"Add variant" button appends a new editable row.
-Variants are stored in product.variants JSONB as [{id, label, sku, price_cents, stock}].
-Each variant tracks stock independently.
+INVENTORY TABLE — columns: Checkbox | Thumb | Name | Category | SKU | Price | Stock | Status | Actions
+- Checkbox header = Select All. Individual row checkboxes.
+- Thumb: 40×40 rounded, image_url or grey Package icon placeholder.
+- Name: click → opens edit Sheet.
+- Price: variants present → "from $X.XX"; otherwise "$X.XX / [unit]" (unit blank for 'each').
+  Active sale → amber "SALE" badge (sale_price set AND today within sale window).
+- Stock: variants present → sum of variant stocks + "N variants" chip.
+  No variants → click-to-edit inline: number becomes a 4-rem input, save on Enter/blur
+  via productApi.update, show micro-spinner while saving, revert on Escape.
+- Status: green "Active" / amber "Low Stock" (stock ≤ reorder_threshold ?? org default) /
+  red "Sold Out" (stock = 0).
+- Column headers Name, Price, Stock are sortable — click toggles asc/desc, shows ↑↓ arrow.
+- Filter bar: Search (name or SKU) | Category | Status | Price Type.
+- Pagination: 25/page. Footer: "X–Y of Z products" + Prev / Next.
+- When ≥1 checked: floating bulk bar — "Mark sold out" | "Export selected" |
+  "Delete selected" (confirm dialog: "Delete N products? Cannot be undone.").
 
-BULK ACTIONS toolbar (above table, activates when rows selected):
-- "Import CSV" → dialog with file upload. Expected columns: name, sku, barcode, price,
-  price_unit, stock, category. Show preview table, confirm to upsert by SKU.
-- "Export" → download current product list as CSV.
-- Checkbox multi-select → "Mark sold out" (sets stock=0 on selected products).
+PRODUCT SHEET — SheetContent size="lg", opened for add and edit.
+
+SECTION Basic Info:
+- Name (required), Description (textarea 3 rows).
+- Image upload zone: dashed border, Package icon, "Click to upload or drag & drop",
+  "PNG or JPG · max 5 MB". On file: validate size, call productApi.uploadImage,
+  show spinner, render 120×120 rounded preview. "Remove" clears image_url.
+  Single image only — stored in image_url.
+- Category select (menu_categories ordered by sort_order).
+  "Manage categories" button → Dialog (not nested Sheet):
+  drag-to-reorder list, inline double-click rename, delete with confirmation,
+  "Add category" input at bottom. Retail categories store name + sort_order ONLY —
+  no LTO window, no discount_percent fields.
+- SKU, Barcode (tooltip: "EAN-13 / UPC-A — used by POS barcode scanner").
+- Visibility switch: Active / Hidden.
+
+SECTION Pricing:
+- Price type: 4-button segment — Per unit | Per kg | Per 100g | Per litre.
+  Weight types: show callout "Customers enter estimated quantity at checkout."
+- Price (number, step 0.01, required). Label adapts to price type.
+- Sale price + Sale start + Sale end DatePickers (show only when sale price filled).
+  Validate: end > start.
+- Cost price (number, labelled "Internal only — not shown to customers").
+  Save as cost_price_cents = Math.round(value * 100).
+
+SECTION Stock:
+- Stock on hand (integer, min 0, required).
+- Low stock threshold (integer, optional, placeholder "Default: N" from org setting).
+- Supplier (text).
+
+SECTION Tags (multi-select chips, stored in products.tags[]):
+Organic | Local | Gluten-free | Vegan | Halal | Nut-free | Dairy-free |
+Kosher | Preservative-free | Australian Made | Frozen | Refrigerated
+
+SECTION Variants (Collapsible, closed by default):
+Trigger shows "Product variants" + badge with count if variants exist.
+Info note: "Each variant has its own price and stock. Base stock is ignored when variants exist."
+Table: Label | SKU | Price ($) | Stock | Remove.
+"+ Add variant" appends row pre-filled with base price. On remove: confirm if stock > 0.
+Stored in product.variants JSONB as [{id: crypto.randomUUID(), label, sku, price_cents, stock}].
+```
+
+---
+
+## Prompt 6b — ShopInventory: CSV import + export
+> Status: [ ] Not started
+
+```
+Add CSV import and export to the existing ShopInventory.tsx created in Prompt 6a.
+Do not re-create the file — only add the two features described below.
+
+TOOLBAR: Add two buttons to the top of the inventory page (left of the search bar):
+- "Import" button (Upload icon)
+- "Export" button (Download icon)
+
+CSV IMPORT — "Import" button opens a Dialog with three steps:
+
+STEP 1 — Upload:
+Drag-and-drop zone or click to select. Accept .csv files only.
+Show file name + size once selected. "Clear" button to reset.
+"Next" button enabled only when a file is selected.
+
+STEP 2 — Preview:
+Parse the CSV client-side (use a simple split-by-line/comma parser or papaparse if
+already in the project). Expected columns (case-insensitive): name, sku, barcode,
+price, price_unit, stock, category.
+Render a preview table showing all parsed rows. For each row:
+- If SKU column is blank/missing: highlight row amber, add "Skipped" badge in a
+  Status column, tooltip "SKU required for import".
+- Otherwise: show green "Ready" badge.
+Summary line above table: "N products ready to import · M rows skipped (missing SKU)".
+"Back" and "Import N products" buttons. Import button disabled if N = 0.
+
+STEP 3 — Importing:
+Show a progress indicator. Process rows sequentially:
+- For each ready row: check if a product with that SKU already exists for this org.
+  - Exists → update: title, price, stock_quantity, barcode, price_unit.
+  - Not found → insert new product.
+- Category field: match to menu_categories by name (case-insensitive).
+  If no match found, create a new category with that name for the org.
+- price_unit: validate against ('each','kg','100g','litre'). Default 'each' if invalid/blank.
+- price: parse as float, store as products.price (dollars, not cents — matches existing schema).
+- stock: parse as integer, store as stock_quantity.
+On complete: close dialog, refresh product list, toast:
+  "Import complete — N products updated/added · M rows skipped."
+
+CSV EXPORT — "Export" button:
+Fetch all org products (use existing products query, no separate fetch needed).
+Build CSV string with headers:
+  name, sku, barcode, price, price_unit, stock, status, category, supplier, cost_price
+- status: derive from stock vs threshold (Active / Low Stock / Sold Out).
+- category: look up category name from menu_categories by category_id.
+- cost_price: cost_price_cents / 100, formatted to 2dp (blank if null).
+Trigger browser download via a Blob URL.
+Filename: "inventory-[org.subdomain_slug]-[YYYY-MM-DD].csv"
 ```
 
 ---
