@@ -33,16 +33,13 @@ This lets you:
 3. If status shows **Active** — skip Part 1 entirely and go straight to Part 2
 4. If status shows **Cancelled** — you need to re-apply using the steps in Part 1 (it is a reactivation, not a new ABN)
 
-### Add "Woahh" to your existing ABN
+### Add "Woahh" to your existing ABN (optional — ASIC does this automatically)
 
-Once you confirm your ABN is active, link the business name to it on the ABR:
+**You can skip this step.** When you complete the ASIC business name registration in Part 2, ASIC automatically links "Woahh" to your ABN in the public register. Anyone searching your ABN will see the business name without you needing to touch the ABR separately.
 
-1. Log in to **myGov → ATO**
-2. Go to **My profile → Business details**
-3. Add `Woahh` under your business names
-4. Anyone searching your ABN will now see: **Pawit Singh trading as Woahh**
+If you do want to add it manually on the ABR side, the correct place is **abr.business.gov.au** (not myGov/ATO) — log in with your **myGovID** (the separate app, not myGov itself), then select **"Update ABN record"** and add a trading name. But again, this is optional — just do Part 2 and it is handled.
 
-Then proceed to Part 2 (ASIC business name registration) — this is still required regardless.
+Then proceed to Part 2 (ASIC business name registration) — this is the step that actually matters.
 
 ### Check your GST status too
 
@@ -318,14 +315,9 @@ The business name will appear on the ASIC register within 1–2 business days.
 
 Once you have your ABN and business name confirmed, do these immediately:
 
-### Update Your ATO Profile with the Business Name
+### Your ABN now shows "Woahh" automatically
 
-1. Log in to **myGov** → **ATO**
-2. Go to **My profile → Business details**
-3. Add your business name: `Woahh`
-4. This links "Woahh" to your ABN on the public ABR lookup
-
-Anyone searching your ABN will now see: **Pawit Singh trading as Woahh**.
+Once ASIC confirms your business name registration, it is linked to your ABN in the public register automatically — no separate step needed. Search your ABN at **abn.business.gov.au** after 1–2 business days and you will see **Woahh** listed against your record.
 
 ---
 
