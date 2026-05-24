@@ -17,12 +17,44 @@ This lets you:
 - Register `woahh.com.au` (requires an ABN matching the business name)
 - Apply for Stripe as a business rather than an individual
 
-**Total cost:** ~$42 (business name registration only — ABN itself is free)
-**Total time:** ~30 minutes to complete both applications
+**Total cost:** ~$98 (business name registration — ABN itself is free)
+**Total time:** ~30 minutes to complete both steps
 
 ---
 
-## Part 1 — Apply for Your ABN
+## Already Have an ABN?
+
+**Do not apply for a new one.** As a sole trader, you are only ever issued one ABN — it is tied to your TFN and stays with you as an individual regardless of how many businesses you run.
+
+### Check if your existing ABN is still active
+
+1. Go to **abn.business.gov.au**
+2. Search your name or ABN number
+3. If status shows **Active** — skip Part 1 entirely and go straight to Part 2
+4. If status shows **Cancelled** — you need to re-apply using the steps in Part 1 (it is a reactivation, not a new ABN)
+
+### Add "Woahh" to your existing ABN
+
+Once you confirm your ABN is active, link the business name to it on the ABR:
+
+1. Log in to **myGov → ATO**
+2. Go to **My profile → Business details**
+3. Add `Woahh` under your business names
+4. Anyone searching your ABN will now see: **Pawit Singh trading as Woahh**
+
+Then proceed to Part 2 (ASIC business name registration) — this is still required regardless.
+
+### Check your GST status too
+
+Look at your existing ABN record on ABR. If GST is not already registered:
+
+1. Log in to **myGov → ATO → Manage tax registrations**
+2. Add GST registration, start date today
+3. Select Quarterly reporting
+
+---
+
+## Part 1 — Apply for Your ABN (only if you don't already have one)
 
 **URL:** https://abr.business.gov.au
 
@@ -337,13 +369,67 @@ These are the next items from your `legalities.md` critical path, in order:
 
 ---
 
+## Part 4 — When You Incorporate as a Pty Ltd
+
+The sole trader structure is for the founding phase only. When you incorporate, the company becomes a completely separate legal entity — it gets its own ABN and its own ACN.
+
+### What the company gets at incorporation
+
+| Item | How it works |
+|---|---|
+| **ACN** (Australian Company Number) | Issued automatically by ASIC at the moment of incorporation — 9 digits (e.g. `123 456 789`). This is the company's permanent unique identifier. |
+| **New ABN** | You register this separately after incorporation at abr.business.gov.au — it is linked to the ACN. Completely different number from your personal sole trader ABN. |
+
+Your personal sole trader ABN does not transfer or convert. Once you have incorporated and the company is fully set up, cancel or deactivate your sole trader ABN through myGov → ATO → Manage registrations.
+
+---
+
+### What you need to update when you incorporate
+
+Go through this checklist the week you incorporate:
+
+| Thing to update | What to do |
+|---|---|
+| **Business name "Woahh"** | Transfer it from your personal ABN to the company ABN — done through ASIC Connect. Select the business name → Update holder → change to the new company. No re-registration fee. |
+| **GST registration** | Re-register for GST under the company's ABN — the sole trader GST registration does not carry over. Lodge your final sole trader BAS first, then start fresh under the company. |
+| **Supabase, Lovable, Resend, Clicksend** | Update billing name to company name + new ABN |
+| **Stripe** | Update business entity details — Stripe may require re-verification documents (ACN, company ABN, director details) |
+| **`woahh.com.au` domain** | Update registrant ABN to the company ABN through your domain registrar |
+| **Business bank account** | Open a new account in the company name — banks require the ACN and company ABN. Your existing sole trader account stays personal. |
+| **BAS lodgment** | New obligation starts under the company ABN from the date of incorporation |
+
+---
+
+### Merchant agreements signed as sole trader
+
+Any merchant agreement, supplier contract, or terms acceptance you signed as **Pawit Singh trading as Woahh** is technically between you personally and the other party — not the company.
+
+When you incorporate, those agreements need to be **novated** to the company: all parties agree in writing to substitute the company in place of you personally. For founding merchant agreements this is usually a simple email or short one-page deed. For anything more significant, your lawyer will draft a deed of novation.
+
+---
+
+### When to incorporate
+
+Do not incorporate just to get the ABN — the sole trader ABN handles the founding phase cleanly. Incorporate when one of these triggers hits:
+
+| Trigger | Why it matters |
+|---|---|
+| About to invoice a paying merchant | Liability protection becomes real — a company limits your personal exposure |
+| Co-founders need to formally hold shares | Shares only exist inside a company structure |
+| External investor interest | Investors put money into companies, not sole traders |
+| Accountant recommends it for tax | Usually around $100k+ revenue when company tax rate (25%) vs personal marginal rate starts to make a difference |
+
+Incorporation costs ~$576 (ASIC registration fee) plus ~$500–$1,000 if you use an accountant or lawyer to set it up cleanly. Budget half a day of admin to update all the subscriptions and accounts afterward.
+
+---
+
 ## Quick Reference
 
-| Item | Status after this guide |
-|---|---|
-| ABN (Sole Trader) | ✅ Done |
-| GST registration | ✅ Done (at same time as ABN) |
-| Business name "Woahh" | ✅ Done |
-| Trading identity | **Pawit Singh trading as Woahh** |
-| ACN | ❌ Not yet — comes with Pty Ltd incorporation |
-| Pty Ltd | ❌ Next milestone — before first paying customer |
+| Item | Sole Trader phase (now) | Pty Ltd phase (later) |
+|---|---|---|
+| ABN | Your personal ABN | New company ABN |
+| ACN | ❌ Does not exist for sole traders | ✅ Issued at incorporation |
+| GST | Registered under personal ABN | Re-registered under company ABN |
+| Business name "Woahh" | Held by you personally | Transferred to the company |
+| Trading identity | Pawit Singh trading as Woahh | Woahh Pty Ltd (or chosen company name) |
+| Personal liability | Unlimited — you are the business | Limited to what you put into the company |
