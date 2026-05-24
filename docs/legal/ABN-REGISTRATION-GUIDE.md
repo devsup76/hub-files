@@ -24,12 +24,15 @@ Go to **abn.business.gov.au** and search your name or ABN number.
 - **Active** → proceed to Step 2
 - **Cancelled** → you need to reactivate it. Go to **abr.business.gov.au**, log in with your **myGovID** app, and select "Update ABN record" → reactivate. Then proceed to Step 2.
 
-While you are here, also check that **GST is registered** against your ABN. If not:
+While you are here, also check whether **GST is registered** against your ABN.
 
-1. Log in to **myGov → ATO → Manage tax registrations**
-2. Add GST, start date today, quarterly reporting
+**During the free test phase — do not register for GST yet.** GST registration is only legally required once your turnover reaches $75,000/year. With no revenue coming in, there is no obligation and no benefit that outweighs the quarterly BAS paperwork.
 
-> **Why GST now:** At 100 merchants on the Marketplace plan ($89/month) you are already at $106k/year — above the $75k mandatory threshold. Register now so you can also claim GST credits back on all business expenses (Supabase, Lovable, Resend, Clicksend, hardware, etc.).
+**Register for GST when** one of these happens:
+- You are about to start charging merchants (subscriptions go live), or
+- You can see turnover approaching $75k/year
+
+To register when the time comes: myGov → ATO → Manage tax registrations → Add GST, start date that day, quarterly reporting.
 
 ---
 
