@@ -17,3 +17,6 @@ docs/pitch/package-lock.json
 Thumbs.db
 *.swp
 *.swo
+
+# Microsoft Office temp/lock files
+~$*
