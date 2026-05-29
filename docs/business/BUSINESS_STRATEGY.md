@@ -59,7 +59,7 @@ Three co-founders. Each owns their lane completely.
 
 **First hire post-investment:** A developer to take technical workload off the CEO so they can focus fully on growth and fundraising.
 
-**Co-founders agreement:** Signed April 2026. Shareholders agreement to be completed before launch.
+**Co-founders agreement:** Signed May 2026. Shareholders agreement to be completed before launch.
 
 ---
 

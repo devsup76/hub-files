@@ -4,7 +4,7 @@
 
 > This file is the single source of truth for woahh development sessions.
 > Update it whenever a feature is completed, a key decision is made, or significant progress occurs.
-> Last updated: 2026-04-30
+> Last updated: 2026-05-29
 
 ---
 
@@ -25,6 +25,46 @@
 It is built and hosted on **Lovable** (AI app builder). The repo in this container is **read-only for review and planning** — all actual edits are made in Lovable.
 
 **Core value prop:** Give a small business owner a single dashboard to manage orders, products, customers, loyalty, promotions, and marketing — with a public-facing storefront, marketplace listing, and customer portal included.
+
+---
+
+## Hosting & Domain Architecture (as of 2026-05-28)
+
+**Live at:** `https://woahh.app` — single origin, path-based split.
+
+| Path | Surface | Notes |
+|---|---|---|
+| `/` | Marketing landing (Storefront.tsx) | Header "Sign in" + "Start free" point at `/business/auth` |
+| `/eat`, `/eat/:slug`, `/shop`, `/order/:id`, `/account`, `/book/:slug`, `/cancel-reservation/:token`, `/impact`, `/signin`, `/reset-password`, `/join`, `/unsubscribe/:token`, `/privacy`, `/terms`, `/demo` | Customer surfaces | All same-origin |
+| `/business/auth`, `/business/recover` | Merchant auth | |
+| `/business/dashboard/*` | Merchant portal | All dashboard pages live here |
+| `/auth`, `/recover`, `/dashboard/*` | Legacy paths | Same-origin `<Navigate>` to `/business/*` |
+
+**Legacy `business.woahh.app` subdomain** still resolves but `src/main.tsx` synchronously redirects to `https://woahh.app/business/<path>` before React mounts. Old email links + bookmarks keep working.
+
+**Why single origin (and not the previous subdomain split):** Lovable's hosting does not support `public/_redirects`, `vercel.json`, or any edge-level redirect config. The subdomain split caused cross-origin localStorage issues for sessions, password reset flows, and magic links (`woahh.app` ↔ `business.woahh.app` are separate origins; localStorage doesn't share). Single origin makes all of these work first try.
+
+**URL helpers** (`src/lib/hostUrls.ts`):
+- `apexUrl(path)` → same-origin path (returns the path as-is)
+- `businessUrl(path)` → `/business/<path>` (e.g. `businessUrl("/auth")` → `/business/auth`)
+- Both are kept for readability and so we can flip back to a real subdomain later if needed.
+
+**`docs/CROSS_DOMAIN_REDIRECTS.md` (in `repo/`)** documents the current architecture and includes Cloudflare edge rules to paste if you ever want true zero-flicker on the legacy subdomain.
+
+---
+
+## Email Domain Setup (Resend, as of 2026-05-28)
+
+Two Resend-verified sub-domains on Cloudflare DNS:
+
+| Subdomain | Purpose | Used by |
+|---|---|---|
+| `mail.woahh.app` | Transactional email (sender domain) | `order-respond`, `order-notify`, `send-transactional-email`, `reservation-confirm`, `reservation-remind` edge functions |
+| `campaigns.woahh.app` | Marketing email (per-merchant slug addressing) | `email-send` — `<slug>@campaigns.woahh.app` |
+
+Each merchant gets a unique sender `<safeFromName(org.name)> <{slug}@campaigns.woahh.app>`. Reply-To uses `organizations.contact_email`. Unsubscribe header includes both Gmail's one-click POST URL and the in-body unsubscribe link.
+
+Email infrastructure is fully hardened: stale-claim self-heal + structured logging + atomic claim, Svix HMAC verification on `email-webhook`, idempotency keys on transactional sends, safe-from-name sanitiser, preheader injection, atomic `increment_email_usage` RPC.
 
 ---
 
@@ -50,9 +90,14 @@ It is built and hosted on **Lovable** (AI app builder). The repo in this contain
 
 ```
 src/
-  App.tsx                             # Route definitions — source of truth for all pages
+  main.tsx                            # Pre-mount: legacy subdomain redirect + demo bootstrap
+  App.tsx                             # Route table — customer paths + /business/* merchant paths
+  lib/
+    hostUrls.ts                       # apexUrl() / businessUrl() / canonicalRedirectFor()
+    demoBootstrap.ts                  # ?demo=role URL handler
   pages/
-    Auth.tsx                          # Owner login/signup
+    Auth.tsx                          # Persona picker + Business Admin form + StaffForm + CustomerForm (exported)
+    CustomerSignIn.tsx                # /signin — wraps CustomerForm in apex shell
     Storefront.tsx                    # Public landing page (merchant storefront entry)
     Shop.tsx                          # Customer-facing product browse + cart
     OrderStatus.tsx                   # Real-time order tracker (public by order UUID)
@@ -244,6 +289,17 @@ TierGate in `App.tsx`:
 | Customer order notifications | ✅ Complete | Email (Resend) + Web Push (VAPID RFC 8291); `push_subscriptions` + `order_notification_log` tables; `order-notify` edge function (accepts owner JWT or service-role key; fixed auth bug); service worker at public/sw.js; PushOptIn Bell on /order/:id; auto-trigger + manual Bell in Orders + KDS; NotificationSettings page (triggers, channels, email footer); dine-in excluded; marketplace tier+ |
 | Staff shift availability | ✅ Complete | ShiftAvailabilityPanel in KDS + Orders; toggle product sold-out/available (stock 0/99); toggle extras on/off in JSONB; manager + service roles only; Realtime subscription |
 | Account recovery | ✅ Complete | /recover page; security questions (SHA-256 hashed); max 3 attempts/hour; account_recovery_log; owner phone change flow (PhoneChangeDialog + OTP); customer dual-verification prompt |
+| Single-origin routing | ✅ Complete | woahh.app serves both customer (`/`, `/eat`, `/account`, ...) and merchant (`/business/*`) surfaces. Legacy `business.woahh.app` redirects pre-mount in `src/main.tsx`. Legacy in-app paths (`/auth`, `/dashboard/*`) `<Navigate>` to `/business/*`. |
+| Customer sign-in route | ✅ Complete | Dedicated `/signin` page on apex (CustomerSignIn.tsx). Reuses CustomerForm from Auth.tsx (named export). Business Admin / Service personas are the only options at `/business/auth`. |
+| Email domain integration | ✅ Complete | `mail.woahh.app` (transactional) + `campaigns.woahh.app` (per-merchant marketing). DKIM/SPF/DMARC verified at Resend. Cloudflare DNS records. |
+| Email send hardening | ✅ Complete | `email-send` edge function: atomic claim, stale-claim self-heal (>10min), try/catch revert on uncaught error, structured `[email-send]` JSON logging at every external call, safeFromName sanitiser, idempotency keys on transactional sends, atomic `increment_email_usage` RPC. |
+| Multi-tenant data isolation | ✅ Complete | Multiple migrations (20260528115310, 131845, 131923, 134549) closed public-SELECT leaks on: orders, reservations, organizations, promotions, courier_credentials, growthhub_profiles, reviews, signup_codes, storage product-images. Replaced with SECURITY DEFINER RPCs (`get_order_by_id`, `get_reservation_by_token`, `cancel_reservation_by_token`, `create_public_reservation`) and safe views (`marketplace_organizations`, `active_promotions`). |
+| `current_org_id` determinism | ✅ Complete | `ORDER BY priority(owner=0, staff=1), tiebreak` ensures stable resolution for users in multiple orgs. Closes a real cross-org data-leak risk. |
+| Public order tracking | ✅ Complete | `OrderStatus.tsx` polls every 5s via `get_order_by_id` RPC; courier driver phone is scrubbed from the RPC's response. |
+| Sign-up flow polish | ✅ Complete | Retail option hidden at sign-up (restaurants only for founding-merchant phase). All org fields (business_type, owner_full_name, legal_entity_type, owner_phone, tos_version) flow through `auth.users.user_metadata` so the dashboard hydrates the org row even when email confirmation is required. `BusinessTypeGate` auto-applies from metadata. |
+| Customer consent timestamps | ✅ Complete | Customers.tsx "Add Customer" toggle now derives `email_consent_at` / `sms_consent_at` from `marketing_opt_in` at insert. Delete wrapped in AlertDialog. |
+| Staff PIN 3-step verify | ✅ Complete | `staff-pin-login` edge function actions: `verify_org` (returns minimal org info), `verify_user` (checks username), `login` (verifies PIN). Generic 404 prevents handle enumeration. |
+| Products realtime | ✅ Complete | `useProductsRealtime` hook + `ALTER TABLE products REPLICA IDENTITY FULL` + supabase_realtime publication. Owner adds menu item → KDS, walk-in dialog, public storefront update without refresh. |
 
 ---
 
@@ -328,8 +384,77 @@ APP_URL                    # Used by email-send for unsubscribe links
 ## Working Conventions
 
 - Repo is on **Lovable** — we review/plan here, implement there
+- Local code lives in `/workspaces/GrowthHub/repo/` (Lovable-managed git repo)
+- Planning docs (this file, todos, strategy) live one level up in `/workspaces/GrowthHub/`
 - All DB changes go through Supabase migrations (never manual edits)
 - Tier gating: email/promote = `solo`; CRM/SMS/loyalty = `marketplace`; donate = no gate
 - Do not add Stripe billing until explicitly scoped
-- Always `git pull` in this container before reviewing the repo — Lovable pushes directly to the remote
+- Always `git pull` in the `repo/` subfolder before reviewing — Lovable pushes directly to the remote
 - Update this file whenever a feature moves from "in progress" to "complete"
+- Local edits + push from the repo subfolder IS a valid workflow when Lovable's prompt-based UX would be slow; Lovable's CI picks up the commits automatically
+- Lovable's hosting has no edge-redirect / `_redirects` / `vercel.json` support — pre-mount JS redirects are the only option for cross-domain logic
+
+---
+
+## Supabase + Lovable gotchas (learned the hard way)
+
+These are non-obvious Lovable-specific behaviors that have caused real bugs. Future debugging should consider them first.
+
+### 1. `handle_new_user_org` fires for staff users → phantom orgs
+
+The `auth.users` insert trigger creates an org owned by the new user. The `staff-manage` edge function uses `admin.auth.admin.createUser()` for staff accounts, which **also** fires the trigger — leaving every staff member as the owner of a useless empty "phantom" org in addition to being a member of the real one.
+
+**Symptom:** Staff session's `orgApi.getMine()` errors with `"JSON object requested, multiple (or no) rows returned"` because `.maybeSingle()` sees both the phantom + real orgs via RLS. Dashboard hangs with no `orgId`. Manager opens `/business/dashboard/menu` and sees an empty page.
+
+**Fix (migration `20260529040000`):** trigger now skips when `raw_user_meta_data.kind = 'staff'`. Existing phantom orgs deleted by criteria (owner has `kind=staff` AND no products/orders/customers). Defensive client-side: `orgApi.getMine` now uses `my_org_id()` RPC + `.eq("id", ...)` instead of unfiltered `.maybeSingle()`.
+
+### 2. `auth.users` JOINs in SECURITY DEFINER functions can return NULL in RLS contexts
+
+A SECURITY DEFINER function that joins `auth.users` may return NULL when called from an RLS WITH CHECK clause on Lovable's Supabase, even though the same function works fine when called directly from the client. Caused a cascading failure across many tables when `current_org_id()` was rewritten to JOIN `auth.users`.
+
+**Rule:** keep `current_org_id()` and similar RLS-helper functions free of `auth.users` joins. Use direct EXISTS subqueries against `organizations` and `staff_accounts` instead.
+
+**Fix (migration `20260529050000`):** reverted `current_org_id()` to the simpler priority-ordered version without the JOIN. Products policy rewritten to check ownership and staff membership directly via EXISTS, no `current_org_id()` dependency.
+
+### 3. Realtime auth context
+
+Supabase Realtime channels bind to the auth context at `.subscribe()` time. If a hook subscribes before `supabase.auth.setSession()` (common during PIN sign-in race), the channel runs with anon JWT and RLS silently drops every event. The fix is to depend on `user.id` in the hook's effect deps so it re-subscribes after auth lands. See `src/hooks/useProductsRealtime.ts`.
+
+### 4. Always pair realtime with a polling fallback
+
+Realtime is a best-effort delivery layer. For "industry-grade live updates", combine `postgres_changes` with a 30-second polling fallback (`refetchInterval` or a `setInterval(invalidate)`). Linear and Vercel do this. The polling makes the UI heal within 30s regardless of realtime state.
+
+---
+
+## Test Merchant (seeded for end-to-end testing)
+
+```
+Email:     pawitsingh23+merchant@gmail.com
+Password:  WoahhTest2026!
+Org slug:  test-bistro
+Tier:      marketplace
+User ID:   11111111-1111-1111-1111-111111111111
+```
+
+Seeded by migration `20260528052109_9ab8f77c-...sql`. Three test customers (`+customer1/2/3@gmail.com`) with `email_consent_at` set so campaigns include them.
+
+Owner email is `pawitsingh23@gmail.com` (Gmail + alias trick — every test email lands in the same inbox). Production user email throughout.
+
+**Cleanup:**
+```sql
+DELETE FROM auth.users WHERE id = '11111111-1111-1111-1111-111111111111';
+```
+
+---
+
+## Outstanding TODOs
+
+See `/workspaces/GrowthHub/docs/WOAHH_FIXES_TODO.md` for the current punch list.
+
+Top items as of 2026-05-28:
+- **`-1.2` Founding-merchant sign-up code gating** — not started. Hidden admin page + `founding_access_codes` table + redeem RPC.
+- **`1.2` Replace email-confirmation popup with dedicated page** — small UX win, not started.
+- **`2.1` Invite-to-consent customer flow** — replace manual Add Customer. Spam-Act compliance requirement before scale.
+- **`2.3` Notify customer on removal** — privacy hygiene.
+- **`3.1` Hard separation of merchant vs customer auth identities** — partly delivered via the routing pivot (`/signin` is customer-only). Hard separation in DB still pending.
+- **`3.2` "View as customer" sidebar button** — UX polish.
