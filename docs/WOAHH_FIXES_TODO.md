@@ -20,18 +20,28 @@ See `CLAUDE.md` for full architecture details.
 
 ## 🔴 Open
 
-### Security warnings flagged by Lovable scanner (2026-05-29)
+### Security review — triaged 2026-05-29 (each item audited, not trusted blindly)
 
-Surface during a code review on Lovable. None block menu/order functionality. Prioritized by severity.
+**✅ Fixed this session**
+- **SMS webhook unauthenticated** (forge opt-outs / delivery receipts) → added `SMS_WEBHOOK_SECRET` shared-secret gate, commit `aac3316`. *Activation (non-dev): set `SMS_WEBHOOK_SECRET` in edge-function secrets, then append `?secret=<value>` to the Clicksend delivery + inbound webhook URLs.*
+- **Webhook JWT exemption was implicit** → declared `email-webhook` / `courier-webhook` / `sms-webhook` as `verify_jwt=false` in `config.toml` with in-function auth documented, commit `69b96f4`.
 
-- 🔴 **Org Stripe IDs + owner PII readable by staff.** "Staff view their org" SELECT returns the full row including `owner_phone`, `abn`, `stripe_account_id`. Fix: stale staff SELECT down to a safe-column view. *Medium effort.*
-- 🔴 **SMS webhook accepts opt-outs without signature verification.** Attacker can POST fake delivery receipts and force-opt-out arbitrary phones. Add Clicksend HMAC verification (mirror the email-webhook Svix pattern). *Small.*
-- 🔴 **Stripe payment intent creation has no auth.** Add JWT verify to the create-payment-intent edge function. *Small.*
-- 🟡 **Realtime subscribe-to-any-org events.** Lovable flagged orders + products. Likely false positive — `postgres_changes` uses table-level RLS, and staff/owner SELECT policies are org-scoped. Verify before "fixing".
-- 🟡 **Product cost prices readable by all staff via products SELECT.** If `cost_price` column exists, service staff can see margins. Fix: column-level RLS or separate `product_costs` table. *Medium.*
-- 🟡 **Courier webhook skips signature verification when no secret configured.** Should fail-closed. *Small.*
-- 🟢 **Account recovery log / order notification log have no SELECT policy.** Effectively locked (no policy = deny by default with RLS on). Cosmetic only — add explicit DENY for defense-in-depth.
-- 🟢 **Waitlist entries: customer can't read their own.** Doesn't break anything. Add tokened SELECT if desired.
+**🟢 False positives — verified, no action**
+- *Recovery/notification logs "no SELECT policy"* — RLS ENABLED + no policy = **deny-all by default** (service role bypasses for writes). Already locked; flag is cosmetic.
+- *Realtime "subscribe to any org"* — `postgres_changes` enforces table RLS; org-scoped SELECT policies mean a client only receives changes for rows it can already read (its own org). Not exploitable.
+
+**🟡 Demoted — real but ~zero current exposure**
+- *Stripe payment-intent no auth* — function is **dormant** (nothing in client calls it; only `stripe-connect-onboard` is wired). Harden before a live checkout. Billing not integrated yet.
+- *Product `cost_price_cents` readable by staff via `productApi.list` `select("*")`* — real over-the-wire leak, BUT only the **retail** inventory page sets it and retail signup is hidden (restaurants only) → no merchant has cost data. **Fix before enabling retail.** Plan: move `cost_price_cents` to an owner/manager-only `product_costs` table (only `ShopInventory.tsx` + `demo.ts` touch it).
+- *Courier webhook skips HMAC when no secret configured* — low risk (forging needs a known `courier_delivery_id`). Make fail-closed when courier goes GA.
+
+**🔴 Still open — real, live, medium refactor (focused verified pass)**
+- **Org PII readable by staff over the wire.** Staff `orgApi.getMine` returns the full `organizations` row incl. `owner_phone`, `owner_full_name`, `abn`, `business_address`, `stripe_account_id`. UI doesn't show these to staff, but a malicious staff member can read them from the network response. Affects every merchant.
+  - **Why not a quick fix:** client-side column selection isn't a security boundary (staff JWT can query columns directly). Correct fix is server-side **column isolation** — move sensitive columns to an owner-only `organization_private` table (RLS: owner only), update the owner components that read them (BusinessTypeGate, OnboardingChecklist, PhoneChangeDialog), onboarding writes, and the `owner-verify` edge function. Verify by creating staff on test-bistro and confirming the PII columns are absent from the staff API response.
+  - **Recommendation:** dedicated change with end-to-end browser verification, not a blind sweep.
+
+**🟢 Minor**
+- *Waitlist entries: customer can't read their own.* Harmless. Add a tokened SELECT if booking confirmations should show status.
 
 ### -1.2 Founding-merchant sign-up code gating
 
