@@ -120,7 +120,7 @@ See `CLAUDE.md` for full architecture details.
 Goal: new restaurants auto-listed; merchant can temporarily hide (still takes orders); escalating reminder emails while off-marketplace; whole feature gated to marketplace tier+ (or active free trial).
 
 - **Phase 1 — foundation ✅ VERIFIED (2026-05-29, migration `20260529130000_marketplace_visibility_foundation`).** New restaurants `marketplace_visible=true` by default; public `marketplace_organizations` view gated by **readiness** (>=1 available product), **tier** (marketplace/growth/enterprise OR active free_trial), and **not paused**; tracking cols (`marketplace_hidden_at`, `marketplace_reminder_stage`, `marketplace_reminders_opted_out`, `marketplace_paused_until`); BEFORE-update trigger maintains hidden_at + resets reminders. Verified: test-bistro now shows on `/eat` + profile loads; "Open now" badge already present.
-- **Phase 2 — merchant controls** ⬜ Operations: "Listed on marketplace" toggle (clear copy: hidden ≠ closed), vacation "pause until" date, listing preview + completeness meter, reminder opt-out.
+- **Phase 2 — merchant controls ✅ SHIPPED (commit `dbd3808`).** Operations card: clearer "Listed on Marketplace" toggle (hidden ≠ closed — storefront/QR still take orders), completeness meter + "Preview listing", vacation "pause until" date (auto-relist, suppresses reminders), reminder-email opt-out.
 - **Phase 3 — reminder emails** ⬜ `marketplace-reminders` edge fn + daily cron, escalating 24h→3d→1w→2w→monthly, opt-out + pause-aware.
 - **Phase 4 — open/closed badge** ⬜ on `/eat` cards (profile already shows "Open now").
 
