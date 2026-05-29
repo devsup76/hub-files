@@ -92,6 +92,12 @@ See `CLAUDE.md` for full architecture details.
 - **Where:** `src/pages/Auth.tsx`, `src/pages/CustomerSignIn.tsx` (auth screens); merchant header/sidebar (`AppSidebar.tsx`) + customer `Account.tsx` shell for the authed log-out path.
 - **Note:** keep merchant vs customer log-out distinct — relates to [[3.1 hard separation of auth identities]].
 
+### Tables: managed dining zones — 🟢 SHIPPED (pending SQL)
+
+- **Was:** a table's zone was free text retyped on every add/edit (typos, case drift split groups).
+- **Now:** zones are a per-org managed list (`table_zones`). Zones manager on the Tables tab (add chip / remove); single-add, bulk-add, and edit forms use a Zone **dropdown** sourced from the list ("No zone" = null). Existing typed zones backfilled. Tables stay restaurant-only. Commit `306de52` (client + migration `20260529120000`).
+- **Activation:** run migration `20260529120000` SQL in the Lovable editor; then verify via browser (create zone → add table via dropdown → groups correctly).
+
 ### Reviews edge cases
 
 - **Latent:** Reviews `INSERT` requires matching order via `customer_id_for_user(org)`. Reviews `SELECT` / `UPDATE` policies should be audited for consistency (e.g., can a customer edit their own review post-submission? can a merchant flag spam?). Not blocking; flag for future audit.
