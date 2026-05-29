@@ -52,12 +52,10 @@ See `CLAUDE.md` for full architecture details.
   - Admin page `/business/dashboard/admin/codes` (generate / copy / revoke) — double-gated by admin email + RLS.
 - **Verify after SQL:** browser — sign-up blocked without a code; admin page generates codes; a generated code lets one sign-up through then is marked used.
 
-### 1.2 Replace email-confirmation popup with dedicated page
+### 1.2 Replace email-confirmation popup with dedicated page — 🟢 SHIPPED (commit `5ccb30b`)
 
-- **Where:** After sign-up submit on `/business/auth`
-- **Status:** ⬜ Open
-- **Current:** Toast pops "check your email"
-- **Wanted:** Route to `/business/auth/check-email` with "We sent a confirmation link to {email}. Click it to finish signing up." + Resend button.
+- AdminForm now swaps to a dedicated "Check your email" screen after a confirmation-required sign-up (instead of a toast): shows the destination address, spam-folder hint, a Resend button with a 30s cooldown (`supabase.auth.resend`), and a "Back to sign in" link. Immediate-session signups still go straight to the dashboard.
+- **Verify:** needs a valid founding code to reach the success branch (gate is live) — bundle with founding-flow verification.
 
 ### 2.1 Replace manual "Add Customer" with invite-to-consent flow
 
@@ -84,6 +82,15 @@ See `CLAUDE.md` for full architecture details.
 
 - **Where:** `src/components/dashboard/AppSidebar.tsx`
 - **Status:** 🟢 SHIPPED by Lovable (commit `89152ff`, "View-as-customer sidebar button"). Verify it points to the customer surface correctly when convenient.
+
+### 3.3 "Back to site" on auth pages + log-out-to-leave for authed users
+
+- **Status:** ⬜ Open — flagged 2026-05-29
+- **Two parts:**
+  1. **"Back to site" button on the login/auth screens.** Both `/business/auth` (merchant) and `/signin` (customer) should show a clear "← Back to site" link/button that returns to the public landing (`/`) without authenticating. A visitor who clicked "Sign in" by mistake currently has no obvious escape back to the marketing site.
+  2. **Authed users leave only by logging out.** Once a merchant or customer is signed in, the way out of their portal should be an explicit **Log out** — not a stray "back to site" affordance that drops them onto the public site while still authenticated (confusing session state). So: show "Back to site" only on the *unauthenticated* auth screens; for authed sessions, surface Log out instead.
+- **Where:** `src/pages/Auth.tsx`, `src/pages/CustomerSignIn.tsx` (auth screens); merchant header/sidebar (`AppSidebar.tsx`) + customer `Account.tsx` shell for the authed log-out path.
+- **Note:** keep merchant vs customer log-out distinct — relates to [[3.1 hard separation of auth identities]].
 
 ### Reviews edge cases
 
