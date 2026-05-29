@@ -83,9 +83,9 @@ See `CLAUDE.md` for full architecture details.
 - **Where:** `src/components/dashboard/AppSidebar.tsx`
 - **Status:** 🟢 SHIPPED by Lovable (commit `89152ff`, "View-as-customer sidebar button"). Verify it points to the customer surface correctly when convenient.
 
-### 3.3 "Back to site" on auth pages + log-out-to-leave for authed users
+### 3.3 "Back to site" on auth pages + log-out-to-leave for authed users — 🟢 SHIPPED (commit `4ae5718`, verifying)
 
-- **Status:** ⬜ Open — flagged 2026-05-29
+- **Done:** Auth.tsx now shows a persistent "Back to site" → `/` on every state (was only on the picker); CustomerSignIn reworded to "Back to site"; DashboardLayout's authed-header "← Back to site" removed (merchants leave via sidebar Log out; "View Storefront" still previews the public page in a new tab). Account.tsx customer portal already compliant (Sign out in authed header; back-link only on signed-out card).
 - **Two parts:**
   1. **"Back to site" button on the login/auth screens.** Both `/business/auth` (merchant) and `/signin` (customer) should show a clear "← Back to site" link/button that returns to the public landing (`/`) without authenticating. A visitor who clicked "Sign in" by mistake currently has no obvious escape back to the marketing site.
   2. **Authed users leave only by logging out.** Once a merchant or customer is signed in, the way out of their portal should be an explicit **Log out** — not a stray "back to site" affordance that drops them onto the public site while still authenticated (confusing session state). So: show "Back to site" only on the *unauthenticated* auth screens; for authed sessions, surface Log out instead.
