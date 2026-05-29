@@ -98,6 +98,32 @@ See `CLAUDE.md` for full architecture details.
 - **Now:** zones are a per-org managed list (`table_zones`). Zones manager on the Tables tab (add chip / remove); single-add, bulk-add, and edit forms use a Zone **dropdown** sourced from the list ("No zone" = null). Existing typed zones backfilled. Tables stay restaurant-only. Commit `306de52` (client + migration `20260529120000`).
 - **Activation:** run migration `20260529120000` SQL in the Lovable editor; then verify via browser (create zone → add table via dropdown → groups correctly).
 
+### 4.1 AI menu import — scan a PDF/image to bulk-create the menu at onboarding
+
+- **Status:** ⬜ Open — onboarding accelerator (new feature, not a fix)
+- **Why:** New merchants drop off when they have to hand-key every product. Let them upload an existing menu (PDF, photo of a printed menu, or screenshot) and have an AI agent parse it into draft products they can review and accept in one pass.
+- **Wanted flow:**
+  1. During onboarding (and as an "Import menu" button on the Menu page), merchant uploads a PDF or image.
+  2. Edge function sends the file to a vision-capable model (Claude with the latest Opus/Sonnet — vision + structured output) with a prompt to extract `{ category, name, description, price, options/extras }` per item.
+  3. Model returns structured JSON → mapped to draft `products` + `menu_categories` rows.
+  4. **Review-before-commit screen:** merchant sees the parsed items in an editable table (fix prices/names, drop junk, assign categories) → confirm → bulk insert. Never auto-publish unreviewed AI output.
+- **Build approach:** integrate directly in the repo (local edits + push, not Lovable prompts) — no 5000-char splitting needed. Lovable CI picks up the commits.
+- **Scope:**
+  - Edge function `menu-import` (Deno): accepts uploaded file (Supabase Storage), calls the model, returns normalised JSON. API key in edge-function secrets.
+  - Storage bucket for uploaded source menus (private, owner-only RLS).
+  - Frontend: upload dropzone in onboarding + Menu page; parsing/progress state; editable review table; bulk-create on confirm (reuse existing product/category create paths).
+- **Considerations:** price parsing (currency symbols, cents), multi-size items → extras/options, categories inferred from headings, dietary tags from menu icons. Token/cost guardrail per import. PDF → may need page-image conversion before vision.
+- **Note:** ties into merchant onboarding & compliance flow; surface alongside `OnboardingChecklist`.
+
+### Marketplace visibility & off-marketplace reminders — building (phased)
+
+Goal: new restaurants auto-listed; merchant can temporarily hide (still takes orders); escalating reminder emails while off-marketplace; whole feature gated to marketplace tier+ (or active free trial).
+
+- **Phase 1 — foundation ✅ VERIFIED (2026-05-29, migration `20260529130000_marketplace_visibility_foundation`).** New restaurants `marketplace_visible=true` by default; public `marketplace_organizations` view gated by **readiness** (>=1 available product), **tier** (marketplace/growth/enterprise OR active free_trial), and **not paused**; tracking cols (`marketplace_hidden_at`, `marketplace_reminder_stage`, `marketplace_reminders_opted_out`, `marketplace_paused_until`); BEFORE-update trigger maintains hidden_at + resets reminders. Verified: test-bistro now shows on `/eat` + profile loads; "Open now" badge already present.
+- **Phase 2 — merchant controls** ⬜ Operations: "Listed on marketplace" toggle (clear copy: hidden ≠ closed), vacation "pause until" date, listing preview + completeness meter, reminder opt-out.
+- **Phase 3 — reminder emails** ⬜ `marketplace-reminders` edge fn + daily cron, escalating 24h→3d→1w→2w→monthly, opt-out + pause-aware.
+- **Phase 4 — open/closed badge** ⬜ on `/eat` cards (profile already shows "Open now").
+
 ### Reviews edge cases
 
 - **Latent:** Reviews `INSERT` requires matching order via `customer_id_for_user(org)`. Reviews `SELECT` / `UPDATE` policies should be audited for consistency (e.g., can a customer edit their own review post-submission? can a merchant flag spam?). Not blocking; flag for future audit.
