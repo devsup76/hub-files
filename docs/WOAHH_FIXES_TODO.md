@@ -42,15 +42,15 @@ See `CLAUDE.md` for full architecture details.
 **🟢 Minor**
 - *Waitlist entries: customer can't read their own.* Harmless. Add a tokened SELECT if booking confirmations should show status.
 
-### -1.2 Founding-merchant sign-up code gating
+### -1.2 Founding-merchant sign-up code gating — 🟢 SHIPPED (pending SQL)
 
-- **Status:** ⬜ Open — highest priority for controlling who can create accounts
-- **Decisions locked:** unique single-use codes; hidden admin page at `/business/dashboard/admin/codes` visible only to `pawitsingh23@gmail.com`
-- **Tech:**
-  - New table `founding_access_codes` (code text PK, created_at, used_at, used_by_user uuid FK, used_by_email text, revoked_at). RLS: admin only.
-  - RPC `redeem_founding_code(p_code text)` SECURITY DEFINER → checks unused + not revoked, marks consumed atomically, granted to `anon`.
-  - Auth.tsx sign-up: required `signup_code` field. Redeem RPC first; only call `supabase.auth.signUp` if redemption succeeded.
-  - Admin page: list + generate + revoke codes.
+- **Status:** Client live (commits `9d67112` + merge `0b79557`). **Activate by running migration `20260529090000` SQL in the Lovable editor.** Until then sign-up fails closed (invite-only by default — the intended state).
+- **What shipped:**
+  - `founding_access_codes` table + admin-only RLS (`auth.jwt()->>'email' = pawitsingh23@gmail.com`).
+  - `redeem_founding_code(code,email)` (anon, atomic consume) + `release_founding_code(code)` (un-consume on signUp failure) + `generate_founding_codes(n,note)` (admin batch).
+  - Auth.tsx: required "Founding access code" field; redeems fail-closed before `signUp`, releases on error.
+  - Admin page `/business/dashboard/admin/codes` (generate / copy / revoke) — double-gated by admin email + RLS.
+- **Verify after SQL:** browser — sign-up blocked without a code; admin page generates codes; a generated code lets one sign-up through then is marked used.
 
 ### 1.2 Replace email-confirmation popup with dedicated page
 
@@ -83,8 +83,7 @@ See `CLAUDE.md` for full architecture details.
 ### 3.2 Add "View as customer" button in merchant sidebar
 
 - **Where:** `src/components/dashboard/AppSidebar.tsx`
-- **Status:** ⬜ Open
-- **Wanted:** Button at the bottom that opens `/account` in a new tab. Same-origin now that single-origin migration is done — much simpler than the prior cross-host plan.
+- **Status:** 🟢 SHIPPED by Lovable (commit `89152ff`, "View-as-customer sidebar button"). Verify it points to the customer surface correctly when convenient.
 
 ### Reviews edge cases
 
