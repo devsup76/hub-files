@@ -35,10 +35,9 @@ See `CLAUDE.md` for full architecture details.
 - *Product `cost_price_cents` readable by staff via `productApi.list` `select("*")`* — real over-the-wire leak, BUT only the **retail** inventory page sets it and retail signup is hidden (restaurants only) → no merchant has cost data. **Fix before enabling retail.** Plan: move `cost_price_cents` to an owner/manager-only `product_costs` table (only `ShopInventory.tsx` + `demo.ts` touch it).
 - *Courier webhook skips HMAC when no secret configured* — low risk (forging needs a known `courier_delivery_id`). Make fail-closed when courier goes GA.
 
-**🔴 Still open — real, live, medium refactor (focused verified pass)**
-- **Org PII readable by staff over the wire.** Staff `orgApi.getMine` returns the full `organizations` row incl. `owner_phone`, `owner_full_name`, `abn`, `business_address`, `stripe_account_id`. UI doesn't show these to staff, but a malicious staff member can read them from the network response. Affects every merchant.
-  - **Why not a quick fix:** client-side column selection isn't a security boundary (staff JWT can query columns directly). Correct fix is server-side **column isolation** — move sensitive columns to an owner-only `organization_private` table (RLS: owner only), update the owner components that read them (BusinessTypeGate, OnboardingChecklist, PhoneChangeDialog), onboarding writes, and the `owner-verify` edge function. Verify by creating staff on test-bistro and confirming the PII columns are absent from the staff API response.
-  - **Recommendation:** dedicated change with end-to-end browser verification, not a blind sweep.
+**🟢 Fix shipped — pending SQL run + browser verification**
+- **Org PII readable by staff over the wire.** Solved without a table split: `get_member_org()` SECURITY DEFINER RPC returns the caller's org with owner PII (`owner_phone`, `owner_full_name`, `abn`, `business_address`, `stripe_account_id`, OTP hash) **nulled for non-owners**; the `"Staff view their org"` policy is dropped so staff have no direct read path. Client (`orgApi.getMine`) calls the RPC for staff with a direct-read fallback so deploy ordering can't break staff dashboards. Commit `745860b` (client + migration `20260529080000`).
+  - **Remaining:** user runs the migration SQL in Lovable editor (auto-deploy doesn't apply migrations); then verify via browser — staff dashboard still loads via the masked RPC, and a direct `organizations.owner_phone` query as staff returns nothing.
 
 **🟢 Minor**
 - *Waitlist entries: customer can't read their own.* Harmless. Add a tokened SELECT if booking confirmations should show status.
