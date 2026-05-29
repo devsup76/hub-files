@@ -35,9 +35,9 @@ See `CLAUDE.md` for full architecture details.
 - *Product `cost_price_cents` readable by staff via `productApi.list` `select("*")`* — real over-the-wire leak, BUT only the **retail** inventory page sets it and retail signup is hidden (restaurants only) → no merchant has cost data. **Fix before enabling retail.** Plan: move `cost_price_cents` to an owner/manager-only `product_costs` table (only `ShopInventory.tsx` + `demo.ts` touch it).
 - *Courier webhook skips HMAC when no secret configured* — low risk (forging needs a known `courier_delivery_id`). Make fail-closed when courier goes GA.
 
-**🟢 Fix shipped — pending SQL run + browser verification**
+**✅ Fixed & VERIFIED (2026-05-29)**
 - **Org PII readable by staff over the wire.** Solved without a table split: `get_member_org()` SECURITY DEFINER RPC returns the caller's org with owner PII (`owner_phone`, `owner_full_name`, `abn`, `business_address`, `stripe_account_id`, OTP hash) **nulled for non-owners**; the `"Staff view their org"` policy is dropped so staff have no direct read path. Client (`orgApi.getMine`) calls the RPC for staff with a direct-read fallback so deploy ordering can't break staff dashboards. Commit `745860b` (client + migration `20260529080000`).
-  - **Remaining:** user runs the migration SQL in Lovable editor (auto-deploy doesn't apply migrations); then verify via browser — staff dashboard still loads via the masked RPC, and a direct `organizations.owner_phone` query as staff returns nothing.
+  - **Verified via browser:** staff resolve their org through `get_member_org` (`[org-query] live (staff, masked)`), the dashboard still loads, and a raw REST `owner_phone` (and `select *`) query with the staff's own token returns **0 rows** — the `"Staff view their org"` policy is gone.
 
 **🟢 Minor**
 - *Waitlist entries: customer can't read their own.* Harmless. Add a tokened SELECT if booking confirmations should show status.
