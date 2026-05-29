@@ -42,7 +42,7 @@ See `CLAUDE.md` for full architecture details.
 **🟢 Minor**
 - *Waitlist entries: customer can't read their own.* Harmless. Add a tokened SELECT if booking confirmations should show status.
 
-### -1.2 Founding-merchant sign-up code gating — 🟢 SHIPPED (pending SQL)
+### -1.2 Founding-merchant sign-up code gating — ✅ VERIFIED LIVE (2026-05-29)
 
 - **Status:** Client live (commits `9d67112` + merge `0b79557`). **Activate by running migration `20260529090000` SQL in the Lovable editor.** Until then sign-up fails closed (invite-only by default — the intended state).
 - **What shipped:**
