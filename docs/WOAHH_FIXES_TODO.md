@@ -115,7 +115,7 @@ See `CLAUDE.md` for full architecture details.
 - **Considerations:** price parsing (currency symbols, cents), multi-size items → extras/options, categories inferred from headings, dietary tags from menu icons. Token/cost guardrail per import. PDF → may need page-image conversion before vision.
 - **Note:** ties into merchant onboarding & compliance flow; surface alongside `OnboardingChecklist`.
 
-### Marketplace visibility & off-marketplace reminders — building (phased)
+### Marketplace visibility & off-marketplace reminders — ✅ COMPLETE (all 4 phases, 2026-05-29/30)
 
 Goal: new restaurants auto-listed; merchant can temporarily hide (still takes orders); escalating reminder emails while off-marketplace; whole feature gated to marketplace tier+ (or active free trial).
 
