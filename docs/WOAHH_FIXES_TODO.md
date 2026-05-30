@@ -124,13 +124,46 @@ See `CLAUDE.md` for full architecture details.
 - **Status:** ⬜ Open — new feature
 - **Why:** When a staff member serves a walk-in / dine-in / counter customer, there's currently no smooth way to attach that customer to the order so they earn loyalty points and perks. Capture them at the moment of checkout — consent-compliant.
 - **Wanted flow (at in-person checkout / when staff completes an order):**
-  1. On the order/checkout screen, staff can **attach a customer**: search existing by phone/email, or capture a new one (name + phone/email).
+  1. On the order/checkout screen, staff can **attach a customer** by any of three identifiers: a **generated loyalty code** (the customer's rotating in-store code from their Account), their **phone number**, or their **email**.
+     - *Generated code* → looks up the already-consented member instantly (no invite needed) and attaches directly.
+     - *Phone / email* → search existing customer; if found and consented, attach directly.
   2. If new (or not yet consented), **send an invite** rather than silently creating a marketing record — customer gets an SMS/email link to confirm + opt in, then loyalty points for that order are credited on accept. Aligns with [[2.1 invite-to-consent customer flow]] (Spam Act).
   3. If the customer is already a consented member, attach directly and credit points immediately.
   4. On order completion, loyalty points/perks apply to the attached customer (in-person orders → earn rule per `loyalty_config`).
-- **Surfaces:** in-person checkout / walk-in order dialog (Orders.tsx + KDS walk-in flow), tie to the in-store loyalty code path already built. Staff roles (manager/service) can attach; respect consent before any marketing send.
-- **Build approach:** integrate directly in the repo (local edits + push). Reuse `customer_invites` (from 2.1) for the invite path so consent timestamps are consistent.
-- **Considerations:** don't create a marketing-eligible row without consent; loyalty earn can be credited to a pending/invited customer and finalised on accept; idempotency so re-completing an order doesn't double-credit; phone/email dedupe against existing customers + `growthhub_profiles`.
+- **Surfaces:** in-person checkout / walk-in order dialog (Orders.tsx + KDS walk-in flow), tie to the in-store loyalty code path already built (the code lookup reuses `loyalty_code_sessions` + validate RPC). Staff roles (manager/service) can attach; respect consent before any marketing send.
+- **Build approach:** integrate directly in the repo (local edits + push). Reuse `customer_invites` (from 2.1) for the invite path so consent timestamps are consistent; reuse the in-store loyalty code validate RPC for the code path.
+- **Considerations:** don't create a marketing-eligible row without consent; loyalty earn can be credited to a pending/invited customer and finalised on accept; idempotency so re-completing an order doesn't double-credit; phone/email/code dedupe against existing customers + `growthhub_profiles`.
+
+### 4.3 Receipts — print + email (must-have)
+
+- **Status:** ⬜ Open — **must-have** feature
+- **Why:** Merchants need to give customers a receipt. Two paths, both required:
+  1. **Email receipt** — already have the email infra; send a receipt for an order to the customer's email.
+  2. **Physical receipt** — a customer can ask for a paper receipt even if they haven't opted in (no consent needed for a one-off transaction record), and many restaurants will want to print every receipt regardless.
+- **Open problem — how merchants print from an iPad / tablet / computer:** we need a printing path that works off the devices merchants actually use. Options to evaluate:
+  - **Browser print (zero hardware lock-in):** generate a print-optimised receipt (HTML/CSS `@media print`, 58mm/80mm thermal width) and trigger the device's native print dialog → works to any AirPrint / system printer from iPad/tablet/computer. Lowest barrier, no SDK.
+  - **Thermal receipt printers:** common in hospitality (Epson TM-series, Star). Evaluate cloud-print (Epson Connect / Star CloudPRNT — server pushes receipt, printer polls) vs. local (Bluetooth/USB/LAN via WebUSB/Web Bluetooth — limited on iPad Safari).
+  - **PDF fallback:** generate a downloadable/printable PDF receipt for any device.
+- **Wanted:**
+  - A receipt record/template per order (org branding, line items, taxes/fees, totals, GST/ABN once registered, donation line if applicable, order #/timestamp).
+  - On any order (online + in-person), buttons: **Email receipt**, **Print receipt**, **Download PDF**.
+  - In-person checkout: prompt "Receipt? — Email / Print / None" at completion.
+- **Build approach:** integrate directly in the repo (local edits + push). Start with browser-print + PDF (no hardware dependency, works everywhere), then layer thermal/cloud-print for merchants who want auto-print every ticket.
+- **Considerations:** thermal width formatting (58mm/80mm), legal/tax fields (GST once ABN-registered — see ABN guide), no marketing consent required for a transactional receipt, reprint/duplicate handling, KDS vs front-of-house printer routing if we go hardware.
+
+### 4.4 Installable app on phone/tablet (PWA — no app store required)
+
+- **Status:** ⬜ Open — revisit (we discussed this before; planning to deploy)
+- **Why:** Merchants want woahh on a phone/tablet like a native app, without going through the App Store / Play Store review process. A **PWA (installable web app)** gives an icon on the home screen, full-screen launch, and offline-ish behaviour — installed straight from `woahh.app` via "Add to Home Screen".
+- **What we likely already have:** a service worker exists (`public/sw.js`, built for Web Push order notifications). PWA install needs that plus a web app manifest. CLAUDE.md lists "custom domain/PWA" as a growth-tier perk — confirm whether that gating still applies or if install should be available to all.
+- **Wanted:**
+  - `manifest.webmanifest` (name, short_name, icons 192/512 + maskable, theme/background color, `display: standalone`, `start_url`, scope) linked from `index.html`.
+  - Decide **which surface installs**: the merchant dashboard (`/business/*`) as a "run the shop" app, the customer surface (storefront/account) as an "order again" app, or both — possibly two manifests / scopes.
+  - In-app **Install prompt** (capture `beforeinstallprompt` on Android/desktop; show iOS "Add to Home Screen" instructions since Safari has no prompt API).
+  - Offline shell / sensible offline fallback so a cold launch without network isn't a blank page.
+- **Build approach:** integrate directly in the repo (local edits + push). PWA is the no-store route; if we ever want a true store listing later, wrap the PWA (e.g. Capacitor / TWA) — note for the future, not now.
+- **Considerations:** iOS PWA limits (no install prompt API, push works on iOS 16.4+ for installed PWAs only, storage eviction); icon/splash assets; make sure the single-origin routing + legacy redirect don't break `start_url`/scope; KDS as an installed tablet app is a strong use case (kitchen runs it full-screen).
+- **TODO before building:** find the earlier discussion notes on this and reconcile (we had a plan) — check older docs / chat history.
 
 ### Marketplace visibility & off-marketplace reminders — ✅ COMPLETE (all 4 phases, 2026-05-29/30)
 
