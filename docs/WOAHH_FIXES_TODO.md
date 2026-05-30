@@ -67,9 +67,11 @@ See `CLAUDE.md` for full architecture details.
   - Dashboard: rename button, pending invites tab with resend / cancel
   - Public: `/i/:token` accept page + `customer-invite-send` and `customer-invite-accept` edge functions + transactional email template
 
-### 2.3 Notify customer when their record is removed
+### 2.3 Notify customer when their record is removed — 🟢 SHIPPED (commit `d5662c8`)
 
-- **Status:** ⬜ Open
+- `customer-removed-notify` edge fn (owner/manager JWT, verifies org membership before sending) emails the customer that their record was removed (loyalty/history gone, reply if a mistake); logs to email_log. Customers.tsx delete flow fires it fire-and-forget after a successful delete, only when the customer has an email. Hard delete retained (behind AlertDialog); soft-delete + 30-day grace = future enhancement.
+- **Verify:** add a throwaway customer with a +alias email, delete it, confirm the notice email arrives.
+- **Status (was):** ⬜ Open
 - **Wanted:** When merchant deletes a customer, send email: "Your account at {Org Name} has been removed. Your loyalty points and order history with this merchant are no longer accessible. If you believe this was a mistake, reply to this email."
 - **Open question:** Soft-delete (30-day grace + scheduled hard purge) vs hard-delete. Recommend soft-delete.
 
