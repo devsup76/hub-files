@@ -57,9 +57,11 @@ See `CLAUDE.md` for full architecture details.
 - AdminForm now swaps to a dedicated "Check your email" screen after a confirmation-required sign-up (instead of a toast): shows the destination address, spam-folder hint, a Resend button with a 30s cooldown (`supabase.auth.resend`), and a "Back to sign in" link. Immediate-session signups still go straight to the dashboard.
 - **Verify:** needs a valid founding code to reach the success branch (gate is live) — bundle with founding-flow verification.
 
-### 2.1 Replace manual "Add Customer" with invite-to-consent flow
+### 2.1 Replace manual "Add Customer" with invite-to-consent flow — 🟢 SHIPPED (commit `f9ec2d5`, run migration `20260530090000`)
 
-- **Status:** ⬜ Open — Spam-Act compliance requirement before scale
+- `customer_invites` table + RPCs (`get_customer_invite`, `accept_customer_invite` → creates customer WITH consent, `decline_customer_invite`); `customer-invite-send` edge fn (owner JWT, emails one-tap consent link); public `/i/:token` accept page (CustomerInvite.tsx); Customers.tsx "Add" → "Invite customer" + pending-invites list (resend/cancel). Manual free-type add removed.
+- **Verify after SQL:** invite a +alias email → email arrives → click → accept → customer appears with email_consent_method='invite_link'.
+- **Status (was):** ⬜ Open — Spam-Act compliance requirement before scale
 - **Current:** Customers.tsx form lets merchants type customer details directly. Band-aid for consent timestamps already applied (commit `ffb9f1b`).
 - **Wanted:** Rename "Add Customer" → "Invite Customer". Merchant enters name + email → invite email sent → customer clicks `/i/:token` → consents → customer row created with `email_consent_at = now()`, `email_consent_method = 'invite_link'`.
 - **Scope (~3 Lovable prompts):**
@@ -116,6 +118,19 @@ See `CLAUDE.md` for full architecture details.
   - Frontend: upload dropzone in onboarding + Menu page; parsing/progress state; editable review table; bulk-create on confirm (reuse existing product/category create paths).
 - **Considerations:** price parsing (currency symbols, cents), multi-size items → extras/options, categories inferred from headings, dietary tags from menu icons. Token/cost guardrail per import. PDF → may need page-image conversion before vision.
 - **Note:** ties into merchant onboarding & compliance flow; surface alongside `OnboardingChecklist`.
+
+### 4.2 In-person checkout: add/invite customer to grant loyalty perks at point of service
+
+- **Status:** ⬜ Open — new feature
+- **Why:** When a staff member serves a walk-in / dine-in / counter customer, there's currently no smooth way to attach that customer to the order so they earn loyalty points and perks. Capture them at the moment of checkout — consent-compliant.
+- **Wanted flow (at in-person checkout / when staff completes an order):**
+  1. On the order/checkout screen, staff can **attach a customer**: search existing by phone/email, or capture a new one (name + phone/email).
+  2. If new (or not yet consented), **send an invite** rather than silently creating a marketing record — customer gets an SMS/email link to confirm + opt in, then loyalty points for that order are credited on accept. Aligns with [[2.1 invite-to-consent customer flow]] (Spam Act).
+  3. If the customer is already a consented member, attach directly and credit points immediately.
+  4. On order completion, loyalty points/perks apply to the attached customer (in-person orders → earn rule per `loyalty_config`).
+- **Surfaces:** in-person checkout / walk-in order dialog (Orders.tsx + KDS walk-in flow), tie to the in-store loyalty code path already built. Staff roles (manager/service) can attach; respect consent before any marketing send.
+- **Build approach:** integrate directly in the repo (local edits + push). Reuse `customer_invites` (from 2.1) for the invite path so consent timestamps are consistent.
+- **Considerations:** don't create a marketing-eligible row without consent; loyalty earn can be credited to a pending/invited customer and finalised on accept; idempotency so re-completing an order doesn't double-credit; phone/email dedupe against existing customers + `growthhub_profiles`.
 
 ### Marketplace visibility & off-marketplace reminders — ✅ COMPLETE (all 4 phases, 2026-05-29/30)
 
