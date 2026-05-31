@@ -47,8 +47,12 @@ reservation-remind/owner-verify. **END-TO-END SEND VERIFIED 2026-05-31**: Test B
 sms_number=+61448653472, owner-JWT invoke of sms-send → {sent:4} (3 fake seed nums + owner mobile
 +61435140245, all sent). Owner-auth note: sms-send verify_jwt=true → sb_secret rejected by gateway,
 legacy service_role JWT ≠ function SUPABASE_SERVICE_ROLE_KEY → must use owner/user JWT.
-STOP/opt-out NOT yet testable: shared numbers don't route inbound + ClickSend webhook URL
-(…/functions/v1/sms-webhook?secret=05f9c6fe…) not configured → needs a DEDICATED number.
+STOP/opt-out VERIFIED end-to-end 2026-05-31: bought dedicated ClickSend number +61455725154
+(REGISTRATION_NOT_REQUIRED), assigned to Test Bistro sms_number, created ClickSend inbound rule
+2327822 (action=URL, match-all) → sms-webhook?secret=05f9c6fe…. Sent campaign → replied STOP →
+sms_log chain: campaign sent, inbound STOP logged opted_out, confirmation sent; customers.sms_opted_out
+flipped true. SEND + STOP both fully functional. ClickSend inbound configurable via API
+(/v3/automations/sms/inbound). Cellcast ~½ ClickSend per-SMS cost — drop-in via SMS_PROVIDER flag at volume.
 CI workflow `.github/workflows/supabase-deploy.yml` held back (PAT lacks `workflow` scope) so GitOps
 auto-deploy NOT live; deploy is manual via `npx supabase`. Branch feat/per-merchant-sms NOT merged
 to main yet (per "merge only when fully functional"). Persistent memory: Option 2 (devcontainer

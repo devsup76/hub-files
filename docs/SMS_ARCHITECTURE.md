@@ -7,10 +7,11 @@
 ## TL;DR — where we are
 
 Migrating Woahh off Lovable onto a fresh Supabase project (ref `pmnyhbhtkcfoozkinieo`);
-in the same push we built **per-merchant SMS**. The code is written and audited; what's
-left is **provisioning numbers + secrets, fixing a short bug list, then end-to-end test +
-deploy**. Migration ~4.5 of 6 steps done (DB, functions, email, web push, build verified).
-SMS code landed today (migration `20260531000000`).
+in the same push we built **per-merchant SMS**. **STATUS (2026-05-31): audit-fixed, deployed,
+and verified end-to-end on the new backend — both outbound campaigns AND inbound STOP/opt-out
+work** (see Live test log). Remaining: merge `feat/per-merchant-sms` → `main`, and for production
+buy a dedicated ClickSend number per real merchant (+ a shared OTP number) and assign via the
+AdminSmsNumbers page. SMS code landed in migration `20260531000000`.
 
 ## The two-number model (the core idea)
 
@@ -89,7 +90,7 @@ alone. `sms-webhook` resolves the org by the inbound `to` number (the merchant's
 - **2026-05-31** — ClickSend creds (`adminwoahhapp@proton.me`) **verified working**: direct API smoke-test to `+61435140245` returned `SUCCESS` (`message_id 1F15CDDE-…`, Optus, $0.079 AUD). **Sent from ClickSend _shared_ system number `+61448653472`** (`is_shared_system_number: true`) → **no dedicated number is provisioned yet.** The per-merchant model needs a purchased ClickSend dedicated number to assign as `organizations.sms_number`; `WOAHH_SMS_NUMBER` (shared OTP) can be a second dedicated number or, interim, the shared pool.
 - **2026-05-31 (cont.)** — Supabase PAT validated. **Secrets set** on `pmnyhbhtkcfoozkinieo`: `CLICKSEND_USERNAME`, `CLICKSEND_API_KEY`, `SMS_WEBHOOK_SECRET`, `WOAHH_SMS_NUMBER=+61448653472` (interim shared) (`RESEND_*` already present). **Deployed** fixed functions: `sms-send`, `sms-webhook`, `reservation-confirm`, `reservation-remind`, `owner-verify`.
 - **2026-05-31 — END-TO-END SEND VERIFIED.** Decision: **use shared number for now** (`+61448653472`). Assigned Test Bistro (`35cf67fb…`, marketplace) `sms_number=+61448653472`; created a consented test customer at the owner mobile `+61435140245`; signed in as owner `pawitsingh23+merchant@gmail.com` (password reset to documented `WoahhTest2026!`) and invoked deployed `sms-send` → `{sent:4}`. `sms_log`: 3 fake seed numbers (`+6140000000x`) + owner mobile, all `sent` from `+61448653472`. Confirms owner-auth + consent filter + ClickSend send + logging + usage. **Owner-auth note:** `sms-send` has `verify_jwt=true`; the new `sb_secret_` key is rejected by the gateway (not JWT) and the legacy service-role JWT doesn't match the function's `SUPABASE_SERVICE_ROLE_KEY` — so service-role invocation fails; use an owner/user JWT (as the dashboard does).
-- **STOP/opt-out NOT yet verifiable** — shared numbers don't reliably route inbound replies, and the ClickSend inbound/DLR webhook URL (`…/functions/v1/sms-webhook?secret=…`) isn't configured. Needs a **dedicated number** + webhook config. Outbound + the `sms-webhook` fixes are deployed and ready.
+- **2026-05-31 — STOP / OPT-OUT VERIFIED end-to-end** with a real dedicated number. Bought `+61455725154` (ClickSend, status `REGISTRATION_NOT_REQUIRED` — numeric numbers are ACMA-exempt), assigned it to Test Bistro `sms_number`, and created a ClickSend inbound rule (`rule_id 2327822`, `action=URL`, match-all) forwarding replies to `…/functions/v1/sms-webhook?secret=05f9c6fe…`. Sent a campaign from `+61455725154` → replied STOP → `sms_log` shows the full chain: campaign `sent`, inbound `STOP` logged as `opted_out`, and the unsubscribe-confirmation `sent` (the new logged-confirmation fix). `customers.sms_opted_out` flipped to `true`, scoped to Test Bistro via the webhook's org-by-`to`-number lookup. **Send + STOP both fully functional on the new backend.** (Configured via the ClickSend automations API — no dashboard step needed.)
 
 ## What's left — TEST + DEPLOY checklist
 1. ⬜ Set ClickSend secrets on the new project: `CLICKSEND_USERNAME`, `CLICKSEND_API_KEY`.
@@ -110,6 +111,21 @@ alone. `sms-webhook` resolves the org by the inbound `to` number (the merchant's
 - Numeric-only sender numbers vs alphanumeric Sender IDs (latter needs ABN + ACMA/ClickSend registration ops flow).
 - ClickSend bulk pricing tier vs projected volume (e.g. 700/mo × N merchants).
 - Whether to add a merchant-facing SMS section in Operations (display the assigned number + a Sender-ID-registration surface per legalities §6.5).
+
+## SMS provider pricing (AU, researched 2026-05-31)
+All AU, ex-GST (+10%), per 160-char GSM-7 segment (marketing msgs often 2–3 segments):
+
+| Provider | Outbound/seg | Inbound (STOP) | Dedicated AU #/mo | Billing |
+|---|---|---|---|---|
+| **ClickSend** (current) | ~$0.072 → $0.057 @150k+ | **free** | $20.71 | AUD, GST handled |
+| **Twilio** | ~$0.072 (USD $0.0515) | ~$0.010 (charged) | ~$11.50 (USD $8.25) | **USD (FX risk)** |
+| **Cellcast** (cheapest AU) | ~$0.037 → $0.028 | free | ~$18–19 | AUD |
+| SMSGlobal | $0.038 → $0.016 (subscription) | — | quote | AUD |
+| MessageMedia | $0.079 → $0.059 (+ plan fee) | — | from $115 plan | AUD |
+
+**Verdict:** ClickSend ≈ Twilio on outbound, but **ClickSend is cheaper all-in for AU** (free inbound STOP replies; AUD billing, no FX; only loses on number rental). **Cellcast is ~half the per-SMS cost** — worth a switch at volume; the `SMS_PROVIDER` abstraction makes it a drop-in. Stay on ClickSend for now (verified working); revisit Cellcast when volume grows.
+
+**⚠️ ACMA SMS Sender ID Register** — registration opens **30 Nov 2025**, enforced **1 Jul 2026**. From then, unregistered *alphanumeric* sender IDs to AU mobiles are flagged "Unverified". **Numeric dedicated/virtual mobile numbers are EXEMPT** — which validates the per-merchant *numeric* `sms_number` model (you can't realistically register a unique alpha sender ID per merchant). Keep senders numeric; avoid alpha tags per-tenant.
 
 ---
 _Audit: 32 agents, 14 confirmed / 13 rejected findings, 2026-05-31. Full transcript under the workflow run `wf_2c9262fe-f61`._
