@@ -255,6 +255,7 @@ TierGate in `App.tsx`:
 | Customer CRM | ✅ Complete | List, manage, opt-in tracking (marketplace tier+) |
 | Loyalty rewards | ✅ Complete | Points + milestone, birthday rewards (marketplace tier+) |
 | SMS campaigns | ✅ Complete | Full UI + Clicksend + delivery tracking + opt-out + top-up credits |
+| Per-merchant SMS | 🟡 Code complete, test+deploy pending | Two-number model (shared `WOAHH_SMS_NUMBER` OTP + per-merchant `organizations.sms_number` marketing; STOP scoped per merchant). Migration `20260531000000` (`admin_assign_sms_number`, `set_sms_consent`), provider abstraction `_shared/sms.ts`. **See `docs/SMS_ARCHITECTURE.md`** for the full audit (14 confirmed fixes incl. critical `deliveryStatusRaw` crash + the `reservation-confirm` "growerr" sender bug) and the test+deploy checklist. |
 | Email campaigns | ✅ Complete | Full UI + Resend batch API + open/click tracking + unsubscribe + top-up credits |
 | Storefront (public) | ✅ Complete | Restaurant + retail variants |
 | /eat Marketplace | ✅ Complete | Marketplace.tsx + MarketplaceProfile.tsx; discovery, cuisine filter, ratings, Impact badge |
@@ -458,5 +459,7 @@ Top items as of 2026-05-28:
 - **`2.3` Notify customer on removal** — privacy hygiene.
 - **`3.1` Hard separation of merchant vs customer auth identities** — partly delivered via the routing pivot (`/signin` is customer-only). Hard separation in DB still pending.
 - **`3.2` "View as customer" sidebar button** — UX polish.
+
+**Per-merchant SMS — test + deploy** — see `/workspaces/GrowthHub/docs/SMS_ARCHITECTURE.md`. Code is complete and audited; remaining = set ClickSend + `WOAHH_SMS_NUMBER` + `SMS_WEBHOOK_SECRET` secrets on the new Supabase project, repoint ClickSend webhooks, fix the confirmed bug list (critical: `deliveryStatusRaw` crash; high: `reservation-confirm` sends from `"growerr"`, STOP `startsWith` false-positives, unrouted `AdminSmsNumbers` provisioning page), then run an end-to-end send/opt-out test.
 
 **POS & in-person payments** — see `/workspaces/GrowthHub/docs/POS_TERMINAL_PLAN.md`. Stripe Terminal (smart reader S700/WisePOS E from the web app, Phase 1) + Tap to Pay via a React Native merchant app (Phase 2). Preserves the in-person 4% → 2%/2% charity split via `application_fee_amount`. Long-lead blockers: Apple Tap to Pay entitlement + Stripe AFSL written confirmation for Connect Custom.
