@@ -37,10 +37,22 @@ Progress 2026-05-31: critical+high audit fixes applied in `repo/` (deliveryStatu
 growerr sender, STOP exact-match, AdminSmsNumbers route, opt-out confirmation logging) —
 frontend builds clean, NOT yet committed. ClickSend creds verified working (smoke-test SUCCESS
 to +61435140245 from shared system number +61448653472). NO dedicated number provisioned yet —
-need to buy one for org.sms_number. Deploy staged in `scripts/sms-deploy.sh`; blocked on a
-Supabase access token (none in rebuilt container, no supabase CLI; `npx supabase` works). MCP
-browser not connected post-rebuild. Persistent memory: Option 2 chosen — devcontainer
-postStartCommand runs `.claude/link-memory.sh` on container start.
+need to buy one for org.sms_number. Deploy staged in `scripts/sms-deploy.sh`. Committed: app repo branch
+`feat/per-merchant-sms` (pushed to origin devsup76/business-growth-hub; main untouched per
+"merge to main only when functional"); planning repo docs commit `8a8b67a` LOCAL only (push to
+master blocked by safety rule, persists in workspace). Browser re-added (Playwright MCP connected).
+PAT received + validated; secrets set on pmnyhbhtkcfoozkinieo (CLICKSEND_*, SMS_WEBHOOK_SECRET,
+WOAHH_SMS_NUMBER=+61448653472 interim shared); deployed sms-send/sms-webhook/reservation-confirm/
+reservation-remind/owner-verify. **END-TO-END SEND VERIFIED 2026-05-31**: Test Bistro (35cf67fb…)
+sms_number=+61448653472, owner-JWT invoke of sms-send → {sent:4} (3 fake seed nums + owner mobile
++61435140245, all sent). Owner-auth note: sms-send verify_jwt=true → sb_secret rejected by gateway,
+legacy service_role JWT ≠ function SUPABASE_SERVICE_ROLE_KEY → must use owner/user JWT.
+STOP/opt-out NOT yet testable: shared numbers don't route inbound + ClickSend webhook URL
+(…/functions/v1/sms-webhook?secret=05f9c6fe…) not configured → needs a DEDICATED number.
+CI workflow `.github/workflows/supabase-deploy.yml` held back (PAT lacks `workflow` scope) so GitOps
+auto-deploy NOT live; deploy is manual via `npx supabase`. Branch feat/per-merchant-sms NOT merged
+to main yet (per "merge only when fully functional"). Persistent memory: Option 2 (devcontainer
+postStartCommand runs .claude/link-memory.sh).
 
 Full durable detail: `docs/SMS_ARCHITECTURE.md`. Migration: `docs/MIGRATION_OFF_LOVABLE.md`,
 `docs/MORNING_CHECKLIST.md`. See [[persistent-memory-setup]].
