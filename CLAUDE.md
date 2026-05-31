@@ -458,3 +458,5 @@ Top items as of 2026-05-28:
 - **`2.3` Notify customer on removal** — privacy hygiene.
 - **`3.1` Hard separation of merchant vs customer auth identities** — partly delivered via the routing pivot (`/signin` is customer-only). Hard separation in DB still pending.
 - **`3.2` "View as customer" sidebar button** — UX polish.
+
+**POS & in-person payments** — see `/workspaces/GrowthHub/docs/POS_TERMINAL_PLAN.md`. Stripe Terminal (smart reader S700/WisePOS E from the web app, Phase 1) + Tap to Pay via a React Native merchant app (Phase 2). Preserves the in-person 4% → 2%/2% charity split via `application_fee_amount`. Long-lead blockers: Apple Tap to Pay entitlement + Stripe AFSL written confirmation for Connect Custom.
