@@ -58,5 +58,23 @@ auto-deploy NOT live; deploy is manual via `npx supabase`. Branch feat/per-merch
 to main yet (per "merge only when fully functional"). Persistent memory: Option 2 (devcontainer
 postStartCommand runs .claude/link-memory.sh).
 
-Full durable detail: `docs/SMS_ARCHITECTURE.md`. Migration: `docs/MIGRATION_OFF_LOVABLE.md`,
-`docs/MORNING_CHECKLIST.md`. See [[persistent-memory-setup]].
+PRE-MERGE GATE CHECK (2026-05-31 night) — NEXT SESSION READ `docs/MORNING_HANDOFF.md` FIRST. Caught:
+(1) `_shared/sms.ts` + migration `20260531000000` were UNTRACKED → now committed to `feat/per-merchant-sms`
+(else main would break — every SMS fn imports _shared/sms.ts). (2) Migration wasn't applied to the live
+DB at first; user applied it via SQL editor. (3) **SECURITY (critical):** `admin_assign_sms_number` AND
+`generate_founding_codes` (in `20260529090000_founding_access_codes.sql`, ALREADY IN MAIN/PROD) both use a
+NULL-unsafe admin gate `(auth.jwt()->>'email') <> 'admin'` (NULL<>x = NULL = falsy) + default PUBLIC execute
+→ **anon-exploitable** (confirmed live: anon reaches the body; could mint permanent founding/zero-commission
+codes or hijack a merchant's sms_number). FIX = `IS DISTINCT FROM` + `REVOKE EXECUTE FROM PUBLIC`. SMS-RPC
+fix committed to branch (`55e52fc`); founding fix pending a tracked migration. **MERGE IS BLOCKED** until the
+user runs the combined security SQL (in `docs/MORNING_HANDOFF.md`) on the live DB (+ likely the old Lovable
+DB if still serving) and I re-test anon=blocked. Overnight security sweep `wf_2a109cbd-20e` DONE + triaged: only new
+live-exploitable bug = `generate_founding_codes` (already in morning SQL). Rest is hardening backlog
+(owner-verify OTP no lockout [top]; reservation-remind `.includes(SERVICE_KEY)` substring auth;
+sms-webhook fail-open secret + PII log + NULL-`to` guard; defense-in-depth REVOKE-FROM-PUBLIC on
+intentionally-public token RPCs). Confirmed non-issues: sms_log RLS (org-scoped policy exists),
+sms-send exact bearer. NOT applied overnight (kept verified state intact). Branch `feat/per-merchant-sms`
+complete + pushed; NOT merged to main. Still TODO: create tracked migration for the founding fix.
+
+Full durable detail: `docs/SMS_ARCHITECTURE.md` + `docs/MORNING_HANDOFF.md`. Migration:
+`docs/MIGRATION_OFF_LOVABLE.md`. See [[persistent-memory-setup]].

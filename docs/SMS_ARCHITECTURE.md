@@ -127,5 +127,24 @@ All AU, ex-GST (+10%), per 160-char GSM-7 segment (marketing msgs often 2–3 se
 
 **⚠️ ACMA SMS Sender ID Register** — registration opens **30 Nov 2025**, enforced **1 Jul 2026**. From then, unregistered *alphanumeric* sender IDs to AU mobiles are flagged "Unverified". **Numeric dedicated/virtual mobile numbers are EXEMPT** — which validates the per-merchant *numeric* `sms_number` model (you can't realistically register a unique alpha sender ID per merchant). Keep senders numeric; avoid alpha tags per-tenant.
 
+## Security review (2026-05-31, pre-merge gate + sweep `wf_2a109cbd-20e`)
+
+**Live-exploitable bugs found + fix (caught by attack-testing, missed by static audit):**
+- 🔴 `admin_assign_sms_number` AND `generate_founding_codes` used a NULL-unsafe admin gate
+  `(auth.jwt()->>'email') <> 'admin'` — `NULL <> 'x'` is `NULL` (falsy), so any caller without an
+  email claim (anon) slipped past, and the default `CREATE FUNCTION` grants EXECUTE to PUBLIC.
+  Confirmed live: anon reached the function body (could hijack a merchant's `sms_number` / mint
+  permanent zero-commission founding codes). **Fix:** `IS DISTINCT FROM` (NULL-safe) + `REVOKE
+  EXECUTE FROM PUBLIC`. SMS RPC fixed on the branch; founding fix + both live-DB re-applies are the
+  morning SQL in `docs/MORNING_HANDOFF.md`. **`founding_access_codes` is already in `main`/prod.**
+- **Lesson:** static review missed both; the live anon attack test caught them. Attack-test every
+  SECURITY DEFINER admin gate.
+
+**Hardening backlog (not live-exploitable; full list + priority in `docs/MORNING_HANDOFF.md`):**
+owner-verify OTP lacks brute-force lockout (top); `reservation-remind` uses `.includes(SERVICE_KEY)`
+substring auth; `sms-webhook` fail-open secret gate + PII payload log + NULL-`to` opt-out guard;
+explicit `REVOKE FROM PUBLIC` on the intentionally-public token RPCs. Confirmed NON-issues: `sms_log`
+RLS (proper org-scoped SELECT policy), `sms-send` exact bearer compare.
+
 ---
-_Audit: 32 agents, 14 confirmed / 13 rejected findings, 2026-05-31. Full transcript under the workflow run `wf_2c9262fe-f61`._
+_Audit: 32 agents, 14 confirmed / 13 rejected findings, 2026-05-31. Full transcript under the workflow run `wf_2c9262fe-f61`. Security sweep: `wf_2a109cbd-20e`._
