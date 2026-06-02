@@ -1,6 +1,6 @@
 # Woahh — Investor Pitch Deck
 
-> Working draft. All figures are sourced from the positioning brief. Items marked **[TBD]** require founder input before this deck ships. **Two numbers MUST be reconciled before going live:** (1) the charity headline % and (2) the Growth tier price ($150 vs $199). This draft uses the code-ground-truth framing and flags the conflicts inline.
+> Working draft. Figures use the **locked model (2026-06-02, BUSINESS_STRATEGY.md):** 3% merchant + 1% customer = 4% gross online → 2% charity / 2% woahh; **$15k GMV/merchant** base; Growth tier **$150**; charity headline = **~2% of every online order + 50% of every subscription**. Items marked **[TBD]** still require founder input (TAM, founding-offer duration).
 
 ---
 
@@ -30,7 +30,7 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 - Tools (Square/Toast) give you back-of-house but **no demand**. Marketplaces (Uber/DoorDash) give you demand but **take the customer and 25–30%**.
 - Fragmentation tax: multiple logins, no unified customer view, no owned marketing channel.
 
-*Speaker note:* Anchor on the modeled merchant — ~$50k GMV/mo, ~37 digital orders/day at ~$45 AOV. The emotional core: they pay the most and own the least. Name the high-fit pain profiles — reservation-led fine dining that doesn't want aggregator traffic, B2B caterers, members' clubs, small-town restaurants where the relationship *is* the business.
+*Speaker note:* Anchor on the modeled merchant — ~$15k GMV/mo through woahh, ~11 digital orders/day at ~$45 AOV (rising as POS captures full in-store volume). The emotional core: they pay the most and own the least. Name the high-fit pain profiles — reservation-led fine dining that doesn't want aggregator traffic, B2B caterers, members' clubs, small-town restaurants where the relationship *is* the business.
 
 ---
 
@@ -73,9 +73,9 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 - **Marketing:** per-merchant SMS numbers + `{slug}@campaigns.woahh.app` email; scheduling, open/click tracking, tier caps + top-ups.
 - **Marketplace & storefront:** branded storefront + `/eat` discovery, reviews, ratings, Impact badge.
 - **Reservations:** booking widget, table mgmt, timezone-aware slots, deposit config, 24h+2h reminders.
-- **AI copilots:** menu import (Sonnet vision), campaign copy + decline reasons (Haiku).
+- **AI copilots:** menu import (Sonnet vision), campaign copy + decline reasons (Sonnet 4.6).
 
-*Speaker note:* Lead with a live demo or screenshot of the KDS and the menu-import-from-photo flow — these land hardest. Be precise on status: dashboard/KDS/orders/menu/reservations/marketplace/portal/demo are live; AI is code-present with final merge pending (see Traction slide).
+*Speaker note:* Lead with a live demo or screenshot of the KDS and the menu-import-from-photo flow — these land hardest. Be precise on status: dashboard/KDS/orders/menu/reservations/marketplace/portal/demo are live; AI is now live (merged + deployed 2026-06-02).
 
 ---
 
@@ -90,7 +90,7 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 - **No kitchen hardware lock-in.** KDS on a $40–60 stick vs $1,000–2,000+ terminals.
 - **Incentive alignment.** Flat subscription, not a per-order tax — woahh wins only when merchants grow.
 
-*Speaker note:* The defensible wedge is giving-as-growth-engine + the marketplace flywheel: more merchants → more consumer pull on `/eat` → more orders → more giving → more social proof → more merchants. Reconcile the charity % to ONE authoritative number (code says 0.1% GMV floor + 50/50 split) before presenting.
+*Speaker note:* The defensible wedge is giving-as-growth-engine + the marketplace flywheel: more merchants → more consumer pull on `/eat` → more orders → more giving → more social proof → more merchants. Charity headline is locked: ~2% of every online order + 50% of every subscription (the 0.1% GMV floor is the separate voluntary-rate default).
 
 ---
 
@@ -101,15 +101,15 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 **Subscriptions (flat monthly, 60-day free Marketplace trial, no card):**
 - **Solo $49/mo** — 1 location; email campaigns + Promote
 - **Marketplace $89/mo** — up to 3 locations; full feature set (CRM, loyalty, SMS, marketplace listing)
-- **Growth $150/mo** *(code/CLAUDE.md; deck/differentiators cite $199 — **[TBD: reconcile to one number]**)* — up to 7 locations, priority placement, custom domain/PWA
+- **Growth $150/mo** — up to 7 locations, priority placement, custom domain/PWA
 - **Enterprise — custom** — unlimited locations, white-label, dedicated support
 
 **Commission (documented policy; not yet charged):**
-- Online: 4% merchant + 2% customer service fee → **3% charity / 3% woahh**
-- In-person: 4% merchant only → **2% charity / 2% woahh** (merchant absorbs)
+- Online: 3% merchant + 1% customer service fee (4% gross) → **2% charity / 2% woahh**
+- In-person: 3% merchant only → **1.5% charity / 1.5% woahh** (merchant absorbs)
 - **Code reality today:** `stripe-payment-intent` hard-codes `application_fee_amount = 0` — founding pass-through; commission is policy/future.
 
-**Unit economics:** blended sub ~$89 ($44.50 woahh / $44.50 charity); net commission to woahh ~3% of GMV; **target LTV $30k+, CAC <$400 (<3 mo revenue)**. Infra at 1,000 merchants ~$2,300/mo → **97–99% net margin on commission; profitable from merchant #1.**
+**Unit economics ($15k GMV/merchant base):** blended sub ~$89 ($44.50 woahh / $44.50 charity); net commission to woahh ~2% of GMV (~$300/merchant/mo) → **~$344.50/merchant/mo to woahh and the same to charity; LTV ~$8–12k, CAC <$400**. Infra ~$2,300/mo at 1,000 merchants → **~94% contribution margin (pre-payroll); break-even ~60–110 merchants.**
 
 *Speaker note:* Be transparent that commission is the future revenue line — today is intentional pass-through to win founding merchants. The flat-fee structure is itself a selling point (aligned incentives). Reconcile Growth price before the deck ships.
 
@@ -122,10 +122,10 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 - **TAM** — Australian independent restaurants (then ANZ/global SMB hospitality): **[TBD: founder to source total addressable restaurant count × ARPU]**
 - **SAM** — independent restaurants in beachhead metros (Brisbane → Sydney / Melbourne / Gold Coast): **[TBD]**
 - **SOM** — phased targets from the model:
-  - **M4:** 50+ merchants · $2.5M GMV · ~$77k revenue
-  - **M12:** 300+ merchants · $15M GMV · ~$450k/mo (**~$5.6M ARR**)
-  - **Model scale:** 1,000 merchants at ~$50k GMV/mo → **~$1.5M/mo to woahh and ~$1.5M/mo to charity (~$18.5M/yr to charity)**
-- **ARPU anchor:** ~$50k GMV/merchant/mo; blended sub ~$89/mo + ~3% net commission.
+  - **M4:** 50+ merchants · ~$0.75M GMV/mo · ~$17k revenue/mo
+  - **M12:** 300+ merchants · ~$4.5M GMV/mo · ~$103k/mo (**~$1.24M ARR**)
+  - **Model scale:** 1,000 merchants at ~$15k GMV/mo → **~$344.5k/mo to woahh and ~$344.5k/mo to charity (~$4.13M/yr to charity); 5,000 merchants → ~$20.7M/yr to charity**
+- **ARPU anchor:** ~$15k GMV/merchant/mo; blended sub ~$89/mo + ~2% net commission (~$344.50/merchant/mo).
 
 *Speaker note:* Don't fabricate TAM — flag it as founder-to-source. Lead instead with the bottom-up unit model and the phased M4/M12 targets, which are defensible from the brief. The 1,000-merchant scale math doubles as the charity-impact headline.
 
@@ -136,7 +136,7 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 **Founding merchants → testimonials → the marketplace flywheel.**
 
 - **Invite-gated launch:** sign-up blocked without a **founding-access code** (admin-issued; `founding_access_codes` table live).
-- **Founding offer:** first **20–25 merchants** get **2 months free + permanent zero commission** (signed agreement) while still paying subscriptions. ~$1,250/mo foregone per merchant (~$25–31k/mo total) — bought back as testimonials, referrals, case studies, investor proof.
+- **Founding offer:** first **20–25 merchants** get **2 months free + permanent zero commission** (signed agreement) while still paying subscriptions. ~$300/mo foregone per merchant (~$6–7.5k/mo total) — bought back as testimonials, referrals, case studies, investor proof.
 - **High-fit wedge segments:** reservation-led fine dining (anti-aggregator), B2B caterers/event companies, members' clubs / invitation-only dining, small-town relationship-driven restaurants.
 - **The flywheel:** more merchants → more consumer pull on `/eat` → more orders → more giving → more social proof → more merchants.
 - **Restaurant-only at launch** (retail `business_type` exists in code but hidden) to keep the wedge sharp.
@@ -151,7 +151,7 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 
 | Player | Take rate / cost | Marketplace? | Back-of-house / POS? | Owns customer? | Donates from GMV? | AI menu import? |
 |---|---|---|---|---|---|---|
-| **woahh** | Flat $49–$150/mo + (future) 4% | **Yes (/eat)** | **Yes (full)** | **Merchant** | **Yes (structural)** | **Yes (live)** |
+| **woahh** | Flat $49–$150/mo + (future) 3% merchant | **Yes (/eat)** | **Yes (full)** | **Merchant** | **Yes (structural)** | **Yes (live)** |
 | Uber Eats / DoorDash | 25–30% | Yes | No | Aggregator | No | n/a |
 | Square | ~2.2% + ~$165/mo | No | Yes | Merchant | No | Racing to ship |
 | Toast | $1,000–2,000+ hardware | No | Yes | Merchant | No | Racing to ship |
@@ -159,7 +159,7 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 | Deliveroo / aggregators | High; siloed accounts | Yes | No | Aggregator | No | n/a |
 | Bopple / MrYum | Order-and-pay only | No | Partial | Merchant | No | No |
 
-- **~87% cheaper take rate** than aggregators (4% vs 30%) and the merchant **keeps the customer**.
+- **~90% cheaper take rate** than aggregators (3% vs 30%) and the merchant **keeps the customer**.
 - No one combines full back-of-house + a consumer marketplace + structural giving.
 
 *Speaker note:* The matrix is the slide. The killer cells are the "Marketplace? + Back-of-house? + Donates from GMV?" trio — woahh is the only "Yes/Yes/Yes" row.
@@ -175,9 +175,9 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 - **Per-merchant SMS (send + STOP/opt-out) verified end-to-end on the live backend (2026-05-31)** with a dedicated ClickSend number.
 - Hardened multi-tenant RLS, PII masking, compliance (ABN checksum, Spam Act consent/unsubscribe), per-merchant email identity.
 
-**Built, code-present, final merge pending:**
-- AI features (`ai-menu-import`, `ai-menu-copilot`, `ai-campaign`, `ai-decline-reasons`) — real edge functions on Claude Haiku 4.5 + Sonnet 4.6 with prompt caching; awaiting final browser sign-off before merge to main.
-- Stripe further along than docs claimed: `stripe-connect-onboard` + `stripe-payment-intent` exist (intent currently `application_fee_amount = 0`).
+**Live (merged + deployed 2026-06-02):**
+- AI features (`ai-menu-copilot`, `ai-campaign`, `ai-decline-reasons`) — real edge functions on Claude Sonnet 4.6 with prompt caching; browser-verified end-to-end, merged to main + deployed.
+- Stripe further along than docs claimed: `stripe-connect-onboard` + `stripe-payment-intent` exist (intent currently `application_fee_amount = 0` — billing UI still to build).
 
 **Honest gaps (NOT overclaimed):**
 - No production subscription-billing UI · no POS/terminal payments · retail vertical hidden · delivery courier code built but flagged off · receipts / PWA install / cookie-GDPR flows not built.
@@ -236,8 +236,8 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 - POS / Tap-to-Pay + AFSL pathway; delivery flag-on.
 
 **Milestones this funds:**
-- **M4:** 50+ merchants · $2.5M GMV · ~$77k revenue
-- **M12:** 300+ merchants · $15M GMV · ~$5.6M ARR
+- **M4:** 50+ merchants · ~$0.75M GMV/mo · ~$17k revenue/mo
+- **M12:** 300+ merchants · ~$4.5M GMV/mo · ~$1.24M ARR
 
 *Speaker note:* Tie the ask directly to the M4/M12 milestones from the model. Be explicit that the single biggest near-term unlock is the billing UI (blocks the first paying merchant). Amount + exact allocation are founder-to-fill.
 
@@ -249,7 +249,7 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 
 - woahh gives independent restaurants the **whole stack and the customer back** — for under $10/day.
 - And it routes giving through the rails: a **0.1% GMV floor**, a **publicly auditable ledger**, a **/impact leaderboard**, and the **50/50 split** model.
-- **The scale math:** 1,000 merchants at ~$50k GMV/mo → **~$18.5M/year to charity** — while woahh stays 97–99% margin on commission.
+- **The scale math:** 1,000 merchants at ~$15k GMV/mo → **~$4.13M/year to charity** (5,000 → **~$20.7M/year**) — at ~94% contribution margin (pre-payroll).
 - Every merchant we win is more revenue, more demand on `/eat`, and **more given away** — all at once.
 
 **woahh — the operating system for independent restaurants, with giving built in.**
@@ -259,10 +259,10 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 ---
 
 ### Pre-flight checklist before this deck ships
-- **[BLOCKING] Reconcile the charity headline %** — code = 0.1% GMV floor + 50/50 split; other docs say 0.15% / 2% / "20% of revenue." Pick ONE authoritative framing and use it on Slides 6, 7, 8, 15.
-- **[BLOCKING] Reconcile Growth tier price** — $150 (code/CLAUDE.md) vs $199 (deck/differentiators). Slide 7.
+- **[RESOLVED 2026-06-02] Charity headline** — locked: **~2% of every online order + 50% of every subscription** (50/50 split). The 0.1% GMV floor is the *separate* voluntary-rate default, not the headline. Used consistently on Slides 6, 7, 8, 15.
+- **[RESOLVED 2026-06-02] Growth tier price** — **$150** ($199 references removed everywhere).
 - Fill all **[TBD]**: founder team (13), ask amount + use of funds (14), TAM/SAM (8), paying-merchant count (11), charity partners (15).
-- Do not overclaim: AI = "built, merge pending"; commission = "policy/future, app fee currently 0"; no POS/billing-UI/retail/delivery/receipts/PWA/GDPR yet.
+- Do not overclaim: AI = **live (merged + deployed 2026-06-02)**; commission = "policy/future, app fee currently 0"; no POS/billing-UI/retail/delivery/receipts/PWA/GDPR yet.
 
 ---
 
