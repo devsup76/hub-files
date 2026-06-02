@@ -165,6 +165,17 @@ See `CLAUDE.md` for full architecture details.
 - **Considerations:** iOS PWA limits (no install prompt API, push works on iOS 16.4+ for installed PWAs only, storage eviction); icon/splash assets; make sure the single-origin routing + legacy redirect don't break `start_url`/scope; KDS as an installed tablet app is a strong use case (kitchen runs it full-screen).
 - **TODO before building:** find the earlier discussion notes on this and reconcile (we had a plan) — check older docs / chat history.
 
+### 5.1 Storefront mobile checkout — floating cart bar → popup (no scroll)
+
+- **Status:** ⬜ Open — plan ready, not started. Frontend-only.
+- **Why:** On the restaurant storefront the cart lives in an `<aside>` inside `lg:grid-cols-[1fr_380px]`, so below `lg` (every phone) it stacks **under the entire menu**. A customer adds an item then has to scroll past every category to reach the cart + "Go to Checkout" button. Retail (`RetailStorefront.tsx`) already avoids this with a `Dialog` checkout from a sticky header button — **this is restaurant-only.**
+- **Plan:**
+  1. **Sticky bottom cart bar (mobile only):** fixed bar pinned to the viewport bottom, shown only below `lg` and only when `cart.length > 0`; shows `itemCount` + live `total` + a "View order" button. Tapping opens the cart popup.
+  2. **Cart in a popup (`Sheet`, slide-up):** move the existing cart body (lines list, fulfillment selector, promo code, totals, "Go to Checkout") into a bottom `Sheet` for mobile. Its "Go to Checkout" calls the existing `startCheckout` → the upsell → checkout → auth dialog chain is unchanged.
+  3. **Desktop unchanged:** at `lg+` the sticky sidebar `<aside>` stays as-is; bar + sheet are `lg:hidden`.
+- **Reuses:** `cart`, `itemCount`, `total`, `startCheckout`, the existing checkout `Dialog` chain, and `Sheet` from `ui/`. Likely extract the cart JSX into a small local component so it isn't duplicated between sidebar and sheet. The fly-to-cart anchor (`cartAnchorRef`) becomes the bottom bar on mobile.
+- **Scope:** one file — `repo/src/pages/storefront/RestaurantStorefront.tsx`. No DB / edge functions / new deps. Implement directly in `repo/` on a branch.
+
 ### Marketplace visibility & off-marketplace reminders — ✅ COMPLETE (all 4 phases, 2026-05-29/30)
 
 Goal: new restaurants auto-listed; merchant can temporarily hide (still takes orders); escalating reminder emails while off-marketplace; whole feature gated to marketplace tier+ (or active free trial).

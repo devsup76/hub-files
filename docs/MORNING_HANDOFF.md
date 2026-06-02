@@ -115,6 +115,10 @@ block above. The morning SQL closes every confirmed hole.** The rest is hardenin
 - `sms-send` bearer compare — exact `===`, not bypassable.
 - "Missing `REVOKE FROM PUBLIC`" on `unsubscribe_email_by_token`, `redeem_founding_code`, `release_founding_code`, `accept/decline_customer_invite`, `create_public_reservation`, `get_order_by_id`, `cancel_reservation_by_token`, `get_reservation_by_token`, `create_order_with_inventory`, `get_public_storefront/menu`, `get_customer_invite` — these are **intentionally anon-callable** (token/flag-gated public RPCs), so PUBLIC ≈ anon. No escalation; defense-in-depth only.
 
+> **UPDATE 2026-06-02:** backlog #1–#3 below are now **implemented** on branch
+> `security/sms-hardening-backlog` (off `origin/main`) — not yet pushed/deployed/applied to the live DB.
+> Details + remaining deploy steps in `docs/SMS_ARCHITECTURE.md` → "Hardening #1–#3 IMPLEMENTED". #4 still open.
+
 **Real hardening backlog (NOT live-exploitable — review when convenient, does NOT block the merge), prioritised:**
 1. **`owner-verify` OTP brute-force** — the owner phone OTP (6-digit) has no attempt counter / lockout. Add one mirroring `staff-pin-login` (5 attempts → 15-min cooldown). *Highest priority of the backlog.*
 2. **`reservation-remind:59`** — uses `auth.includes(SERVICE_KEY)` (substring) vs `=== SERVICE_KEY` everywhere else; fails open only if `SERVICE_KEY` were empty (never in prod). 1-line fix to match the others.

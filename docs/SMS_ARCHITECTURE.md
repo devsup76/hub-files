@@ -146,5 +146,23 @@ substring auth; `sms-webhook` fail-open secret gate + PII payload log + NULL-`to
 explicit `REVOKE FROM PUBLIC` on the intentionally-public token RPCs. Confirmed NON-issues: `sms_log`
 RLS (proper org-scoped SELECT policy), `sms-send` exact bearer compare.
 
+### ✅ Hardening #1–#3 IMPLEMENTED (2026-06-02, branch `security/sms-hardening-backlog` off `origin/main`)
+
+Code written + reviewed locally; **NOT yet pushed, deployed, or applied to the live DB.** Three items:
+1. **`owner-verify` OTP brute-force lockout** — 5 wrong codes → 15-min cooldown, mirroring
+   `staff-pin-login`. New migration `20260602000000_owner_verify_otp_lockout.sql` adds
+   `organizations.phone_otp_attempts` + `phone_otp_locked_until`. `verify_otp` checks/increments/locks
+   (only a valid-format wrong guess burns an attempt; counter resets on success or once a past lock
+   expires); `send_otp` also honours the lock so resend-cycling can't reset the counter.
+2. **`reservation-remind`** — substring `auth.includes(SERVICE_KEY)` → strip-prefix + exact
+   `bearer === SERVICE_KEY` (matches `marketplace-reminders`).
+3. **`sms-webhook`** — secret gate now **fail-CLOSED** (401 when `SMS_WEBHOOK_SECRET` unset);
+   dropped the raw-payload `console.log` (was logging phone + body = PII); guards empty/NULL inbound
+   `from`/`to` before the org lookup.
+
+**Remaining to ship #1–#3:** ⬜ run migration `20260602000000` on the live DB (`pmnyhbhtkcfoozkinieo`) ·
+⬜ deploy `owner-verify`, `reservation-remind`, `sms-webhook` · ⬜ merge branch → `main`.
+Item #4 (explicit `REVOKE FROM PUBLIC` on intentionally-public token RPCs — defense-in-depth only) still open.
+
 ---
 _Audit: 32 agents, 14 confirmed / 13 rejected findings, 2026-05-31. Full transcript under the workflow run `wf_2c9262fe-f61`. Security sweep: `wf_2a109cbd-20e`._
