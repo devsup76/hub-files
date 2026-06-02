@@ -38,7 +38,7 @@
 
 > "Woahh gives a small business owner the same tech stack that Dominos spent millions building — for a flat monthly fee starting at $49.
 
-> No transaction fees to us. No commission on orders. No per-device hardware costs. No developer required.
+> Founding merchants pay zero commission — and after that, a low 3% on marketplace orders, a fraction of the 25–30% the delivery apps take. No per-device hardware costs. No developer required.
 
 > Their own branded storefront. A full loyalty and rewards engine. CRM with complete customer history. SMS and email marketing. Kitchen display. Table management. Delivery orchestration via Uber Direct at a flat fee, not a percentage.
 
@@ -48,7 +48,7 @@
 
 ## SLIDE 5 — Plans & Pricing
 
-> "We have four tiers. Solo at $49 for the smallest operators. Marketplace at $99 which unlocks CRM, loyalty, and marketplace listing. Growth at $199 — our flagship — which adds custom domain, SMS, unlimited locations, and priority placement. And Enterprise for multi-location chains.
+> "We have four tiers. Solo at $49 for the smallest operators. Marketplace at $89 — our most popular — which unlocks CRM, loyalty, SMS, and the discovery marketplace listing. Growth at $150 adds up to seven locations, priority placement, custom domain and PWA, and higher messaging caps. And Enterprise for multi-location chains.
 
 > Every plan includes a fixed monthly charitable donation built in — I'll come back to that.
 
@@ -58,11 +58,11 @@
 
 ## SLIDE 6 — Unit Economics
 
-> "The model works at every scale. Gross margins run between 76 and 81 percent across all tiers.
+> "The model works at every scale. After the charity split, contribution margins run north of 90 percent pre-payroll — the marginal cost to serve a merchant is only a few dollars.
 
 > Our infrastructure is multi-tenant SaaS. We build once and serve many. Adding merchant number 500 costs almost the same as adding merchant number 50. Supabase, Resend, Clicksend — the marginal cost per merchant is around $2.80.
 
-> At the Growth tier, a merchant pays $199. We collect roughly $259 including transaction fees. Our cost to serve is around $50. That's $209 in gross profit per merchant, per month.
+> Take a Growth-tier merchant doing $15,000 a month. Their $150 subscription splits 50/50, so we keep $75 — plus about 2% of their GMV in net commission, roughly $300. That's about $375 a month to Woahh per merchant, against a cost to serve of a few dollars.
 
 > We are profitable from merchant number one."
 
@@ -70,13 +70,13 @@
 
 ## SLIDE 7 — The Giving Model
 
-> "Here's the part that most SaaS companies would bury in a footnote. We donate approximately 20% of total revenue to charity. Not as a campaign. Not as a marketing line. As a structural commitment.
+> "Here's the part most SaaS companies would bury in a footnote. We give half of everything to charity — half of every subscription and half of every order fee. Not as a campaign. Not as a marketing line. As a structural commitment.
 
-> Every plan includes a fixed monthly donation — $10 on Solo, $40 on Growth. Additionally, 0.15% of every transaction processed through Woahh goes to charity. Woahh keeps 0.15% net. The other 0.15% is routed to a charitable cause, fully publicly verifiable.
+> Half of every subscription goes to charity — that's $24.50 on Solo, $75 on Growth. And on every online order the merchant pays 3% and the customer pays 1%; half of that — 2% of the order — goes to charity, and Woahh keeps the other half. Every dollar is routed to a charitable cause, fully publicly verifiable on the impact ledger.
 
-> A merchant processing $20,000 a month through Woahh donates roughly $30 to charity automatically. Their storefront displays an Impact Partner badge. Their customers can see it.
+> A merchant processing $15,000 a month through Woahh sends roughly $345 to charity automatically — about $300 from commission plus $45 from their subscription. Their storefront displays an Impact Partner badge. Their customers can see it.
 
-> At 5,000 merchants with average GMV of $20,000, that's over $1 million a year to charitable causes.
+> At 5,000 merchants averaging $15,000 in monthly GMV, that's over $20 million a year to charitable causes.
 
 > No competitor is within an order of magnitude of this commitment."
 

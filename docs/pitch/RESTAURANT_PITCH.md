@@ -25,8 +25,8 @@ On a $50k/month restaurant, that's **$5,000–$6,000 a month** — and after all
 
 | | Uber Eats / DoorDash | woahh |
 |---|---|---|
-| Their cut | **$9.00** (30%) | **$0.90 net** (4% commission, half of which goes to charity) |
-| You keep | $21.00 | **$28.56** |
+| Their cut | **$9.00** (30%) | **$0.60 net** (3% merchant + 1% customer fee, half of which goes to charity) |
+| You keep | $21.00 | **$28.28** |
 | Who owns the customer | *They do* | **You do — forever** |
 
 That's **$7.56 more in your pocket on every $30 order** — and you walk away with the diner's details instead of nothing.
@@ -45,7 +45,7 @@ You're not paying for software. You're keeping the money the apps were taking.
 One platform, one dashboard, the full loop:
 
 1. **Online orders come in on the app** — pickup, dine-in or delivery land on your kitchen screen in real time. No third-party app skimming 30% off the top.
-2. **Walk-ins pay at your counter** — take tap and chip payments in person on your own card reader *(Stripe Terminal — see below)*, at roughly **0.8% + 10¢** processing and the same low 4% rate. In-person and online sales sit in **one dashboard** — no reconciling two systems.
+2. **Walk-ins pay at your counter** — take tap and chip payments in person on your own card reader *(Stripe Terminal — see below)*, at roughly **1.7% + 5¢** processing and the same low 3% rate. In-person and online sales sit in **one dashboard** — no reconciling two systems.
 3. **Every customer joins your database** — online or walk-in, capture the diner with a tap (loyalty code, phone or email) so they're *yours*, not the delivery app's. Consent-compliant by design.
 4. **You send them back through the door** — once they're in your list, send offers, loyalty rewards and birthday treats over **your own SMS number and email address**, anytime, for free within your plan.
 
@@ -103,7 +103,7 @@ Flat monthly pricing — **no per-order tax.** We only grow when you grow.
 | **Growth** | **$150/mo** | Up to 7 locations — priority placement, custom domain/PWA |
 | **Enterprise** | **Custom** | Unlimited locations, white-label, dedicated support |
 
-On commission, our standard merchant rate is **4% — a fraction of the 25–30% the delivery apps charge.** And founding merchants pay **zero commission at all.**
+On commission, our standard merchant rate is **3% — a fraction of the 25–30% the delivery apps charge.** And founding merchants pay **zero commission at all.**
 
 ---
 
@@ -112,14 +112,14 @@ On commission, our standard merchant rate is **4% — a fraction of the 25–30%
 We're hand-picking a small founding cohort. Spots are limited and close once the cohort is full. Founding merchants get:
 
 - **Free subscription** — _[FINAL TERM BEING LOCKED: 1 year vs lifetime — see 6.2]_
-- **Zero commission** while you're a founding merchant — at $30k/mo in orders, that's roughly the ~$1,200/mo you'd otherwise hand a delivery app
+- **Zero commission** while you're a founding merchant — on $30k/mo in orders a delivery app would take ~$9,000/mo, and even our standard 3% would be ~$900/mo; you pay neither
 - A direct line to shape the product around how *your* restaurant actually runs
 
 ---
 
 ## On the roadmap — next 90 days
 
-- **Walk-in payments on your own terminal** — Stripe Terminal card readers (then tap-to-pay straight on a phone), so in-person sales run at the same low 4% and land in the same dashboard as your online orders.
+- **Walk-in payments on your own terminal** — Stripe Terminal card readers (then tap-to-pay straight on a phone), so in-person sales run at the same low 3% and land in the same dashboard as your online orders.
 - **Courier auto-dispatch** — Uber Direct, DoorDash Drive and more, on demand.
 - **Smarter AI insights** — "Tuesday lunch is down 40%" before you even have to ask.
 
@@ -138,4 +138,4 @@ You keep your customers. You keep your margin. And every plate you sell helps fu
 *Internal note: generated 2026-06-02; numbers + hardware/full-loop section added per founder request. Confirm before sending to a real merchant:*
 - *Founding-merchant terms (count, 1yr vs lifetime free subscription, commission window) still OPEN — see docs/WOAHH_FIXES_TODO.md 6.2.*
 - *Hardware: BUSINESS_STRATEGY.md §12 says the Woahh Kit (tablet pre-loaded + kitchen screen + Stripe Terminal) is a **lease or one-time purchase** (Phase 2), not free; co-founders configure in person at founding onboarding. Decide whether founding merchants get hardware **included** or **leased** before promising "we provide a tablet." Off-the-shelf DIY kit is $200–600 one-time.*
-- *Stripe Terminal / in-person payments are roadmap, not live yet (app_fee currently 0). The $0.90-net and $248k/yr figures come from BUSINESS_STRATEGY.md (4% commission, $30 order; $80k/mo GMV vs Uber Eats 30%).*
+- *Stripe Terminal / in-person payments are roadmap, not live yet (app_fee currently 0). The $0.60-net and ~$258k/yr figures come from BUSINESS_STRATEGY.md (3% merchant + 1% customer, $30 order; $80k/mo GMV vs Uber Eats 30%).*
