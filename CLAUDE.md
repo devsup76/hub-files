@@ -4,7 +4,7 @@
 
 > This file is the single source of truth for woahh development sessions.
 > Update it whenever a feature is completed, a key decision is made, or significant progress occurs.
-> Last updated: 2026-05-29
+> Last updated: 2026-06-02
 
 ---
 
@@ -301,6 +301,7 @@ TierGate in `App.tsx`:
 | Customer consent timestamps | ✅ Complete | Customers.tsx "Add Customer" toggle now derives `email_consent_at` / `sms_consent_at` from `marketing_opt_in` at insert. Delete wrapped in AlertDialog. |
 | Staff PIN 3-step verify | ✅ Complete | `staff-pin-login` edge function actions: `verify_org` (returns minimal org info), `verify_user` (checks username), `login` (verifies PIN). Generic 404 prevents handle enumeration. |
 | Products realtime | ✅ Complete | `useProductsRealtime` hook + `ALTER TABLE products REPLICA IDENTITY FULL` + supabase_realtime publication. Owner adds menu item → KDS, walk-in dialog, public storefront update without refresh. |
+| Ingredient availability | ✅ Complete (branch `feat/ingredient-availability`, committed not pushed) | Org-wide "temporarily unavailable ingredient" registry. Staff toggle an ingredient Out in the Shift Availability panel ("Menu availability" sheet on Orders + KDS); every restaurant dish whose `ingredients_list` contains it shows "temporarily unavailable" on the storefront card + struck-through in the customize dialog, **but stays orderable**. Out ingredients are stamped into `removed_ingredients` at add-to-cart so the kitchen ticket/KDS/receipt show "− No X". `ingredient_shortages` table (migration `20260602100000`, APPLIED to live DB) + RLS via `current_org_id()` + anon `get_public_ingredient_shortages` RPC (mirrors `get_public_menu`). Adversarial-reviewed (17 agents) + Playwright-verified end-to-end (incl. real order → KDS ticket "NO Coriander"). Out-of-stock ingredients computed **live at order time** (commit `0351633`). **Essential-ingredient hard-block shipped** (commit `cd758a3`, migration `20260602120000`): per-product `required_ingredients`; a required ingredient out → item "Temporarily sold out" + Add disabled + checkout guard; optional ingredients still stay-orderable. Menu editor ★ toggle marks required. **Deferred:** demo-mode seeding. |
 
 ---
 
@@ -463,3 +464,11 @@ Top items as of 2026-05-28:
 **Per-merchant SMS — merge + productionise** — see `/workspaces/GrowthHub/docs/SMS_ARCHITECTURE.md`. Audit-fixed, deployed, and **verified end-to-end on the new backend (send + STOP/opt-out)** on 2026-05-31. Remaining: merge `feat/per-merchant-sms` → `main`; for production, buy a dedicated ClickSend number per real merchant (+ a shared OTP number) and assign via the AdminSmsNumbers page (now routed at `/business/dashboard/admin/sms`); add `.github/workflows/supabase-deploy.yml` to the remote (needs a `workflow`-scoped PAT) to enable GitOps auto-deploy. Consider Cellcast (~½ the per-SMS cost) at volume — drop-in via the `SMS_PROVIDER` flag.
 
 **POS & in-person payments** — see `/workspaces/GrowthHub/docs/POS_TERMINAL_PLAN.md`. Stripe Terminal (smart reader S700/WisePOS E from the web app, Phase 1) + Tap to Pay via a React Native merchant app (Phase 2). Preserves the in-person 4% → 2%/2% charity split via `application_fee_amount`. Long-lead blockers: Apple Tap to Pay entitlement + Stripe AFSL written confirmation for Connect Custom.
+
+**Franchise / multi-location** — see `/workspaces/GrowthHub/docs/FRANCHISE_ARCHITECTURE.md` (todo `6.5`). Designed + approved 2026-06-02, **not built yet** (build later, post-onboarding). Strictly **additive**: a franchise layer *above* organizations (each location stays its own org); cross-org access via a `franchise_members` membership overlay (so `organizations.owner_id`/`staff_accounts.user_id` UNIQUE are NOT relaxed); nullable `organizations.franchise_id` (NULL = standalone, unaffected); additive grant-only RLS via `franchise_org_ids()`; reuses `growthhub_profiles`/`merchant_connections` for configurable shared loyalty + franchise-wide campaigns. 10 additive stages. Only non-additive item: a `kind='franchise'` skip branch in `handle_new_user_org()`.
+
+**New TODOs added 2026-06-02** (see `WOAHH_FIXES_TODO.md`): `6.1` make delivery temporarily unavailable behind a feature flag (needs funding+code; keep courier code dormant); `6.2` founding launch promo — free subscription (1yr/lifetime OPEN) + temporary zero commission for first N sign-ups (reconcile with existing founding terms); `6.3` UI uplift (scope TBD); `6.4` restrict customer/CRM details to owner+manager only — drop the `"Staff view customers"` RLS policy (client already gates it; check `current_org_id()` doesn't still cover staff); `6.5` franchise (above).
+
+**Pitch & positioning materials** — `docs/pitch/RESTAURANT_PITCH.md` (merchant sign-up pitch: numbers, full daily loop, hardware/tablet+terminal story), `docs/pitch/VC_PITCH_DECK.md` (15-slide investor deck + speaker notes), `docs/pitch/POSITIONING_BRIEF.md` (feature inventory + differentiators + roadmap). Open before sending: founding-offer terms (6.2), hardware lease-vs-included (BUSINESS_STRATEGY §12), and reconcile charity-% + Growth-price conflicts flagged in the deck.
+
+**Planning/docs repo remote** — this repo (`/workspaces/GrowthHub`, the docs/CLAUDE.md repo, distinct from the Lovable `repo/`) is now GitHub **`devsup76/hub-files`** (was `Pawit12-spec/hub-files`; that account's PAT is revoked/401). Push needs a current **devsup76** PAT.
