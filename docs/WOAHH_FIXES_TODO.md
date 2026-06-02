@@ -2,7 +2,7 @@
 
 > Single source of truth for the open punch list.
 > Closed items at the bottom for context.
-> Last updated: 2026-05-29
+> Last updated: 2026-06-02
 
 ---
 
@@ -19,6 +19,46 @@ See `CLAUDE.md` for full architecture details.
 ---
 
 ## 🔴 Open
+
+### New requests (2026-06-02) — Pawit
+
+> Added this session. Planning/spec only — not yet built. "We'll add more once I think of it." Decisions flagged **OPEN** below.
+
+#### 6.1 Make delivery temporarily unavailable (requires funding + code) — ⬜ Open
+
+- **Why:** Courier/delivery isn't production-ready — it needs funding (courier API accounts, per-delivery cost, AFSL/insurance considerations) and more code before we can offer it. Pull it from the customer-facing flow **temporarily** rather than ship a half-working option.
+- **Wanted:** Hide/disable **delivery** as a fulfillment option across the app, behind a single **feature flag** so re-enabling later is a one-line change — do **not** delete the courier code.
+  - Keep available: **pickup**, **dine-in**, **in-store pickup**, **shipping** (decide per business type — see OPEN).
+- **Where (audit all fulfillment-type surfaces):**
+  - Customer: `repo/src/pages/storefront/RestaurantStorefront.tsx`, `RetailStorefront.tsx`, `Shop.tsx`, the checkout dialog chain (fulfillment selector + delivery address fields + delivery-fee display).
+  - Merchant: `Operations.tsx` (fulfillment settings — hide/disable the delivery toggle), `KitchenSettings.tsx` (courier credentials section), `Orders.tsx` / KDS (delivery badge + courier status).
+  - Backend: disable the `auto_dispatch_courier` trigger so nothing tries to dispatch while off; leave `courier-dispatch` edge fn, `courier_credentials`, and the order courier columns in place (dormant).
+- **Build approach:** integrate directly in `repo/` on a branch. Prefer one source of truth for the flag (e.g. `settings.fulfillment.delivery_enabled` default `false`, or a build-time const) checked everywhere the option renders.
+- **OPEN decisions:** global kill-switch vs per-merchant toggle (recommend a global flag now, per-merchant later); does **shipping** (retail) stay on or also pause; copy for any merchant who already had delivery enabled.
+
+#### 6.2 Launch promo — free subscription + zero commission for the first few sign-ups — ⬜ Open
+
+- **Why:** Incentivise the very first merchants to onboard. Sweeten the existing founding-merchant deal.
+- **Wanted:** The first **N** sign-ups get:
+  1. **Free subscription** — for **1 year or lifetime** (**OPEN** — decide which) — comped, no Stripe charge.
+  2. **No commission — temporarily** — `application_fee_amount: 0` on their orders for the promo window.
+- **Relation to existing model:** CLAUDE.md already states "Founding merchants (first 20–25): zero commission **permanently**; still pay subscriptions." This request **changes/extends** that: the new offer also **waives the subscription** (1yr/lifetime) and frames commission as **temporary**. Reconcile the two into one coherent founding offer before building — don't ship contradictory terms.
+- **Ties to:** `-1.2` founding-access-codes (the gate that controls who counts as a founding sign-up) and the tier/`apply_tier_caps` system.
+- **Scope sketch:**
+  - DB: flag an org as promo/founding (e.g. `organizations.is_founding` + `founding_perks` JSONB: `{ free_sub_until | free_sub_lifetime, zero_commission_until }`); set at sign-up when a founding code is redeemed.
+  - Billing: when Stripe billing lands, comp the subscription for flagged orgs (skip charge / 100% coupon); set `application_fee_amount: 0` while within the commission window.
+  - Admin/visibility: surface the perk + its expiry in the merchant dashboard and admin codes page.
+- **OPEN decisions:** **how many** sign-ups (the "few" / N); **1 year vs lifetime** for the free subscription; **how long** commission stays waived (temporary window length); whether this supersedes or stacks with the existing "first 20–25 permanent zero-commission" line.
+- **Note:** mostly **dormant until Stripe billing is integrated** (CLAUDE.md: billing not started). Can record the perk flags now; enforcement lands with billing.
+
+#### 6.3 UI uplift — ⬜ Open (under-specified, scope TBD)
+
+- **Why:** Make the app look and feel more premium / modern — a visual + UX polish pass.
+- **Wanted:** A design refresh across the product. Scope to be defined — placeholder to capture intent.
+- **Candidate areas (refine with Pawit):** dashboard shell + sidebar, storefront/marketplace, onboarding, empty states, typography/spacing/color system (Tailwind theme), component consistency (shadcn/ui), mobile polish, loading/skeleton states, micro-interactions.
+- **Next step:** Pawit to specify which surfaces matter most and any reference look/feel; then break into per-surface branches. Frontend-only; integrate directly in `repo/`.
+
+---
 
 ### Security review — triaged 2026-05-29 (each item audited, not trusted blindly)
 
