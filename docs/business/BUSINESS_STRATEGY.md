@@ -35,12 +35,12 @@ Woahh is a full-stack SaaS platform for small business owners — restaurants, r
 2. **Discovery marketplace** — the public `/eat` directory, zero-commission, where customers find and order from local businesses. The alternative to Uber Eats that doesn't take 25–30% of every order.
 
 **Financial philosophy:**
-The goal is not maximum extraction from merchants. The intent is to build a sustainably profitable business that generates wealth to support the team and fund charitable causes, while genuinely helping small businesses grow. Pricing reflects this — commission is set at 2% on the merchant + 1% on the customer (3% gross online, vs. 30% industry standard), no volume caps that penalise growth, and half of all commission goes directly to charity.
+The goal is not maximum extraction from merchants. The intent is to build a sustainably profitable business that generates wealth to support the team and fund charitable causes, while genuinely helping small businesses grow. Pricing reflects this — commission is set at 3% on the merchant + 1% on the customer (4% gross online, vs. 30% industry standard), no volume caps that penalise growth, and half of all commission goes directly to charity.
 
-> **Model base (updated 2026-06-02):** 2% merchant + 1% customer = 3% gross online (2% in-person); half to charity, half to Woahh. Average GMV assumption **$15,000/merchant/month**. Subscription prices unchanged ($49/$89/$150), split 50/50 with charity. All figures below use this base.
+> **Model base (updated 2026-06-02):** 3% merchant + 1% customer = 4% gross online (3% in-person); half to charity, half to Woahh. Average GMV assumption **$15,000/merchant/month**. Subscription prices unchanged ($49/$89/$150), split 50/50 with charity. All figures below use this base.
 
 **The giving model:**
-2% merchant commission + 1% customer service fee on online orders (3% gross). Half of each goes to charity. Half to Woahh. At scale this means ~1.5% of every online dollar (1% in-person) processed through Woahh goes to charity — automatically, publicly, and verifiably. Every merchant's dashboard shows their individual charitable contribution. A public `/impact` page shows the full donation ledger. No competitor does this at any percentage. It is a structural commitment built into the transaction layer from day one, not a marketing gimmick.
+3% merchant commission + 1% customer service fee on online orders (4% gross). Half of each goes to charity. Half to Woahh. At scale this means ~2% of every online dollar (1.5% in-person) processed through Woahh goes to charity — automatically, publicly, and verifiably. Every merchant's dashboard shows their individual charitable contribution. A public `/impact` page shows the full donation ledger. No competitor does this at any percentage. It is a structural commitment built into the transaction layer from day one, not a marketing gimmick.
 
 **Expanding verticals:**
 - Restaurants and retail: live at launch
@@ -155,23 +155,23 @@ Two distinct phases. The model changes once the platform has proven itself with 
 
 ### Fee Breakdown on a $30 Order
 
-**The 1% customer service fee applies to online orders only — not in-person (dine-in, counter pickup, POS walk-in). Customers at the counter see no service fee. The merchant absorbs only their 2% commission.**
+**The 1% customer service fee applies to online orders only — not in-person (dine-in, counter pickup, POS walk-in). Customers at the counter see no service fee. The merchant absorbs only their 3% commission.**
 
 | | Customer pays | Stripe fee | Woahh gross | → Charity | → Woahh net | Merchant receives |
 |---|---|---|---|---|---|---|
-| Online (domestic card) | $30.30 | $0.82 (1.7% + 30¢) | $0.90 (3%) | $0.45 (1.5%) | $0.45 (1.5%) | $28.58 |
-| In-person (Stripe Terminal) | $30.00 | $0.55 (~1.7% + 5¢) | $0.60 (2%) | $0.30 (1%) | $0.30 (1%) | $28.85 |
+| Online (domestic card) | $30.30 | $0.82 (1.7% + 30¢) | $1.20 (4%) | $0.60 (2%) | $0.60 (2%) | $28.28 |
+| In-person (Stripe Terminal) | $30.00 | $0.55 (~1.7% + 5¢) | $0.90 (3%) | $0.45 (1.5%) | $0.45 (1.5%) | $28.55 |
 
-*Online: customer pays $30 + $0.30 service fee; merchant commission = $0.60; service fee = $0.30; Woahh gross = $0.90; half each to charity and Woahh net.*
+*Online: customer pays $30 + $0.30 service fee; merchant commission = $0.90; service fee = $0.30; Woahh gross = $1.20; half each to charity and Woahh net.*
 
-*In-person: customer pays $30 only; merchant commission = $0.60; no customer service fee; Woahh gross = $0.60; half each to charity and Woahh net.*
+*In-person: customer pays $30 only; merchant commission = $0.90; no customer service fee; Woahh gross = $0.90; half each to charity and Woahh net.*
 
 **Comparison to Uber Eats (same $30 order):**
 Uber Eats takes 30% = $9.00. Merchant receives $21.00 and owns zero customer data.
-Woahh's merchant commission is 2% = $0.60. Merchant receives $28.58 and owns the customer forever.
-**Woahh costs the merchant ~93% less than Uber Eats on every single order.**
+Woahh's merchant commission is 3% = $0.90. Merchant receives $28.28 and owns the customer forever.
+**Woahh costs the merchant ~90% less than Uber Eats on every single order.**
 
-**Comparison to Square:** Square charges 2.2% online ($0.66 on $30) + $165/month software. Woahh's merchant commission is just $0.60 on the same order — and it includes a marketplace, CRM, loyalty, campaigns, and a $0.45 automatic charitable contribution that Square cannot match.
+**Comparison to Square:** Square charges 2.2% online ($0.66 on $30) + $165/month software. Woahh's merchant commission is $0.90 on the same order — slightly above Square's pure processing fee, but it includes a marketplace, CRM, loyalty, campaigns, and a $0.60 automatic charitable contribution that Square cannot match.
 
 ### Legal Considerations
 
@@ -182,17 +182,17 @@ Woahh's merchant commission is 2% = $0.60. Merchant receives $28.58 and owns the
 
 ### Commission + Subscription Revenue at Scale
 
-| Platform GMV/month | 3% gross commission | → Charity (1.5%) | → Woahh net (1.5%) | Sub MRR (half to Woahh) | **Total Woahh revenue/mo** | **Total charity/mo** |
+| Platform GMV/month | 4% gross commission | → Charity (2%) | → Woahh net (2%) | Sub MRR (half to Woahh) | **Total Woahh revenue/mo** | **Total charity/mo** |
 |---|---|---|---|---|---|---|
-| $150k (10 merchants) | $4,500 | $2,250 | $2,250 | ~$445 | **~$2,695** | **~$2,695** |
-| $1.5M (100 merchants) | $45,000 | $22,500 | $22,500 | ~$4,450 | **~$26,950** | **~$26,950** |
-| $7.5M (500 merchants) | $225,000 | $112,500 | $112,500 | ~$22,250 | **~$134,750** | **~$134,750** |
-| $15M (1,000 merchants) | $450,000 | $225,000 | $225,000 | ~$44,500 | **~$269,500** | **~$269,500** |
-| $75M (5,000 merchants) | $2,250,000 | $1,125,000 | $1,125,000 | ~$222,500 | **~$1,347,500** | **~$1,347,500** |
+| $150k (10 merchants) | $6,000 | $3,000 | $3,000 | ~$445 | **~$3,445** | **~$3,445** |
+| $1.5M (100 merchants) | $60,000 | $30,000 | $30,000 | ~$4,450 | **~$34,450** | **~$34,450** |
+| $7.5M (500 merchants) | $300,000 | $150,000 | $150,000 | ~$22,250 | **~$172,250** | **~$172,250** |
+| $15M (1,000 merchants) | $600,000 | $300,000 | $300,000 | ~$44,500 | **~$344,500** | **~$344,500** |
+| $75M (5,000 merchants) | $3,000,000 | $1,500,000 | $1,500,000 | ~$222,500 | **~$1,722,500** | **~$1,722,500** |
 
-*GMV assumption: **$15k/month per merchant** (online/processed-through-Woahh volume). Blended subscription avg ~$89/month; half (~$44.50) to Woahh, half to charity. Commission is the dominant revenue stream — same model as Stripe and Shopify Payments. At 5,000 merchants: **~$16.2M/year to charity.** Capturing full in-store GMV via POS (3–4× the online volume) raises every row proportionally.*
+*GMV assumption: **$15k/month per merchant** (online/processed-through-Woahh volume). Blended subscription avg ~$89/month; half (~$44.50) to Woahh, half to charity. Commission is the dominant revenue stream — same model as Stripe and Shopify Payments. At 5,000 merchants: **~$20.7M/year to charity.** Capturing full in-store GMV via POS (3–4× the online volume) raises every row proportionally.*
 
-**Founding merchant carve-out:** First 20–25 merchants locked at zero commission permanently. On $15k/month GMV each, this forgoes ~$225/month net per founding merchant (~$4,500–5,625/month total). Founding merchants still pay subscriptions — half of which goes to charity. The deliberate cost of the early adoption strategy.
+**Founding merchant carve-out:** First 20–25 merchants locked at zero commission permanently. On $15k/month GMV each, this forgoes ~$300/month net per founding merchant (~$6,000–7,500/month total). Founding merchants still pay subscriptions — half of which goes to charity. The deliberate cost of the early adoption strategy.
 
 ---
 
@@ -237,7 +237,7 @@ Billion-dollar restaurant tech stack, available to a café at $150/month.
 
 ### The Pitch
 
-> "On every order, everyone chips in. Merchants pay 2% — half to charity. Customers pay 1% — half to charity. Half your subscription goes to charity too. That's ~1.5% of every online dollar processed through Woahh going to causes that matter. Not a feature. The whole model. Uber Eats takes 30% and gives nothing back. Starting at $49 a month."
+> "On every order, everyone chips in. Merchants pay 3% — half to charity. Customers pay 1% — half to charity. Half your subscription goes to charity too. That's ~2% of every online dollar processed through Woahh going to causes that matter. Not a feature. The whole model. Uber Eats takes 30% and gives nothing back. Starting at $49 a month."
 
 ---
 
@@ -248,24 +248,24 @@ Billion-dollar restaurant tech stack, available to a café at $150/month.
 - Weighted average subscription per merchant: ~$89/month (blended)
 - Subscription split: 50% to charity, 50% to Woahh (~$44.50 Woahh, ~$44.50 charity)
 - Average GMV per merchant per month: $15,000 (online / processed-through-Woahh volume — ~11 orders/day at $45 AOV; rises 3–4× once POS captures full in-store GMV)
-- Commission net to Woahh: 1.5% of GMV (half of 3% gross online)
-- Commission to charity: 1.5% of GMV
+- Commission net to Woahh: 2% of GMV (half of 4% gross online)
+- Commission to charity: 2% of GMV
 - Infrastructure costs are estimates; SMS is the primary variable cost
 - **Net profit below is PRE-PAYROLL** (infra only). Team/salaries are the real fixed cost — see break-even note.
 
 ### Combined Revenue Projection (Subscription + Commission)
 
-| Active merchants | Sub MRR (Woahh half) | Commission net (1.5%) | **Total Woahh revenue** | Infra costs | **Contribution/mo (pre-payroll)** | **Revenue ARR** |
+| Active merchants | Sub MRR (Woahh half) | Commission net (2%) | **Total Woahh revenue** | Infra costs | **Contribution/mo (pre-payroll)** | **Revenue ARR** |
 |---|---|---|---|---|---|---|
-| 50 | ~$2,225 | $11,250 | **$13,475** | ~$180 | **$13,295** | **$162k** |
-| 100 | ~$4,450 | $22,500 | **$26,950** | ~$320 | **$26,630** | **$323k** |
-| 250 | ~$11,125 | $56,250 | **$67,375** | ~$650 | **$66,725** | **$808k** |
-| 500 | ~$22,250 | $112,500 | **$134,750** | ~$1,400 | **$133,350** | **$1.62M** |
-| 1,000 | ~$44,500 | $225,000 | **$269,500** | ~$2,800 | **$266,700** | **$3.23M** |
-| 2,000 | ~$89,000 | $450,000 | **$539,000** | ~$5,500 | **$533,500** | **$6.47M** |
-| 5,000 | ~$222,500 | $1,125,000 | **$1,347,500** | ~$13,000 | **$1,334,500** | **$16.2M** |
+| 50 | ~$2,225 | $15,000 | **$17,225** | ~$180 | **$17,045** | **$207k** |
+| 100 | ~$4,450 | $30,000 | **$34,450** | ~$320 | **$34,130** | **$413k** |
+| 250 | ~$11,125 | $75,000 | **$86,125** | ~$650 | **$85,475** | **$1.03M** |
+| 500 | ~$22,250 | $150,000 | **$172,250** | ~$1,400 | **$170,850** | **$2.07M** |
+| 1,000 | ~$44,500 | $300,000 | **$344,500** | ~$2,800 | **$341,700** | **$4.13M** |
+| 2,000 | ~$89,000 | $600,000 | **$689,000** | ~$5,500 | **$683,500** | **$8.27M** |
+| 5,000 | ~$222,500 | $1,500,000 | **$1,722,500** | ~$13,000 | **$1,709,500** | **$20.7M** |
 
-**Contribution margin: ~93% (pre-payroll).** Infrastructure scales near-flat; commission revenue scales with merchant GMV. **The real fixed cost is the team** — these figures are *before* salaries. After a lean team (~$20k/mo early → ~$70–180k/mo at scale), **break-even is ~80–140 merchants** and net margin lands ~55–80% at scale.
+**Contribution margin: ~94% (pre-payroll).** Infrastructure scales near-flat; commission revenue scales with merchant GMV. **The real fixed cost is the team** — these figures are *before* salaries. After a lean team (~$20k/mo early → ~$70–180k/mo at scale), **break-even is ~60–110 merchants** and net margin lands ~60–82% at scale.
 
 *Note: Founding merchants (20–25) are zero-commission. All projections above assume full commission applies — the founding carve-out (~$225/merchant/mo forgone) reduces early numbers. Charity receives an equal amount to Woahh at every scale milestone.*
 
@@ -318,10 +318,10 @@ The `donation_ledger` table records every charitable contribution: source (GMV-m
 
 | Source | Rate | Notes |
 |---|---|---|
-| Merchant commission | 2% per order → 1% Woahh, 1% charity | Online + in-person. Automatic on every order |
+| Merchant commission | 3% per order → 1.5% Woahh, 1.5% charity | Online + in-person. Automatic on every order |
 | Customer service fee | 1% per order → 0.5% Woahh, 0.5% charity | **Online orders only.** Added at checkout, disclosed as "Platform service fee". In-person orders carry no customer fee. |
-| **Online order total** | **1.5% of GMV → charity, 1.5% → Woahh** | Half of every online transaction dollar to charity |
-| **In-person order total** | **1% of GMV → charity, 1% → Woahh** | Merchant commission only; no customer-facing fee |
+| **Online order total** | **2% of GMV → charity, 2% → Woahh** | Half of every online transaction dollar to charity |
+| **In-person order total** | **1.5% of GMV → charity, 1.5% → Woahh** | Merchant commission only; no customer-facing fee |
 | Subscription | 50% to charity, 50% to Woahh | Solo $49 ($24.50 each), Marketplace $89 ($44.50 each), Growth $150 ($75 each) |
 | Voluntary rate | Merchant-configurable above floor | Slider in Donate dashboard |
 | Promoted listings | 70% → charity, 30% → Woahh | Promotion fee split on `/eat` sponsored listings |
@@ -381,8 +381,8 @@ Woahh is both: owned operations stack + zero-commission marketplace, under one f
 
 | Factor | Square / Toast | Uber Eats / DoorDash | me&u / Bopple | **Woahh** |
 |---|---|---|---|---|
-| Commission per order | 2.2–2.9% (processing only) | 15–30% | None / low | **2% merchant + 1% customer** |
-| Monthly platform cost ($80k GMV) | ~$1,925 | ~$12,000–24,000 | ~$299–600 | **$1,689** |
+| Commission per order | 2.2–2.9% (processing only) | 15–30% | None / low | **3% merchant + 1% customer** |
+| Monthly platform cost ($80k GMV) | ~$1,925 | ~$12,000–24,000 | ~$299–600 | **$2,489** |
 | Marketplace / discovery | None | Yes (30% commission) | Limited | **Yes (zero commission)** |
 | Owned storefront | Basic | None | Yes | **Full-featured, branded** |
 | Customer data ownership | Partial | Never | Partial | **Full — merchant's CRM** |
@@ -395,23 +395,23 @@ Woahh is both: owned operations stack + zero-commission marketplace, under one f
 | Push notifications (no app) | No | App only | No | **Yes — web push** |
 | Unified customer identity | No | No | No | **Yes — cross-merchant account** |
 | Appointment booking | No | No | No | **Phase 1 roadmap** |
-| Charity contribution | None | None | None | **1.5% of every online order + 50% of subscription** |
+| Charity contribution | None | None | None | **2% of every online order + 50% of subscription** |
 | Public giving transparency | None | None | None | **Yes — /impact page** |
 | Hardware required | Yes (proprietary) | Smartphone | Tablet | **Any browser** |
 
 ### Marketing-Ready Cost Comparison (for Sales and Investor Decks)
 
-**Headline:** "On every order, everyone chips in. Merchants pay 2% — half to charity. Customers pay 1% — half to charity. Half your subscription goes to charity too. Uber Eats takes 30% and gives nothing back."
+**Headline:** "On every order, everyone chips in. Merchants pay 3% — half to charity. Customers pay 1% — half to charity. Half your subscription goes to charity too. Uber Eats takes 30% and gives nothing back."
 
 | Competitor | Their model | Monthly cost on $80k GMV | Annual cost | vs. Woahh annual saving |
 |---|---|---|---|---|
-| Uber Eats | 30% commission | $24,000 | $288,000 | **$267,732 saved** |
-| DoorDash Premier | 30% commission | $24,000 | $288,000 | **$267,732 saved** |
-| DoorDash Basic | 15% commission | $12,000 | $144,000 | **$123,732 saved** |
-| Square Online + Plus | 2.2% + $165 sub | $1,925 | $23,100 | *Woahh costs ~$2,832 **less** — and includes marketplace, CRM, loyalty, and ~$14,900/yr to charity* |
-| me&u | ~$500 sub | $500 | $6,000 | *Woahh costs ~$14,268 more — but includes full feature stack + marketplace + charity model* |
-| Bopple | ~$299 sub, 0% | $299 | $3,588 | *Woahh costs ~$16,680 more — but includes marketplace, CRM, campaigns, loyalty, and charity giving* |
-| **Woahh** | **2% + 1% customer + $89 sub** | **$1,689** | **$20,268** | — |
+| Uber Eats | 30% commission | $24,000 | $288,000 | **$258,132 saved** |
+| DoorDash Premier | 30% commission | $24,000 | $288,000 | **$258,132 saved** |
+| DoorDash Basic | 15% commission | $12,000 | $144,000 | **$114,132 saved** |
+| Square Online + Plus | 2.2% + $165 sub | $1,925 | $23,100 | *Woahh costs ~$6,768 more — but includes marketplace, CRM, loyalty, and ~$19,700/yr to charity* |
+| me&u | ~$500 sub | $500 | $6,000 | *Woahh costs ~$23,868 more — but includes full feature stack + marketplace + charity model* |
+| Bopple | ~$299 sub, 0% | $299 | $3,588 | *Woahh costs ~$26,280 more — but includes marketplace, CRM, campaigns, loyalty, and charity giving* |
+| **Woahh** | **3% + 1% customer + $89 sub** | **$2,489** | **$29,868** | — |
 
 *$1,644.50/year of every Woahh merchant's spend goes to charity — none of the competitors above contribute a cent.*
 
