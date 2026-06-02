@@ -1,5 +1,7 @@
 # Woahh — Investor Pitch Deck
 
+> **Presentable deck:** `docs/pitch/woahh-vc-deck.html` — a branded, keyboard-navigable HTML deck (17 slides, forest/gold, charts, the giving flywheel, and the Eat → Shop → Book expansion finale). This markdown is the content source-of-truth. An **Inventory** slide is reserved (feature in build — adds stock-updates-per-order + stocktake to the product + competition story).
+
 > Working draft. Figures use the **locked model (2026-06-02, BUSINESS_STRATEGY.md):** 3% merchant + 1% customer = 4% gross online → 2% charity / 2% woahh; **$15k GMV/merchant** base; Growth tier **$150**; charity headline = **~2% of every online order + 50% of every subscription**. Items marked **[TBD]** still require founder input (TAM, founding-offer duration).
 
 ---
@@ -243,7 +245,25 @@ Branded storefront · zero-commission discovery marketplace · CRM, loyalty, SMS
 
 ---
 
-## Slide 15 — Closing / Mission
+## Slide 15 — Expansion: the platform play (Eat → Shop → Book)
+
+**You think this is restaurant software. It's the operating system for every main-street business.**
+
+| Stage | Vertical | Status | What it reuses |
+|---|---|---|---|
+| **Now** | 🍽️ **Eat** — restaurants (orders, kitchen, menu, loyalty, marketplace) | **Live** on `woahh.app/eat` | the wedge we win first |
+| **Next** | 🛍️ **Shop** — retail (SKU/barcode, inventory, shipping) | `business_type='retail'` code exists, hidden | same storefront + marketplace + giving rails |
+| **Then** | 💈 **Book** — services: barbers, nail & beauty salons, fitness (appointments, staff schedules, deposits) | reuses the live reservations engine | ~80% of what's already shipped |
+
+- **One OS · one marketplace · one giving ledger — across every local vertical.** `/eat → /shop → /book`.
+- Each new vertical is a re-skin + a few modules on rails that already exist (multi-tenant, branding, CRM, loyalty, marketing, payments, giving). The marginal cost of a new vertical is low; the TAM multiplies.
+- **Inventory mode (in build):** stock updates per order + stocktake — strengthens the restaurant wedge now and is the backbone of Shop mode next.
+
+*Speaker note:* This is the "edge" — investors came for a restaurant SaaS and leave seeing a multi-vertical local-commerce + giving platform. Land the wedge narrative first (win restaurants decisively), then reveal the platform. The same rails, the same flywheel, the same ledger — just pointed at the next category.
+
+---
+
+## Slide 16 — Closing / Mission
 
 **Giving is not a cost centre. It's the growth engine.**
 
