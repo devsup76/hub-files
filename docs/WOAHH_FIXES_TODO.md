@@ -73,12 +73,17 @@ See `CLAUDE.md` for full architecture details.
 - **One non-additive item:** `handle_new_user_org()` needs a `kind='franchise'` skip branch for pure franchise-admin accounts (function change, no data loss).
 - **Rollout:** 10 additive stages in the doc, each independently shippable. Start with schema-only (zero behavior change).
 
-#### 6.3 UI uplift — ⬜ Open (under-specified, scope TBD)
+#### 6.3 UI uplift — 🟢 LARGELY SHIPPED (2026-06-02, merged to `main` → live on woahh.app)
 
 - **Why:** Make the app look and feel more premium / modern — a visual + UX polish pass.
-- **Wanted:** A design refresh across the product. Scope to be defined — placeholder to capture intent.
-- **Candidate areas (refine with Pawit):** dashboard shell + sidebar, storefront/marketplace, onboarding, empty states, typography/spacing/color system (Tailwind theme), component consistency (shadcn/ui), mobile polish, loading/skeleton states, micro-interactions.
-- **Next step:** Pawit to specify which surfaces matter most and any reference look/feel; then break into per-surface branches. Frontend-only; integrate directly in `repo/`.
+- **Shipped (app repo `devsup76/business-growth-hub`, merged to `main`):**
+  - **App-wide green/gold theme** — `src/index.css` semantic tokens remapped from ink-black/indigo to brand forest-green primary + gold accents; **buttons green + white text**, gold kept as accents (focus rings, highlights, badges, "Soon" pills). Main marketing page keeps its fixed `brand-*` gold palette (intentionally untouched).
+  - **Dark mode** — `next-themes` `ThemeProvider` wired up (was installed, unused) + `ThemeToggle` in the dashboard header; full green/gold dark palette.
+  - **Marketing landing v2** — `Storefront.tsx` redesign: full feature set, AI section (chatbot menu import), founding offer, 16-row competitor comparison table, FAQ; overclaims removed (delivery/native-app → "on the way"); email-live / SMS-soon status.
+  - **SEO/AI discoverability** — `index.html` JSON-LD (Organization/SoftwareApplication+Offers/FAQPage), `public/llms.txt`, richer meta + canonical, sitemap.
+  - **Merchant branding consistent on customer surfaces** — `useStorefrontSettings(org)` applied to RetailStorefront (+logo), OrderStatus, ReservationBooking (was storefront-only); `marketplaceApi.getById` returns `settings`.
+- **Open polish (non-blocking):** founding-offer **duration** wording (1yr vs lifetime — see 6.2); a real **1200×630 `og-image.png`** (og:image currently falls back to `/icon-512.png`); deeper per-page polish (onboarding, empty/loading states) if desired.
+- **Candidate areas (future, refine with Pawit):** onboarding flow, empty states, loading/skeleton states, micro-interactions, mobile polish.
 
 ---
 
