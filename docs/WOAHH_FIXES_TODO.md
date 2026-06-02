@@ -51,6 +51,19 @@ See `CLAUDE.md` for full architecture details.
 - **OPEN decisions:** **how many** sign-ups (the "few" / N); **1 year vs lifetime** for the free subscription; **how long** commission stays waived (temporary window length); whether this supersedes or stacks with the existing "first 20–25 permanent zero-commission" line.
 - **Note:** mostly **dormant until Stripe billing is integrated** (CLAUDE.md: billing not started). Can record the perk flags now; enforcement lands with billing.
 
+#### 6.4 Restrict customer details to OWNER + MANAGER only (block service + kitchen) — ⬜ Open
+
+- **Why:** Service staff should not be able to view customer PII (name, email, phone, addresses, birthday, loyalty). Only the owner and managers should see CRM/customer details.
+- **Status of each layer (audited 2026-06-02):**
+  - **Client — ✅ already correct, no change:** `service`/`kitchen` lack the `customers` permission (`repo/src/hooks/useRole.ts:124-134`), the sidebar hides Customers for them (`AppSidebar.tsx:79,112-114`), and `RouteGuard.tsx:19` blocks `/business/dashboard/customers`.
+  - **Server (RLS) — ❌ the real gap:** the `customers` table still has a `"Staff view customers"` SELECT policy (migration `20260427063540…sql:167-170`) granting SELECT to **any** staff via `is_staff_of_org()`. A service-role token can therefore read customer rows directly over the REST/PostgREST API, bypassing the hidden UI.
+- **Fix (new migration — do NOT edit the old migration file):**
+  1. `DROP POLICY "Staff view customers" ON public.customers;` — removes service/kitchen's direct read path.
+  2. Keep `"Managers manage customers"` (`…sql:172-180`) — manager-only ALL access.
+  3. **⚠️ Verify the owner path:** the older `"Org members manage customers"` policy (`20260418045819…sql:49-51`) is `FOR ALL USING (organization_id = current_org_id())`. Since `current_org_id()` resolves a **staff** member's org too (priority owner=0, staff=1), this policy may *still* let service staff SELECT/UPDATE/DELETE customers. Confirm: if so, tighten it to **owner-only** (e.g. `EXISTS (SELECT 1 FROM organizations o WHERE o.id = customers.organization_id AND o.owner_id = auth.uid())`) so only owner + manager remain. Dropping `"Staff view customers"` alone is **not** sufficient if `current_org_id()` covers staff.
+- **Verify after SQL:** sign in as a `service` staff member, hit the `customers` table directly with that token (raw REST `select=*`) → **0 rows**; manager + owner still read/write normally; the Customers page is unreachable for service (already true).
+- **Scope:** one migration + a browser/REST verification. No frontend change needed. Build directly in `repo/`. Relates to the staff-PII security work already done for `organizations` (`get_member_org` masking).
+
 #### 6.3 UI uplift — ⬜ Open (under-specified, scope TBD)
 
 - **Why:** Make the app look and feel more premium / modern — a visual + UX polish pass.
