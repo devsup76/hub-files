@@ -64,6 +64,15 @@ See `CLAUDE.md` for full architecture details.
 - **Verify after SQL:** sign in as a `service` staff member, hit the `customers` table directly with that token (raw REST `select=*`) → **0 rows**; manager + owner still read/write normally; the Customers page is unreachable for service (already true).
 - **Scope:** one migration + a browser/REST verification. No frontend change needed. Build directly in `repo/`. Relates to the staff-PII security work already done for `organizations` (`get_member_org` masking).
 
+#### 6.5 Franchise / multi-location — ⬜ Open (PLANNED, build later post-onboarding)
+
+- **Why:** Pricing advertises multi-location ("up to 3/7/unlimited"), but no franchise/location concept exists in the product yet. Brand owners want to manage several restaurants together (combined insights, org-switcher, per-location staff) and individually, with customer-facing brand unity.
+- **Status:** Full architecture designed + approved 2026-06-02 — **see `docs/FRANCHISE_ARCHITECTURE.md`**. Strictly **additive** (only ADD tables/columns/policies; never re-key/drop) per founder requirement — safe to build after real merchants are onboarded.
+- **Model (short):** franchise layer sits *above* organizations; each location stays its own org. Cross-org access by **membership** (`franchise_members` overlay), not ownership — so `organizations.owner_id UNIQUE` and `staff_accounts.user_id UNIQUE` are NOT relaxed. New tables `franchise_groups` + nullable `organizations.franchise_id` (NULL = standalone, unaffected). RLS via additive grant-only SELECT policies + `franchise_org_ids()` helper. Reuses existing `growthhub_profiles`/`merchant_connections` for shared loyalty + franchise-wide campaigns.
+- **Decisions locked:** read-only oversight first (central editing later, `can_write` reserved); loyalty configurable per brand; campaigns franchise-wide + per-location; staff — manager can be franchise-wide or store-limited (configurable), service/kitchen per-store only.
+- **One non-additive item:** `handle_new_user_org()` needs a `kind='franchise'` skip branch for pure franchise-admin accounts (function change, no data loss).
+- **Rollout:** 10 additive stages in the doc, each independently shippable. Start with schema-only (zero behavior change).
+
 #### 6.3 UI uplift — ⬜ Open (under-specified, scope TBD)
 
 - **Why:** Make the app look and feel more premium / modern — a visual + UX polish pass.
