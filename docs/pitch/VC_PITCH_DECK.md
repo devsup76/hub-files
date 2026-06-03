@@ -242,12 +242,12 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 **Built by a lean founding team.**
 
-- **Pawit Singh — Founder & CEO** — product, engineering & GTM. **[TBD: background]**
-- **Sid Sethia — Co-founder** — **[TBD: role + background]**
-- **Adithya Buddhavarapu** — Co-founder — **[TBD: role + background]**
+- **Pawit Singh — Founder & CEO** — product, engineering & GTM
+- **Sid Sethia — Co-founder** — engineering & finance
+- **Adithya Buddhavarapu — Co-founder** — engineering & marketing
 - Advisors / charity partners — **[TBD]**
 
-*Speaker note:* Investors back the team as much as the product. Emphasize the depth shipped lean (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) as evidence of execution velocity. Fill backgrounds + roles + any hospitality credibility.
+*Speaker note:* Three-person founding team, all hands-on technical (three engineers) with finance and marketing ownership split across the co-founders — explains the execution velocity (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) built lean. Add short backgrounds + any hospitality credibility if available.
 
 ---
 
