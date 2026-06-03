@@ -115,7 +115,75 @@ Other phase-2 items: AI invoice/delivery OCR receiving (reuse the `ai-menu-impor
 
 ---
 
-## 8. What is intentionally NOT in v1
+## 8. Plate Economics & Margin Radar — the flagship (phase 3)
+
+> **Founder idea, 2026-06-03 — "this could be the biggest thing."** A system that knows the true cost of every plate *as ingredient prices move*, and tells the merchant **what to do about it**: when to run a sale, when *not* to, what to push, what to quietly pull. Potatoes are $15/case today and $5 next week — that swing should change what's on special. **This is the part no competitor does.**
+
+### 8.1 The gap we exploit
+
+Today's cost tools — **Jelly, MarginEdge ("Price Movers & Alerts"), MarketMan, xtraCHEF/Toast, Apicbase, Supy, meez, cogs-well** — all do the same thing: scan a supplier invoice → structured line items (SKU, qty, price) → update each recipe's cost card → recompute gross-profit % → **send a "this price changed" alert**. Volatility tracking = "here's what happened over the last 90 days." ([MarginEdge](https://www.marginedge.com/food-cost), [Jelly](https://blog.getjelly.co.uk/ingredient-price-alert-tools-restaurants/))
+
+They **report**. They don't **decide**. None of them close the loop to a *menu action*: "your potato dishes just fell below target margin — here's the sale to run instead, and here's the one to pull." That decision layer — cost movement → margin impact → **recommended action**, forecast-ahead and in plain English — is the wedge, exactly like the self-learning recipe loop (§7). We already hold the two assets that make it possible: the **recipe BOM** (`recipe_components`, which links every ingredient price move to the exact dishes it hits) and the **sales mix** (`orders.line_items`).
+
+### 8.2 The concepts (grounded)
+
+- **Plate cost** — the food cost of one serving = Σ(recipe component qty × that ingredient's current unit cost). We can compute this per dish *the moment a cost changes* because we have the BOM. ([touchBistro](https://www.touchbistro.com/blog/menu-pricing-how-to-calculate-food-cost-percentage/))
+- **Food cost %** = plate cost ÷ menu price. Healthy is ~25–35%. ([meez](https://www.getmeez.com/blog/food-cost-percentage-vs-contribution-margin))
+- **Contribution margin (CM)** = menu price − plate cost — the dollars that actually land in the till per dish. The real lever is **high CM**, not just low food-cost %. ([Tenzo](https://www.gotenzo.com/resources/insight/the-secret-to-menu-engineering-contribution-margins/))
+- **Menu-engineering matrix** — classify each dish by CM × popularity: **Stars** (high CM, popular), **Plowhorses** (popular, low CM), **Puzzles** (high CM, unpopular), **Dogs** (low CM, unpopular). We can plot this automatically: CM from our cost data, popularity from sales mix. ([meez menu engineering](https://www.getmeez.com/blog/the-ultimate-guide-to-menu-engineering), [Lightspeed](https://www.lightspeedhq.com/blog/menu-engineering/))
+- **Price elasticity** — how much demand moves when price moves. Discount *elastic* items (more units + traffic); hold/raise *inelastic* ones. We learn each dish's elasticity from our own price/promo → sales history. ([Revionics](https://revionics.com/blog/profitable-pricing-decisions-using-price-elasticity-of-demand), [NetSuite dynamic pricing](https://www.netsuite.com/portal/resource/articles/business-strategy/dynamic-pricing.shtml))
+
+### 8.3 What the system does
+
+1. **Live plate cost & margin per dish.** Recompute every dish's plate cost, food-cost % and CM whenever an ingredient cost changes. The inventory page already knows the recipe; this just adds the money layer.
+2. **Cost-spike → margin-impact alerts, mapped to dishes.** Because of the BOM we go from "potatoes +180% this week" straight to *"your Loaded Fries CM dropped $9.20 → $4.10 (food cost 31% → 58%); 3 other dishes affected."* No competitor connects the price to the *plate* automatically across the menu.
+3. **Auto menu-engineering quadrant.** Stars / Plowhorses / Puzzles / Dogs, recomputed continuously from CM (cost data) × popularity (sales mix). Tells the owner what to feature, fix, reprice, or cut.
+4. **When-to-run-a-sale (and when NOT) — the headline.** Combine *current + forecast ingredient cost* × *dish CM* × *learned elasticity*:
+   - **Cheap input + elastic, popular dish → promote it.** "Potatoes are at a 6-month low — push Loaded Fries this weekend; even at 20% off you make more per plate *and* drive traffic."
+   - **Spiking input → pull or reprice, don't feature.** "Tomatoes +160% — quietly drop the Caprese from specials or nudge it +$2; promoting it now would sell your worst-margin plate."
+   - **Inelastic + healthy margin → leave alone.** Discounting it just gives away margin.
+5. **Forecast, so decisions are proactive.** Seasonality + supplier-order reading + external feeds predict next week's costs (ARIMA for seasonality, LSTM-class models for ag prices — both well-established for commodities). "Avocado climbs into summer — lock supply now or rotate the guac off the hero spot." ([USDA ERS season-average forecasts](https://www.ers.usda.gov/data-products/season-average-price-forecasts), [ag price deep-learning](https://www.nature.com/articles/s41598-025-05103-z))
+6. **Demand-side trends (the far edge).** Align the *cheap-input* window with a *high-demand* window — seasonal/search/social signals — so promos land when an item is both cheap to make and trending.
+
+### 8.4 Data inputs
+
+**Internal (we already own — free):**
+- `recipe_components` — the BOM; the link from any ingredient price move to the exact dishes. **The asset competitors charge for, we already have.**
+- `ingredients.cost_per_unit_cents` — current unit cost (already in the v1 schema).
+- `ingredient_movements` (`source='order'`/`import`) — every restock can carry the **purchase unit cost**, building a per-ingredient **price history** automatically (add a `unit_cost_cents` column to movements in phase 3).
+- `orders.line_items` + `completed_at` + `promo_codes` — sales mix and price/promo → sales response = the **elasticity** training set.
+
+**AI-captured:**
+- **Invoice / supplier-order OCR** (reuse the `ai-menu-import` vision pipeline): photograph or forward a supplier invoice → line-item prices flow straight into the ingredient price history. *This is how prices get into the system with zero manual entry* — and it doubles as the receiving/restock flow from §7's phase-2 list. Reading **supplier order confirmation emails** is the same pipeline.
+- **LLM as the translator**: turn the numbers into one plain-English recommendation a busy owner acts on in 5 seconds ("Run a fries promo this weekend; pull the caprese").
+
+**External price feeds (layer in later; mostly subscription, few open APIs):**
+- **AU (woahh is Brisbane-based):** [Brisbane Markets Price Report / Brismark](https://brisbanemarketspricereport.com.au/), [Freshlogic WPTI](https://freshlogic.com.au/services/weekly-pricing/), [DAFF/ABARES weekly horticulture prices](https://www.agriculture.gov.au/abares/data/weekly-commodity-price-update/australian-horticulture-prices), Ausmarket national report.
+- **Global:** [FAO Food Price Index](https://www.fao.org/worldfoodsituation/foodpricesindex/en), [USDA ERS](https://www.ers.usda.gov/data-products), commodity APIs ([commoditypriceapi](https://commoditypriceapi.com/), [APIFarmer](https://apifarmer.com/agriculture-commodity-prices-api/)).
+- **Cold-start without any feed:** the invoice-derived internal price history alone (what *this* merchant actually paid over time) already powers alerts + recommendations. External feeds add forecasting and benchmarking; start internal, layer external.
+
+### 8.5 Why the v1 + phase-2 foundation already supports it
+
+- The **BOM** (`recipe_components`) and **per-ingredient cost** (`ingredients.cost_per_unit_cents`) ship in v1 — plate cost is computable today.
+- The **self-learning recipe loop (§7)** makes plate costs *accurate* even when recipes were rough estimates — cost intelligence is only as good as the quantities, and §7 keeps them honest.
+- **Additive phase-3 schema only** (no rewrite): `ingredient_movements.unit_cost_cents` (purchase price history), `products.target_food_cost_pct`, an `ingredient ↔ commodity-symbol` map for forecasts, and a `dish_margin_snapshots` (or computed view) for the quadrant/alerts.
+
+### 8.6 Phasing
+
+- **3a — Plate economics:** per-dish plate cost, food-cost %, CM from current ingredient costs; the auto menu-engineering quadrant (CM × sales mix). Pure read/compute over existing data.
+- **3b — Cost movement intelligence:** invoice OCR → ingredient price history → cost-spike → margin-impact alerts mapped to dishes.
+- **3c — Recommendations (the flagship):** forecast (seasonality + supplier orders + AU feeds) + learned elasticity → "run / don't run this sale," "reprice," "86 for now," surfaced in plain English by the LLM.
+- **3d — Demand-side:** trend signals so promos hit the cheap-input × high-demand sweet spot; optional automated dynamic pricing / scheduled promos.
+
+### 8.7 Positioning
+
+> Incumbents tell you *the price went up.* Woahh tells you *what to cook, what to push, and what to put on special this week to make the most money* — and gives half of what it earns to charity. It's the difference between a **cost report** and a **profit copilot**.
+
+This compounds with everything else: the same BOM that auto-depletes stock (v1) and self-calibrates recipes (§7) also prices every plate and times every promotion (§8). One data spine, three escalating layers of intelligence — none of which the incumbents have.
+
+---
+
+## 9. What is intentionally NOT in v1
 
 - **Extras (`added_extras`) and combos do not deplete.** Documented to avoid a confusing asymmetric ledger (a removed ingredient subtracts but an added extra wouldn't). Phase 2 maps extras → ingredients.
 - **Per-dish recipe editor inside the Menu screen** — skipped for now to avoid risk in that large file; recipes are managed via the AI builder + inventory page.
@@ -124,7 +192,7 @@ Other phase-2 items: AI invoice/delivery OCR receiving (reuse the `ai-menu-impor
 
 ---
 
-## 9. Verification done (demo, Playwright)
+## 10. Verification done (demo, Playwright)
 
 All green in `?demo=owner` (restaurant Bella's Bistro):
 - Inventory page renders the seeded ingredients.
@@ -137,7 +205,7 @@ Build is green (`npm run build`). (`@stripe/stripe-js` had to be `npm install`ed
 
 ---
 
-## 10. How to go live (next phase)
+## 11. How to go live (next phase)
 
 1. **Merge** `feat/restaurant-inventory` → `main` (Cloudflare rebuilds prod frontend from `main`).
 2. **Run the migration** `supabase/migrations/20260603100000_restaurant_ingredient_inventory.sql` against the live project (`pmnyhbhtkcfoozkinieo`) — paste in the Supabase SQL editor, or `supabase db push` with an access token.
@@ -151,7 +219,7 @@ Build is green (`npm run build`). (`@stripe/stripe-js` had to be `npm install`ed
 
 ---
 
-## 11. Key files
+## 12. Key files
 
 | File | Purpose |
 |---|---|
