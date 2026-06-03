@@ -4,7 +4,7 @@
 
 > **Repositioned 2026-06-03:** the **consumer `/eat` marketplace is no longer a pitch pillar** — the story is now the **all-in-one operating system that's *smarter* (AI inventory + margin intelligence) and *gives back***, beating the point-solution stack (**Toast, Square, Bopple, me&u, MarketMan/MarginEdge**) rather than the delivery aggregators (Uber Eats / DoorDash). Tier names (Solo/Marketplace/Growth) are product SKUs and unchanged.
 
-> Figures use the **locked model (BUSINESS_STRATEGY.md):** 3% merchant + 1% customer = 4% gross online → 2% charity / 2% woahh; **$15k GMV/merchant** base; Growth tier **$150**; charity headline = **~2% of every online order + 50% of every subscription**. Team, ask ($1–1.5M seed), TAM (~54k AU restaurants), and traction (pre-revenue) are now filled — only a **contact email**, **named charity partner**, and optional **founder backgrounds** remain for the founders to add.
+> Figures use the **locked model (BUSINESS_STRATEGY.md):** 3% merchant + 1% customer = 4% gross online → 2% charity / 2% woahh; **$15k GMV/merchant** base; Growth tier **$150**; charity headline = **~2% of every online order + 50% of every subscription**. Team, ask ($1–1.5M seed), TAM (~54k AU restaurants), traction (pre-revenue), and contact (adminwoahhapp@proton.me) are filled. Giving is to charity generically (no named partner yet). Only optional **founder backgrounds** remain.
 
 ---
 
@@ -18,7 +18,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 - Brand: **Woahh** (UI) · `woahh.app`
 - Beachhead: independent restaurants, Brisbane → Sydney / Melbourne / Gold Coast
-- Contact: Pawit Singh, Founder & CEO · woahh.app · **[add preferred contact email]**
+- Contact: Pawit Singh, Founder & CEO · adminwoahhapp@proton.me · woahh.app
 
 *Speaker note:* Open with the one-liner, then the hook: "A restaurant today pays for a POS, a separate online-ordering tool, a separate inventory tool, and a separate marketing tool — four bills, four logins, none of them talk, and none of them are smart. We replace the whole stack with one system that actually thinks — it learns your kitchen and tells you what to put on special — for the price of a coffee a day, and routes giving through the platform itself."
 
@@ -250,7 +250,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - **Pawit Singh — Founder & CEO** — product, engineering & GTM
 - **Sid Sethia — Co-founder** — engineering & finance
 - **Adithya Buddhavarapu — Co-founder** — engineering & marketing
-- Advisors & registered charity partner — being finalised.
+- Advisors — in progress. (Giving model is live; a specific charity partner will be named at launch.)
 
 *Speaker note:* Three-person, all-technical founding team — computer science students who shipped a full platform (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) *while studying*, with finance and marketing ownership split across the co-founders. Frame the youth as the edge: this is the execution velocity and AI-native instinct of builders who grew up with these tools — not a liability. Add any hackathon wins / prior projects / hospitality credibility if available.
 
@@ -313,7 +313,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - **Charity headline** — locked: **~2% of every online order + 50% of every subscription** (50/50 split). The 0.1% GMV floor is the *separate* voluntary-rate default.
 - **Growth tier price** — **$150** ($199 references removed everywhere).
 - **Founding offer** — **0% commission + 12 months free** (matches the live landing; reconcile the open 1-year-vs-lifetime note in WOAHH_FIXES_TODO 6.2).
-- **Filled 2026-06-03:** team (Pawit/Sid/Adithya, all CS students), ask ($1–1.5M seed + allocation), TAM (~54k AU restaurants → ~$250M/yr), traction (pre-revenue, cohort signing). **Still founder-to-add:** a contact email, the named charity partner, and one-line founder backgrounds.
+- **Filled 2026-06-03:** team (Pawit/Sid/Adithya, all CS students), ask ($1–1.5M seed + allocation), TAM (~54k AU restaurants → ~$250M/yr), traction (pre-revenue, cohort signing), contact (adminwoahhapp@proton.me). **Still optional:** one-line founder backgrounds. Giving stated to charity generically — no named partner yet.
 - Do not overclaim: AI copilots = **live**; smart inventory = **built, next-phase**; self-learning + margin radar = **roadmap (designed, not built)**; commission = "policy/future, app fee currently 0"; no POS/billing-UI/retail/delivery yet.
 
 ---
