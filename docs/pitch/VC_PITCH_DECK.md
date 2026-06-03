@@ -244,10 +244,10 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 - **Pawit Singh — Founder & CEO** — product, engineering & GTM. **[TBD: background]**
 - **Sid Sethia — Co-founder** — **[TBD: role + background]**
-- **Aditya [surname — TBD]** — Co-founder — **[TBD: role + background]**
+- **Adithya Buddhavarapu** — Co-founder — **[TBD: role + background]**
 - Advisors / charity partners — **[TBD]**
 
-*Speaker note:* Investors back the team as much as the product. Emphasize the depth shipped lean (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) as evidence of execution velocity. Fill backgrounds + roles + Aditya's surname + any hospitality credibility. **[Aditya's surname not found in any doc — founder to confirm spelling.]**
+*Speaker note:* Investors back the team as much as the product. Emphasize the depth shipped lean (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) as evidence of execution velocity. Fill backgrounds + roles + any hospitality credibility.
 
 ---
 
