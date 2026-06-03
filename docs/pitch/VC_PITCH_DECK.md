@@ -79,7 +79,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - **Marketing:** per-merchant SMS numbers + `{slug}@campaigns.woahh.app` email; scheduling, open/click tracking, tier caps + top-ups.
 - **Storefront:** branded online-ordering site, reviews, ratings, Impact badge.
 - **Reservations:** booking widget, table mgmt, timezone-aware slots, deposit config, 24h+2h reminders.
-- **AI copilots:** menu import (Sonnet vision), campaign copy + decline reasons (Sonnet 4.6).
+- **AI copilots (live in-app):** menu import (photo/PDF vision), campaign copy + decline reasons.
 
 *Speaker note:* Lead with a live demo or screenshot of the KDS and the menu-import-from-photo flow — these land hardest. Be precise on status: dashboard/KDS/orders/menu/reservations/storefront/portal/demo are live; AI is live (merged + deployed 2026-06-02). The inventory engine (next slide) is built and next-phase.
 
@@ -206,14 +206,14 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - Hardened multi-tenant RLS, PII masking, compliance (ABN checksum, Spam Act consent/unsubscribe), per-merchant email identity.
 
 **Live (merged + deployed 2026-06-02):**
-- AI features (`ai-menu-copilot`, `ai-campaign`, `ai-decline-reasons`) — real edge functions on Claude Sonnet 4.6; browser-verified, merged + deployed.
+- AI features (`ai-menu-copilot`, `ai-campaign`, `ai-decline-reasons`) — real in-app AI edge functions; browser-verified, merged + deployed.
 
 **Built, next-phase launch:**
 - **Smart inventory** (AI recipe builder, auto-deplete on completion, auto-86 to storefront, conversational stock AI) — built + demo-verified on branch `feat/restaurant-inventory`.
 
 **Honest gaps (NOT overclaimed):**
 - No production subscription-billing UI · no POS/terminal payments · retail vertical hidden · delivery courier code built but flagged off · self-learning + margin-radar are roadmap (designed, not built) · receipts/PWA/GDPR flows not built.
-- Status: **pre-revenue** — founding cohort being signed; first paying merchants launch next phase.
+- Status: **pre-revenue — in the founding stage, finding & signing our first founding merchants (Brisbane) now**; first paying merchants launch next phase.
 
 *Speaker note:* Credibility comes from honesty. Lead with what's verified, separate "built / next-phase," and name the gaps before an investor finds them. The SMS end-to-end verification and the demo-verified inventory engine are real, dated proof points.
 
