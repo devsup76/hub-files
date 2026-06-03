@@ -87,8 +87,8 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 **Inventory that runs — and thinks — for you. This is what no competitor has.**
 
 **Tier 1 — it runs itself (built, next-phase launch):**
-- AI reads your menu and **drafts every recipe** — the setup step that makes MarketMan/xtraCHEF users quit.
-- Stock **auto-depletes as orders complete**; an ingredient hitting zero **auto-pulls the dish** from your storefront. No clipboards.
+- AI reads your menu and **estimates how much of each ingredient a dish uses** — *"this pizza ≈ 150g mozzarella, 100ml sauce, 5g basil"* — which the owner **confirms in one click** (it's an estimate they approve, not a guess at their secret recipe). This hand-entry is the setup step that makes MarketMan/xtraCHEF users quit.
+- Stock then **auto-depletes as orders complete**; an ingredient hitting zero **auto-pulls the dish** from your storefront. No clipboards.
 
 **Tier 2 — it learns your kitchen (roadmap):**
 - A few stock-takes teach it how much each dish really uses → it **predicts** your stock and cuts manual counting **~75%**. *No incumbent closes this loop.*

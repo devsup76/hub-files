@@ -14,13 +14,13 @@
 > "Woahh doesn't just track your stock — it learns your kitchen and tells you what to put on special."
 
 **~30-second script (spoken):**
-> "Every restaurant wastes hours on paper stock-takes — and still has no idea which dish actually makes money when prices swing. Woahh fixes both. You snap a photo of your menu, AI builds your recipes, and from then on your stock depletes automatically every time you sell a plate — run out of an ingredient and it pulls the dish from your storefront on its own. Then it goes further: it learns how much each dish really uses, so it can *predict* your stock and you stop counting by hand. And the big one — it knows the live cost of every plate as ingredient prices move, so when potatoes are cheap it tells you to run the fries, and when tomatoes spike it tells you to pull the caprese. Most tools tell you a price went up. Woahh tells you what to cook, what to push, and what to put on special — and gives half of what it earns to charity."
+> "Every restaurant wastes hours on paper stock-takes — and still has no idea which dish actually makes money when prices swing. Woahh fixes both. You snap a photo of your menu, and AI estimates how much of each ingredient every dish uses — this pizza, about 150 grams of mozzarella and 100 mls of sauce — you just confirm it. From then on your stock depletes automatically every time you sell a plate, and if you run out of an ingredient it pulls the dish from your storefront on its own. Then it goes further: it learns how much each dish *really* uses from your actual stock-takes, so it can predict your stock and you stop counting by hand. And the big one — it knows the live cost of every plate as ingredient prices move, so when potatoes are cheap it tells you to run the fries, and when tomatoes spike it tells you to pull the caprese. Most tools tell you a price went up. Woahh tells you what to cook, what to push, and what to put on special — and gives half of what it earns to charity."
 
 **~15-second cut (if you need it tighter):**
-> "Woahh builds your recipes with AI, depletes your stock automatically as you sell, and tells you exactly when to run a sale — like pushing the fries when potatoes are cheap. It's a profit copilot for your kitchen, not just an inventory list. And half of what we earn goes to charity."
+> "Snap your menu and AI sets up your recipes — this pizza, about 150g of mozzarella — you just confirm. Stock then depletes automatically as you sell, and it tells you exactly when to run a sale, like pushing the fries when potatoes are cheap. A profit copilot for your kitchen, not just an inventory list. And half of what we earn goes to charity."
 
 **On-screen beats (b-roll suggestions):**
-1. Snap menu photo → recipes auto-fill
+1. Snap menu photo → AI fills in "Margherita: 150g mozzarella · 100ml sauce · 5g basil" → owner taps Confirm
 2. Order completes → ingredient bars tick down
 3. Ingredient hits zero → dish flips to "temporarily sold out" on the storefront
 4. Alert card: *"Potatoes at a 6-month low — push Loaded Fries this weekend."*
@@ -37,7 +37,7 @@
 **Body (3 tiers, shown as an escalating stack):**
 
 1. **It runs itself (built).**
-   - AI reads your menu and drafts every recipe — the setup step that makes competitors quit.
+   - AI reads your menu and estimates how much of each ingredient a dish uses — *"this pizza ≈ 150g mozzarella, 100ml sauce"* — which you confirm in one click. The hand-entry that makes competitors quit, done for you.
    - Stock auto-depletes as orders complete; sell-outs auto-pull the dish from your storefront. No clipboards.
 
 2. **It learns your kitchen (roadmap).**
