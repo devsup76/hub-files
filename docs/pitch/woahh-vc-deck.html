@@ -47,6 +47,7 @@ th{font-family:"Space Grotesk";font-weight:600;color:var(--muted);font-size:12.5
 td.c,th.c{text-align:center}
 tr.us td{background:hsl(42 70% 95%);font-weight:600;color:var(--ink)}
 tr.us td:first-child{color:var(--gold-deep);font-weight:700}
+td.wc,th.wc{background:hsl(42 70% 94%)} th.wc{color:var(--gold-deep);font-weight:700} td.wc{color:var(--ink);font-weight:700}
 .yes{color:var(--good);font-weight:800} .no{color:hsl(0 0% 70%);font-weight:700}
 /* bar chart */
 .chart{display:flex;align-items:flex-end;gap:clamp(20px,5vw,70px);height:46vh;margin-top:30px;padding:0 10px}
@@ -248,16 +249,21 @@ tr.us td:first-child{color:var(--gold-deep);font-weight:700}
 <!-- 13 COMPETITION -->
 <section class="slide cream">
   <div class="kick">Competition</div>
-  <h2>The only row that <span class="gold">runs the restaurant, thinks about margin, and gives.</span></h2>
-  <table>
-    <tr><th></th><th class="c">Back-of-house</th><th class="c">Own-brand ordering</th><th class="c">AI margin intelligence</th><th class="c">CRM / marketing</th><th class="c">Donates from sales</th><th>Cost</th></tr>
-    <tr class="us"><td>Woahh</td><td class="c yes">Yes</td><td class="c yes">Yes</td><td class="c yes">Yes · recommends</td><td class="c yes">Yes</td><td class="c yes">Yes</td><td>Flat $49–150/mo</td></tr>
-    <tr><td>Toast</td><td class="c yes">Yes</td><td class="c">Add-on</td><td class="c no">Reports only</td><td class="c">Add-ons</td><td class="c no">No</td><td>Hardware + fees</td></tr>
-    <tr><td>Square</td><td class="c yes">Yes</td><td class="c">Add-on</td><td class="c no">Reports only</td><td class="c">Add-ons</td><td class="c no">No</td><td>~2.2% + $165/mo</td></tr>
-    <tr><td>Bopple / me&amp;u</td><td class="c no">No</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">Partial</td><td class="c no">No</td><td>SaaS + per-order</td></tr>
-    <tr><td>MarketMan / MarginEdge</td><td class="c no">No</td><td class="c no">No</td><td class="c no">Reports only</td><td class="c no">No</td><td class="c no">No</td><td>SaaS fee</td></tr>
+  <h2 style="font-size:clamp(26px,3.6vw,44px)">One system vs a <span class="gold">stack of point tools.</span></h2>
+  <table style="font-size:clamp(11px,1.12vw,14px);margin-top:16px">
+    <tr><th></th><th class="c wc">Woahh</th><th class="c">Toast</th><th class="c">Square</th><th class="c">Bopple</th><th class="c">me&amp;u</th><th class="c">MarketMan</th></tr>
+    <tr><td>Full back-of-house (orders · menu · KDS)</td><td class="c wc">Yes</td><td class="c">Yes</td><td class="c">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+    <tr><td>Own-brand online ordering + storefront</td><td class="c wc">Yes</td><td class="c">Add-on</td><td class="c">Add-on</td><td class="c">Yes</td><td class="c">QR only</td><td class="c no">No</td></tr>
+    <tr><td>Reservations + table management</td><td class="c wc">Yes</td><td class="c">Add-on</td><td class="c">Add-on</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+    <tr><td>CRM + loyalty + marketing</td><td class="c wc">Yes</td><td class="c">Add-ons</td><td class="c">Add-ons</td><td class="c">Partial</td><td class="c no">No</td><td class="c no">No</td></tr>
+    <tr><td>Ingredient inventory + auto-deplete</td><td class="c wc">Yes</td><td class="c">Add-on</td><td class="c">Basic</td><td class="c no">No</td><td class="c no">No</td><td class="c">Yes</td></tr>
+    <tr><td><b>AI margin intelligence — when to run a sale</b></td><td class="c wc">Yes · recommends</td><td class="c no">Reports only</td><td class="c no">Reports only</td><td class="c no">No</td><td class="c no">No</td><td class="c no">Reports only</td></tr>
+    <tr><td>AI menu import &amp; copywriting</td><td class="c wc">Yes · live</td><td class="c no">Racing</td><td class="c no">Racing</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+    <tr><td>Donates from every sale</td><td class="c wc">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+    <tr><td>No locked-in hardware (any browser)</td><td class="c wc">Yes</td><td class="c no">No</td><td class="c">Partial</td><td class="c">Yes</td><td class="c">Yes</td><td class="c">Yes</td></tr>
+    <tr><td>Flat all-in price (no per-feature add-ons)</td><td class="c wc">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c">Per-order</td><td class="c">Per-order</td><td class="c">SaaS</td></tr>
   </table>
-  <p class="lead" style="margin-top:18px">Everyone else is blank — or "reports only" — in the <b class="gold">margin-intelligence</b> column. No one else gives.</p>
+  <p class="lead" style="margin-top:14px;font-size:clamp(13px,1.4vw,17px)">Competitors sell these as <b>separate paid add-ons</b> — and none have margin intelligence or give back. <span class="gold">Woahh is one bill that does it all, and thinks.</span> <span style="font-size:11px;color:hsl(150 8% 55%)">Standard offerings; names are trademarks of their owners.</span></p>
 </section>
 
 <!-- 14 GTM -->
@@ -298,7 +304,19 @@ tr.us td:first-child{color:var(--gold-deep);font-weight:700}
   <p class="lead" style="margin-top:22px;color:hsl(42 30% 86%)">One smart OS · one giving ledger — across every local vertical. The inventory spine is the connective tissue; each vertical reuses ~80% of what's shipped.</p>
 </section>
 
-<!-- 17 ASK -->
+<!-- 17 TEAM -->
+<section class="slide cream">
+  <div class="kick">Team</div>
+  <h2>Built by a <span class="gold">lean founding team.</span></h2>
+  <div class="grid g3">
+    <div class="card"><div class="big" style="font-size:23px">Pawit Singh</div><div class="lbl">Founder &amp; CEO — product, engineering &amp; GTM. <span class="tbd">[background]</span></div></div>
+    <div class="card"><div class="big" style="font-size:23px">Sid Sethia</div><div class="lbl">Co-founder — <span class="tbd">[role + background]</span></div></div>
+    <div class="card"><div class="big" style="font-size:23px">Aditya <span class="tbd">[surname]</span></div><div class="lbl">Co-founder — <span class="tbd">[role + background]</span></div></div>
+  </div>
+  <p class="lead" style="margin-top:22px">Shipped 27 feature pages, AI copilots, a smart-inventory engine, and hardened multi-tenancy — proof of execution velocity. <span class="tbd">[advisors · charity partners to add]</span></p>
+</section>
+
+<!-- 18 ASK -->
 <section class="slide cream">
   <div class="kick">The ask</div>
   <h2>Raising <span class="tbd">[amount]</span> to win restaurants — decisively.</h2>

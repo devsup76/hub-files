@@ -171,21 +171,25 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 ## Slide 11 — Competition
 
-**We're the only system that runs the restaurant, thinks about its margins, and gives from every sale.**
+**One system vs a stack of point tools — and the only one that thinks about margin and gives.** (Feature-by-feature, same axes as the website comparison; aggregators excluded — different category.)
 
-| Player | Full back-of-house (orders/KDS/menu) | Own-brand online ordering | AI inventory + **margin intelligence** | CRM / loyalty / marketing | Donates from sales | Cost shape |
+| Capability | **Woahh** | Toast | Square | Bopple | me&u | MarketMan / MarginEdge |
 |---|---|---|---|---|---|---|
-| **woahh** | **Yes (full)** | **Yes** | **Yes — recommends actions** | **Yes (built-in)** | **Yes (structural)** | **Flat $49–$150/mo** |
-| Toast | Yes | Add-on | Basic stock; **reports only** | Add-ons | No | Hardware + fees + add-ons |
-| Square | Yes | Add-on | Basic stock; **reports only** | Add-ons | No | ~2.2% + ~$165/mo + add-ons |
-| Bopple | No (ordering only) | Yes | No | Partial | No | SaaS + per-order |
-| me&u | No (QR order & pay) | QR only | No | No | No | Per-order fee |
-| MarketMan / MarginEdge | No (not a POS) | No | Inventory cost **reporting only** | No | No | SaaS fee |
+| Full back-of-house (orders · menu · KDS) | **Yes** | Yes | Yes | No | No | No |
+| Own-brand online ordering + storefront | **Yes** | Add-on | Add-on | Yes | QR only | No |
+| Reservations + table management | **Yes** | Add-on | Add-on | No | No | No |
+| CRM + loyalty + marketing | **Yes** | Add-ons | Add-ons | Partial | No | No |
+| Ingredient inventory + auto-deplete | **Yes** | Add-on | Basic | No | No | Yes |
+| **AI margin intelligence — when to run a sale** | **Yes · recommends** | Reports only | Reports only | No | No | Reports only |
+| AI menu import & copywriting | **Yes · live** | Racing | Racing | No | No | No |
+| Donates from every sale | **Yes** | No | No | No | No | No |
+| No locked-in hardware (any browser) | **Yes** | No | Partial | Yes | Yes | Yes |
+| Flat all-in price (no per-feature add-ons) | **Yes** | No | No | Per-order | Per-order | SaaS |
 
-- **Only woahh is "Yes" across run-the-restaurant + margin intelligence + giving.** Toast/Square run the till but are dumb about margin and charge per feature; Bopple/me&u are just a checkout; MarketMan/MarginEdge only report costs and don't run anything.
-- **The one cell nobody else can fill:** *AI margin intelligence that recommends the action* — when to run a sale, what to pull, what to push.
+- **Credibility check (honest):** Toast/Square *are* full POS — but each capability is a **separate paid add-on** (Toast owns xtraCHEF for inventory; both have online ordering/KDS/marketing in higher tiers). Bopple/me&u are **ordering layers only**, not back-of-house. MarketMan/MarginEdge are **inventory-cost tools** that *report* — they don't run the restaurant. None recommend menu actions; none give.
+- **The two cells nobody else fills:** *AI margin intelligence that recommends the action* (everyone else "reports only" or blank) and *donates from every sale* (everyone else "No").
 
-*Speaker note:* The matrix is the slide. Walk the "margin intelligence" column — everyone else is blank or "reports only." Then the "donates from sales" column — everyone else is No. We're the only all-Yes row. (Delivery aggregators are a different category — we make merchants *less* dependent on them, but they're not who we replace.)
+*Speaker note:* Walk the **margin-intelligence** row — everyone else is "Reports only" or "No"; only Woahh *recommends* (when to run a sale). Then the **donates** row — everyone else "No". Frame the add-on cells honestly: competitors *have* the pieces, but as four separate bills that don't talk; Woahh is one bill that does it all and turns the data into decisions. Aggregators (Uber/DoorDash) are deliberately excluded — different category.
 
 ---
 
@@ -236,14 +240,14 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 ## Slide 14 — Team
 
-**[TBD: founder to fill]**
+**Built by a lean founding team.**
 
-- Founder / CEO — **[TBD: name, background, why this team wins]**
-- Engineering — **[TBD]**
-- Advisors — **[TBD]**
-- Charity / impact partnerships — **[TBD: named charity partners + structure]**
+- **Pawit Singh — Founder & CEO** — product, engineering & GTM. **[TBD: background]**
+- **Sid Sethia — Co-founder** — **[TBD: role + background]**
+- **Aditya [surname — TBD]** — Co-founder — **[TBD: role + background]**
+- Advisors / charity partners — **[TBD]**
 
-*Speaker note:* Investors back the team as much as the product. Emphasize the depth shipped solo/lean (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) as evidence of execution velocity. Fill founder bio + any hospitality credibility.
+*Speaker note:* Investors back the team as much as the product. Emphasize the depth shipped lean (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) as evidence of execution velocity. Fill backgrounds + roles + Aditya's surname + any hospitality credibility. **[Aditya's surname not found in any doc — founder to confirm spelling.]**
 
 ---
 
