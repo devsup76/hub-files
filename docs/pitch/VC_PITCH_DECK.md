@@ -4,7 +4,7 @@
 
 > **Repositioned 2026-06-03:** the **consumer `/eat` marketplace is no longer a pitch pillar** — the story is now the **all-in-one operating system that's *smarter* (AI inventory + margin intelligence) and *gives back***, beating the point-solution stack (**Toast, Square, Bopple, me&u, MarketMan/MarginEdge**) rather than the delivery aggregators (Uber Eats / DoorDash). Tier names (Solo/Marketplace/Growth) are product SKUs and unchanged.
 
-> Figures use the **locked model (BUSINESS_STRATEGY.md):** 3% merchant + 1% customer = 4% gross online → 2% charity / 2% woahh; **$15k GMV/merchant** base; Growth tier **$150**; charity headline = **~2% of every online order + 50% of every subscription**. Items marked **[TBD]** need founder input (TAM, team, the ask, traction).
+> Figures use the **locked model (BUSINESS_STRATEGY.md):** 3% merchant + 1% customer = 4% gross online → 2% charity / 2% woahh; **$15k GMV/merchant** base; Growth tier **$150**; charity headline = **~2% of every online order + 50% of every subscription**. Team, ask ($1–1.5M seed), TAM (~54k AU restaurants), and traction (pre-revenue) are now filled — only a **contact email**, **named charity partner**, and optional **founder backgrounds** remain for the founders to add.
 
 ---
 
@@ -18,7 +18,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 - Brand: **Woahh** (UI) · `woahh.app`
 - Beachhead: independent restaurants, Brisbane → Sydney / Melbourne / Gold Coast
-- Contact: [TBD: founder name + email]
+- Contact: Pawit Singh, Founder & CEO · woahh.app · **[add preferred contact email]**
 
 *Speaker note:* Open with the one-liner, then the hook: "A restaurant today pays for a POS, a separate online-ordering tool, a separate inventory tool, and a separate marketing tool — four bills, four logins, none of them talk, and none of them are smart. We replace the whole stack with one system that actually thinks — it learns your kitchen and tells you what to put on special — for the price of a coffee a day, and routes giving through the platform itself."
 
@@ -146,8 +146,8 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 **Beachhead: independent, owner-operated restaurants in Australia.**
 
-- **TAM** — Australian independent restaurants (then ANZ/global SMB hospitality): **[TBD: founder to source restaurant count × ARPU]**
-- **SAM** — independents in beachhead metros (Brisbane → Sydney / Melbourne / Gold Coast): **[TBD]**
+- **TAM** — **~54,000 cafés & restaurants in Australia** (ABS, FY24), the large majority independent SMBs. At woahh's ARPU (~$89/mo sub + ~2% net commission ≈ ~$4.7k/yr/merchant) that's **~$250M/yr of woahh revenue at full penetration** — and **~3–4× that** as Shop (retail) and Book (services) open up.
+- **SAM** — independents in beachhead metros (Brisbane → Sydney / Melbourne / Gold Coast): a large share of the national base; **bottom-up via the M4/M12 targets below** rather than a top-down guess.
 - **SOM** — phased targets from the model:
   - **M4:** 50+ merchants · ~$0.75M GMV/mo · ~$17k revenue/mo
   - **M12:** 300+ merchants · ~$4.5M GMV/mo · ~$103k/mo (**~$1.24M ARR**)
@@ -213,7 +213,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 **Honest gaps (NOT overclaimed):**
 - No production subscription-billing UI · no POS/terminal payments · retail vertical hidden · delivery courier code built but flagged off · self-learning + margin-radar are roadmap (designed, not built) · receipts/PWA/GDPR flows not built.
-- Paying merchants to date: **[TBD: founder to fill]**.
+- Status: **pre-revenue** — founding cohort being signed; first paying merchants launch next phase.
 
 *Speaker note:* Credibility comes from honesty. Lead with what's verified, separate "built / next-phase," and name the gaps before an investor finds them. The SMS end-to-end verification and the demo-verified inventory engine are real, dated proof points.
 
@@ -250,7 +250,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - **Pawit Singh — Founder & CEO** — product, engineering & GTM
 - **Sid Sethia — Co-founder** — engineering & finance
 - **Adithya Buddhavarapu — Co-founder** — engineering & marketing
-- Advisors / charity partners — **[TBD]**
+- Advisors & registered charity partner — being finalised.
 
 *Speaker note:* Three-person, all-technical founding team — computer science students who shipped a full platform (27 feature pages, AI copilots, smart inventory engine, hardened multi-tenancy) *while studying*, with finance and marketing ownership split across the co-founders. Frame the youth as the edge: this is the execution velocity and AI-native instinct of builders who grew up with these tools — not a liability. Add any hackathon wins / prior projects / hospitality credibility if available.
 
@@ -258,20 +258,20 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 ## Slide 15 — The Ask
 
-**Raising [TBD: amount] to [TBD: stage — pre-seed / seed].**
+**Raising $1–1.5M (seed)** to win restaurants — decisively. ~18–24 months runway for the lean team.
 
-**Use of funds [TBD: founder to confirm allocation]:**
-- Ship production subscription billing → first paying merchants.
-- Sign and onboard the founding 20–25 merchant cohort (Brisbane).
-- Ship + productionise smart inventory; build the self-learning + margin-radar layers.
-- GTM / sales for metro expansion (Sydney / Melbourne / Gold Coast).
-- POS / Tap-to-Pay + AFSL pathway; delivery flag-on.
+**Use of funds (indicative allocation):**
+- **~30% — Advertising & marketing:** brand + demand generation to land merchants fast.
+- **~25% — Hardware kits:** tablets, kitchen-display screens, Stripe Terminals provisioned for merchants (the on-ramp that removes setup friction).
+- **~20% — AI/ML development:** the margin-radar, self-learning recipes, and price forecasting — the differentiation moat.
+- **~15% — GTM / sales:** metro expansion (Sydney / Melbourne / Gold Coast).
+- **~10% — Product:** subscription-billing UI, POS / Tap-to-Pay + AFSL pathway, delivery flag-on.
 
 **Milestones this funds:**
 - **M4:** 50+ merchants · ~$0.75M GMV/mo · ~$17k revenue/mo
 - **M12:** 300+ merchants · ~$4.5M GMV/mo · ~$1.24M ARR
 
-*Speaker note:* Tie the ask to the M4/M12 milestones. The single biggest near-term unlock is the billing UI (blocks the first paying merchant); the biggest differentiation unlock is the margin-radar layer. Amount + allocation are founder-to-fill.
+*Speaker note:* Tie the ask to the M4/M12 milestones. The biggest *near-term* unlock is the billing UI (blocks the first paying merchant); the biggest *differentiation* unlock is the margin-radar layer; the biggest *growth* unlock is hardware kits + marketing to acquire merchants quickly. Allocation is indicative — adjust to investor conversations.
 
 ---
 
@@ -313,9 +313,9 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - **Charity headline** — locked: **~2% of every online order + 50% of every subscription** (50/50 split). The 0.1% GMV floor is the *separate* voluntary-rate default.
 - **Growth tier price** — **$150** ($199 references removed everywhere).
 - **Founding offer** — **0% commission + 12 months free** (matches the live landing; reconcile the open 1-year-vs-lifetime note in WOAHH_FIXES_TODO 6.2).
-- Fill all **[TBD]**: founder team (14), ask amount + use of funds (15), TAM/SAM (9), paying-merchant count (12).
+- **Filled 2026-06-03:** team (Pawit/Sid/Adithya, all CS students), ask ($1–1.5M seed + allocation), TAM (~54k AU restaurants → ~$250M/yr), traction (pre-revenue, cohort signing). **Still founder-to-add:** a contact email, the named charity partner, and one-line founder backgrounds.
 - Do not overclaim: AI copilots = **live**; smart inventory = **built, next-phase**; self-learning + margin radar = **roadmap (designed, not built)**; commission = "policy/future, app fee currently 0"; no POS/billing-UI/retail/delivery yet.
 
 ---
 
-*Internal note: repositioned 2026-06-03 (dropped marketplace pillar, refocused competition on POS/ordering/inventory players, added Smart Inventory & Plate Economics). All [TBD] markers need founder input before presenting.*
+*Internal note: repositioned 2026-06-03 (dropped marketplace pillar, refocused competition on POS/ordering/inventory players, added Smart Inventory & Plate Economics; team + ask + TAM + traction filled). HTML deck (`woahh-vc-deck.html`, v3) reordered to: Title · Cold-open · Problem · Why-now · Solution · Product · Smart Inventory · Traction · Moat · Competition · Giving · Business model · Unit economics · Market · GTM · Expansion · Team · Ask · Close.*
