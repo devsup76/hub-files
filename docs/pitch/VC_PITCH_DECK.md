@@ -32,6 +32,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 - That's **hundreds to thousands a month** before a single smart decision is made for them.
 - **None of it is intelligent.** Inventory is a paper clipboard or a tool that only *reports* a price went up. Nobody tells the owner *which dish just stopped making money, or when to run a sale.*
 - **No unified view:** orders, stock, customers and margins live in separate silos that never reconcile.
+- **The chains have what they don't.** McDonald's, Hungry Jack's and every franchise run one unified, intelligent stack. The independent down the road can't afford it — so the gap widens every year.
 
 *Speaker note:* Anchor on the modeled merchant — ~$15k GMV/mo through woahh, ~11 digital orders/day at ~$45 AOV (rising as POS captures full in-store volume). Emotional core: they pay for four tools, do stock-takes on paper, and *still* don't know which plate makes money when potato prices double. High-fit pain profiles: reservation-led fine dining, B2B caterers, members' clubs, small-town relationship-driven restaurants.
 
@@ -40,6 +41,8 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 ## Slide 3 — Solution
 
 **One operating system that replaces the whole stack — and is the only one that thinks for the owner.**
+
+> **The enterprise stack the billion-dollar chains (McDonald's, Hungry Jack's, every franchise) spent millions building — now ready for the independent down the road, for under $10/day + a small commission.**
 
 - **Run the restaurant:** real-time order kanban, Kitchen Display System, full menu/catalog, reservations & tables, staff roles, analytics.
 - **Sell direct:** branded online-ordering storefront + live order tracking — your brand, your customer, no per-order aggregator tax.
@@ -279,7 +282,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 | Stage | Vertical | Status | What it reuses |
 |---|---|---|---|
 | **Now** | 🍽️ **Eat** — restaurants (orders, kitchen, menu, smart inventory, loyalty) | **Live** on `woahh.app` | the wedge we win first |
-| **Next** | 🛍️ **Shop** — retail (SKU/barcode, inventory, shipping) | `business_type='retail'` code exists, hidden | same storefront + **inventory engine** + giving rails |
+| **Next** | 🛍️ **Shop** — retail: the SKU/barcode, inventory & shipping stack **Coles & Woolworths run, for the corner shop** | `business_type='retail'` code exists, hidden | same storefront + **inventory engine** + giving rails |
 | **Then** | 💈 **Book** — services: barbers, salons, fitness (appointments, staff schedules, deposits) | reuses the live reservations engine | ~80% of what's already shipped |
 
 - **One smart OS · one giving ledger — across every local vertical.** `/eat → /shop → /book`.
