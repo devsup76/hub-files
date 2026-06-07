@@ -81,7 +81,20 @@ the 3 screens. High-fidelity presentational mockups (judge a design language; no
 **Orchestration:** generate (3 independent agents, one full direction each — divergent) → judge panel
 (independent scorers) → I assemble the gallery + self-critique + Playwright-verify. Branch off `master`.
 
-**STATUS: not started** (Goal 1 first).
+**STATUS: ✅ DONE (pending founder pick) 2026-06-07.** Branch `feat/marketing-home-redesign` (worktree
+`repo-home`), off `main` `25df918`. 3 directions × 3 screens, all screenshot-verified distinct +
+industry-level; tsc 0 new errors, vite build green; live pages byte-unchanged.
+- **REVIEW:** `/home-preview` on the `feat/marketing-home-redesign` Cloudflare preview (flip
+  Momentum/Warmth/Clarity × Home/Marketplace/Dashboard via the top switcher; deep-link
+  `/home-preview/:direction/:screen`).
+- **Momentum** — bold conversion-SaaS (forest+gold, dark hero motif, gold SVG charts).
+- **Warmth** — editorial/human, charity-led ("good food should do some good"), photography-forward,
+  soft; "Your impact this month" dashboard highlight.
+- **Clarity** — product-led Linear/Notion, **dark-mode native** (self-contained toggle; dark-first
+  dashboard), product UI as hero, recharts.
+- Commits: `408b904` harness+fixtures · `21c9f01` 3 directions. All pushed.
+- Note: local `vite preview` can serve a stale `dist` (gave false 404s); Cloudflare builds fresh so the
+  preview renders correctly. Each direction is presentational (judge the design; copy is shared real content).
 
 ---
 
@@ -176,6 +189,8 @@ food-truck/QSR showed a dining-room photo → food-forward hero.
 - [2026-06-07] Context recovered; WIP checkpoint `b1c66e3`.
 - [2026-06-07] Goal 1 foundation `4f36ed8` → seams `68529ba` → 4 bespoke homes `28afb96` → fixes
   `44edaa6`. 8 templates, screenshot-verified desktop+mobile. **GOAL 1 DONE (pending review).**
-- [2026-06-07] NEXT: Goal 2 — website UI upgrade (3 home-page directions preview), new branch
-  `feat/marketing-home-redesign`.
-- Goal 3: NOT STARTED.
+- [2026-06-07] **GOAL 2 DONE (pending pick):** `feat/marketing-home-redesign` `408b904`→`21c9f01`.
+  3 directions (Momentum/Warmth/Clarity) × 3 screens (home/marketplace/dashboard), screenshot-verified
+  distinct + industry-level. Review at `/home-preview`.
+- [2026-06-07] NEXT: Goal 3 — native merchant app plan + Capacitor scaffold, new branch
+  `feat/native-app-platform` off main.
