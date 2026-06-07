@@ -106,9 +106,46 @@ Branch off `master`.
 
 ---
 
+## GOAL 1 — FINAL ARCHETYPE MAP (decision 2026-06-07)
+
+**Architecture for "completely different layouts":** the 6 existing blueprints share ONE section-based
+home (StorefrontRenderer sections) and differ only in chrome + theme — that's why they read similar.
+The NEW archetypes get **bespoke home components** (not the generic section stack). Seam: a
+`homes/` registry (id → home component); `ThemeShell` renders `children` so the preview passes the
+bespoke home as children for new archetypes, and the section-based home for keepers. Ordering chrome
+(nav/cart/menu/product/checkout via ThemeShell) is reused by all.
+
+**KEEP 4 (section-based, customizable via font/vibe/color — identities clarified):**
+- `modern-minimal` **Aurora** — Modern Minimalist (design-forward bistro / specialty)
+- `editorial-boutique` **Atelier** — Editorial Boutique (artisan / wine bar / plant-based)
+- `luxe-noir` **Noir** — Luxe Noir, dark & moody (cocktail bar / steakhouse / izakaya)
+- `fresh-organic` **Harvest** — Warm Farm-to-Table (brunch / health)
+**Drop from the restaurant picker:** `bold-appetite` (Counter) + `vibrant-market` (Pantry) — their
+vibes are recreated stronger by the new Rush/Kerb archetypes (kept in code, not shown for restaurants).
+
+**ADD 4 NEW (bespoke completely-different home layouts):**
+1. **Kerb** — Food truck / street food. "We're parked at" location+hours hero, today's menu strip,
+   weekly schedule, social photo row, sticky Order. Energetic. Type: Archivo. Ordering: dense-grid +
+   sticky-bottom-bar + bottom-sheet checkout.
+2. **Daily** — Local cafe / bakery. Cozy welcome, "today's specials" board, opening-hours card,
+   loyalty join, warm gallery, story. Type: Fraunces soft. Ordering: photo-card-grid + friendly checkout.
+3. **Maison** — Prestige fine dining. Cinematic full-bleed, reservation-first CTA, degustation/prix-fixe
+   menu, chef story + portrait, press/awards, muted luxe. Type: Cormorant Garamond. Ordering:
+   longform-by-course + dedicated-page checkout.
+4. **Rush** — Fast-casual / QSR. Deal/combo hero ("2 for $20"), big category tiles, value combos,
+   "order in 3 taps" + app band, fast reorder. Type: Bricolage chunky. Ordering: dense-grid +
+   sticky-bottom-bar + bottom-sheet checkout.
+
+Fonts reuse the 6 already-loaded families (CSP-clean) in NEW pairings; each new archetype gets its own
+`data-template` typography block in index.css. New template enum values added in storefrontConfig.ts
+(code only — DB CHECK not needed for the code-driven preview). Final restaurant set = **8 templates**.
+
 ## LIVE STATUS (update + commit after every milestone)
 - [2026-06-07] Context recovered; WIP checkpoint `b1c66e3` committed+pushed on `feat/storefront-platform`.
-- [2026-06-07] Goal-1 foundation build workflow `ww43hqahv` LAUNCHED (background). Awaiting completion.
-- Goal 1 templates (6→4 + new archetypes): PENDING (after foundation lands).
+- [2026-06-07] Goal-1 FOUNDATION complete + pushed (`4f36ed8`): CartTrigger, Checkout(5), ThemeShell,
+  6 blueprints, navigable preview. 0 storefront tsc errors, vite build green. The 6-blueprint system
+  is functional end-to-end (home→menu→product→cart→checkout).
+- [2026-06-07] Archetype map decided (above). NEXT: build seams + 4 bespoke new-archetype homes; cut
+  picker to the 8-template set; screenshot-verify (Playwright installing in bg).
 - Goal 2: NOT STARTED.
 - Goal 3: NOT STARTED.
