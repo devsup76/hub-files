@@ -231,4 +231,19 @@ food-truck/QSR showed a dining-room photo → food-forward hero.
 - [2026-06-07] **GOAL 3 DONE:** `feat/native-app-platform` `eb61f2f` plan → `89f5ee0` Capacitor scaffold.
   Plan + Android scaffold + per-merchant seams; tsc clean, build green, cap sync ok. Pushed.
 - [2026-06-07] **ALL 3 GOALS COMPLETE + STAGED FOR REVIEW.** See "MORNING REVIEW — START HERE" above.
-  Final cross-branch bug-hunt review running; findings appended below when done.
+- [2026-06-07] **Final adversarial review + fixes done** (review `w77066bs9` → fixes pushed
+  G1 `d515eb4`, G2 `8308b18`, G3 `c501209`). Review confirmed: G3 web behaviour byte-identical; G2
+  ship-ready as preview (2 content tweaks done); G1 had real defects in the new preview layer (live
+  storefront untouched) — all fixed + re-verified:
+  - **G1 BLOCKER fixed:** Rush storefront had no cart trigger → now renders the header cart (visually
+    confirmed). HIGH fixed: Atelier full-page product (was below footer → full-screen takeover), Pantry
+    persistent-rail (was full-width-bottom → beside catalogue, visually confirmed), DB CHECK now allows
+    the 4 bespoke templates. + MEDIUM (active-tab, Counter dense-grid nav + sticky offset, Esc-to-close)
+    + LOW (Footer no in-render clock). tsc clean, build green, 72/72 tests pass.
+  - **G2 fixed:** Clarity dashboard total now derived ($23,480, was a wrong hardcoded $23,310); Warmth
+    story copy cuisine-agnostic; Momentum headline robust + closed-merchant a11y.
+  - **G3 fixed:** native bootstrap (Android back-button + StatusBar runtime API), dropped dead deps/
+    config, build-script env-file corrected, Tables QR via nativeRedirectBase.
+  - Remaining minor (non-blocking, for later): Pantry rail could be `sticky` vs stretched; add a
+    smoke test per blueprint; Noir/Maison differentiation (founder call).
+- [2026-06-07] **Overnight work COMPLETE.** Nothing merged/deployed; all 3 branches review-ready.
