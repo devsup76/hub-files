@@ -115,7 +115,43 @@ needs a Mac/Xcode — document).
 synthesized plan → ONE focused execution agent for the scaffold (single-writer) → verify build.
 Branch off `master`.
 
-**STATUS: not started** (after Goals 1 & 2).
+**STATUS: ✅ DONE 2026-06-07.** Branch `feat/native-app-platform` (worktree `repo-native`), off `main`.
+- **Plan:** `docs/NATIVE_APP_PLATFORM.md` (decision-ready, 10 sections) — Capacitor 8 wrap (no RN
+  rewrite); phased PWA→single-app→per-merchant white-label; the Apple 4.2.6/4.3 + Play repetitive-
+  content trap and the **compliant** routes (Model A picker app now; Model C = engine published under
+  each MERCHANT's own dev account later); physical-goods IAP exemption (keep Stripe); Capgo OTA.
+- **Scaffold (committed, verified):** `capacitor.config.ts`, `android/` native project, `src/lib/native.ts`
+  (`isNativePlatform`/`nativeRedirectBase`/`forcedSlug`, web-safe no-ops), 10 auth/Stripe `return_url`
+  sites migrated to `nativeRedirectBase()` (behaviour-preserving on web), SW gated web-only, `forcedSlug`
+  wired into the root route, `scripts/build-merchant-app.mjs` (Model C per-merchant build) + `merchants/
+  example.json`, `docs/NATIVE_SCAFFOLD.md`. Verified: tsc clean (8 pre-existing only), `npm run build`
+  green, `npx cap sync android` success, per-merchant script tested end-to-end. iOS scaffolding needs a
+  Mac (`npx cap add ios` there — documented). Commits `eb61f2f` plan · `89f5ee0` scaffold. Pushed.
+- **Human-only next:** Apple Developer ($99/yr) + Play Console ($25), icons/splash/store assets, iOS on
+  a Mac, FCM/APNs for native push, signing + first submission. Suggest Node 22+ for Capacitor 8.
+
+---
+
+## ☀️ MORNING REVIEW — START HERE (2026-06-07 overnight, all 3 goals done)
+
+Everything is on its **own branch + pushed**; **nothing merged to main, nothing deployed, no live DB
+changes** (as agreed). Review each Cloudflare branch preview, then tell me which to wire live / merge.
+
+| Goal | Branch | Review at | Decision needed |
+|---|---|---|---|
+| 1 — Restaurant templates (8) | `feat/storefront-platform` | `…pages.dev/storefront-preview` | pick favourites → I wire ThemeShell + the 8 into the live `Shop.tsx`/picker (currently preview-only) |
+| 2 — Website redesign (3 dirs) | `feat/marketing-home-redesign` | `…pages.dev/home-preview` | pick one direction → I build it into the real marketing/marketplace/dashboard |
+| 3 — Native app | `feat/native-app-platform` | read `docs/NATIVE_APP_PLATFORM.md` | approve the phased path; the human-only store steps above |
+
+**Open polish / decisions I deliberately left for you** (none are blockers):
+- G1: Noir vs Maison are the closest pair (both dark-elegant) — could re-skew Noir to nightlife/bar.
+  Keepers Aurora/Harvest share a centered-hero (accepted — customizable). Per-archetype product imagery
+  still uses shared fixtures (only Kerb/Rush covers swapped to food).
+- G1: the 8 templates are **preview-only** — wiring into the live published storefront + dashboard
+  picker is the next step once you pick.
+- G2: directions are presentational mockups (shared real copy) to judge the design language; the winner
+  then gets built for real.
+- G3: white-label per-merchant apps need the Model C call (publish under merchant accounts) before scaling.
 
 ---
 
@@ -192,5 +228,7 @@ food-truck/QSR showed a dining-room photo → food-forward hero.
 - [2026-06-07] **GOAL 2 DONE (pending pick):** `feat/marketing-home-redesign` `408b904`→`21c9f01`.
   3 directions (Momentum/Warmth/Clarity) × 3 screens (home/marketplace/dashboard), screenshot-verified
   distinct + industry-level. Review at `/home-preview`.
-- [2026-06-07] NEXT: Goal 3 — native merchant app plan + Capacitor scaffold, new branch
-  `feat/native-app-platform` off main.
+- [2026-06-07] **GOAL 3 DONE:** `feat/native-app-platform` `eb61f2f` plan → `89f5ee0` Capacitor scaffold.
+  Plan + Android scaffold + per-merchant seams; tsc clean, build green, cap sync ok. Pushed.
+- [2026-06-07] **ALL 3 GOALS COMPLETE + STAGED FOR REVIEW.** See "MORNING REVIEW — START HERE" above.
+  Final cross-branch bug-hunt review running; findings appended below when done.
