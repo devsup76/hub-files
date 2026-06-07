@@ -4,16 +4,15 @@
 
 > This file is the single source of truth for woahh development sessions.
 > Update it whenever a feature is completed, a key decision is made, or significant progress occurs.
-> Last updated: 2026-06-02
+> Last updated: 2026-06-07
+>
+> **How we work now (2026-06-07) — woahh.app is OFF Lovable.** It runs on **Cloudflare Pages** (frontend) → **Supabase `pmnyhbhtkcfoozkinieo`** (Postgres/RLS, Auth, Storage, Edge Functions). We **edit code directly and push to `main` of `devsup76/business-growth-hub`**; Cloudflare rebuilds prod from `main` (a branch push = a Cloudflare *preview*). DB changes = SQL migrations the owner runs in the Supabase SQL editor; edge functions deploy via `npx supabase functions deploy`. The "Lovable prompt" workflow described below is historical.
 
 ---
 
-## Lovable Prompt Constraints
+## ~~Lovable Prompt Constraints~~ — OBSOLETE (off Lovable)
 
-- **5000 character limit per prompt** — always split large changes into multiple prompts
-- Split by logical unit: one large file = one prompt; small wiring changes (route + sidebar link) can be grouped
-- Never bundle a large component + edge function + migration into one prompt
-- When in doubt, split further — a truncated prompt silently breaks the implementation
+woahh.app no longer builds on Lovable; we edit code directly and push to `main`. The old 5000-char Lovable-prompt-splitting rule no longer applies. (Kept only as a historical marker — ignore for current work.)
 
 ---
 
@@ -22,7 +21,7 @@
 **Woahh** is a multi-tenant SaaS platform for small business owners (restaurants + retail shops).
 
 > **Brand casing rule:** UI / frontend = `Woahh` (capital W). Backend code, edge functions, email addresses, query keys, SMS bodies = `woahh` (lowercase).
-It is built and hosted on **Lovable** (AI app builder). The repo in this container is **read-only for review and planning** — all actual edits are made in Lovable.
+It runs on **Cloudflare Pages** (frontend) + **Supabase `pmnyhbhtkcfoozkinieo`** (Postgres/RLS, Auth, Storage, Edge Functions). Code is edited directly in this repo and pushed to `main` of `devsup76/business-growth-hub`; Cloudflare rebuilds prod from `main`.
 
 **Core value prop:** Give a small business owner a single dashboard to manage orders, products, customers, loyalty, promotions, and marketing — with a public-facing storefront, marketplace listing, and customer portal included.
 
@@ -42,7 +41,7 @@ It is built and hosted on **Lovable** (AI app builder). The repo in this contain
 
 **Legacy `business.woahh.app` subdomain** still resolves but `src/main.tsx` synchronously redirects to `https://woahh.app/business/<path>` before React mounts. Old email links + bookmarks keep working.
 
-**Why single origin (and not the previous subdomain split):** Lovable's hosting does not support `public/_redirects`, `vercel.json`, or any edge-level redirect config. The subdomain split caused cross-origin localStorage issues for sessions, password reset flows, and magic links (`woahh.app` ↔ `business.woahh.app` are separate origins; localStorage doesn't share). Single origin makes all of these work first try.
+**Why single origin (historical):** an earlier subdomain split caused cross-origin localStorage issues for sessions, password reset, and magic links (`woahh.app` ↔ `business.woahh.app` are separate origins; localStorage doesn't share). Single origin fixed those. **Now on Cloudflare Pages** (which DOES support `public/_headers` + `_redirects` — we use `_headers` for CSP), we are introducing **per-merchant `<slug>.woahh.app` subdomains for storefronts** (see "Storefront Platform" below). The merchant *dashboard/auth* stays single-origin on the apex, so the cross-origin-session concern doesn't apply to public storefronts (no merchant login on a storefront subdomain).
 
 **URL helpers** (`src/lib/hostUrls.ts`):
 - `apexUrl(path)` → same-origin path (returns the path as-is)
@@ -50,6 +49,29 @@ It is built and hosted on **Lovable** (AI app builder). The repo in this contain
 - Both are kept for readability and so we can flip back to a real subdomain later if needed.
 
 **`docs/CROSS_DOMAIN_REDIRECTS.md` (in `repo/`)** documents the current architecture and includes Cloudflare edge rules to paste if you ever want true zero-flicker on the legacy subdomain.
+
+---
+
+## Storefront Platform — per-merchant subdomains + config-driven UI + per-merchant PWA (branch `feat/storefront-platform`, SCAFFOLDED 2026-06-07, NOT merged/deployed)
+
+Three additive pillars layered **on top of** the existing single-origin stack. Apex (`woahh.app` marketing + `/eat` marketplace + `/business/*` dashboard) behaviour is intended to stay byte-for-byte unchanged; subdomains are a routing/presentation layer over the existing `subdomain_slug` + `get_public_storefront` RPC — **no new data path, no new RLS surface, no change to the isolation boundary** (a subdomain deterministically resolves to exactly one slug → exactly one org via the same SECURITY DEFINER RPC already in production).
+
+**Pillar 1 — `<slug>.woahh.app` subdomain tenant resolution.** `src/lib/tenant.ts` (NEW, scaffolded) is the single host→slug authority: pure/SSR-safe, `RESERVED_HOSTS` set (apex/system labels never resolve to an org — fail-safe to apex), `SLUG_RE` mirroring the DB rule, `resolveTenant`/`getTenantSlug`/`isMerchantSubdomain`/`tenantUrl`. Apex, `www`, localhost, IPs, `*.pages.dev`, `capacitor://`, `file://` all resolve to `apex` (apex unchanged off prod). `src/App.tsx` root route is wired: `tenantSlug ? <Shop forcedSlug={tenantSlug}/> : <Storefront/>` so `<slug>.woahh.app/` boots the merchant storefront, marketing on apex. `src/pages/Shop.tsx` accepts `forcedSlug`. (Designs also call for a pre-mount `/business`+`/eat`→apex redirect on tenant hosts and a `set_subdomain_slug` RPC + reserved-slug DB guard — **NOT yet built**.)
+
+**Pillar 2 — config-driven custom storefront UI.** Dedicated `storefront_config` table (migration `20260603010000_storefront_config.sql`, NEW, **NOT applied to live DB**): one row per org, presentation-only (`template` ∈ classic|hero|grid|minimal, `theme` jsonb tokens, `sections` jsonb ordered/toggleable, `hero` copy, `is_published`). RLS via `current_org_id()` (owner+staff write); server-side `validate_storefront_config` trigger (allow-listed section ids, HSL-regex theme tokens, length-capped copy); anon read **only** via `get_public_storefront_config(slug)` SECURITY DEFINER RPC (published-only), mirroring `get_public_storefront`/`get_public_menu`. Frontend: `src/lib/storefrontConfig.ts` (types, `DEFAULT_STOREFRONT_CONFIG`, `parseStorefrontConfig` sanitiser, `visibleSections`), `src/components/storefront/StorefrontRenderer.tsx` (section registry → ordered/toggled render; template = layout-wrapper only) + `src/components/storefront/sections/*` (Hero, FeaturedProducts, Categories, About, Gallery, Reviews, Map, CTA). Theme tokens reuse the existing `useStorefrontSettings` HSL-allowlist guard (no raw merchant CSS). Config-driven, not bespoke per-merchant code, not a drag-drop builder. **PENDING integration:** `StorefrontRenderer` is NOT yet in the render path — `Shop.tsx` still renders `RestaurantStorefront`/`RetailStorefront`; nothing yet calls `get_public_storefront_config` / a `storefrontConfigApi`; **no editor UI** (no `StorefrontDesigner`/`Design` dashboard page, route, or sidebar link).
+
+**Pillar 3 — per-merchant installable PWA (dynamic manifest).** `src/lib/pwaManifest.ts` (NEW, scaffolded): `buildTenantManifest`/`applyTenantManifest` build a per-merchant Web App Manifest (name/icon/theme from the org + branding) as a `blob:` URL and swap `<link rel="manifest">` at runtime — invoked from `Shop.tsx` **only on a merchant subdomain** (apex keeps the static `public/manifest.json` = "Woahh"). The service worker is per-origin so caches/push are tenant-isolated automatically. **Capacitor-wrapped native app = later** (outline only; `resolveTenant` already returns `apex` for `capacitor://` so it's the single seam to extend with a build-time forced slug). PENDING polish: per-merchant 192/512 maskable icons (currently falls back to `logo_url` / Woahh defaults); optional edge-rendered manifest (Cloudflare Pages Function / Supabase fn) for launcher fidelity.
+
+**Status — scaffolded vs pending:**
+- ✅ **Committed + pushed on `feat/storefront-platform`** (foundation `8b29b03` + hardening `60b7831`; `vite build` + `tsc` green, 48 `tenant.test.ts` tests pass, apex byte-unchanged, NOT merged): `tenant.ts`, `storefrontConfig.ts`, `StorefrontRenderer.tsx` + `sections/*`, `pwaManifest.ts`, migration `20260603010000_storefront_config.sql`; `App.tsx` root-route + `Shop.tsx` `forcedSlug`/manifest wiring.
+- ✅ **Hardening done** (`60b7831`): CSP `manifest-src 'self' blob:`; apex-only route guard (`ApexOnly.tsx` — `/business`+`/eat`→apex on tenant hosts); reserved-slug DB guard trigger (migration `20260603020000_guard_subdomain_slug.sql` — UPDATE rejects reserved/malformed `subdomain_slug`, INSERT auto-suffixes so signup never breaks); `storefront_config` 32KB + https-URL bounds; `tenant.test.ts`.
+- ⏳ Pending — **DNS/infra (human-only):** wildcard `*.woahh.app` CNAME → Cloudflare Pages project, add `*.woahh.app` as a Pages custom domain, wildcard TLS (Universal/Advanced cert covers one level only — single-label slugs enforced by the regex). `_redirects` SPA fallback + `_headers` CSP are path-based/host-agnostic so they inherit fine; verify post-cutover.
+- ⏳ Pending — **integration:** wire `StorefrontRenderer` + `get_public_storefront_config` into the storefront render path (default config = today's layout, so unconfigured merchants render unchanged); apply the migration to live (`pmnyhbhtkcfoozkinieo`) + regenerate `types.ts`.
+- ⏳ Pending — **template selection (NOT a builder — founder decision 2026-06-07):** merchants do NOT get a page/section builder ("above their level + time-consuming"). Ship **a curated set of premium, state-of-the-art ready-made templates** (each = a vetted `storefront_config`: template + sections + theme) that the merchant simply **picks** in a small dashboard page, plus basic branding (logo / colors / copy). No drag-drop, no section-reorder UI. The `sections`/`StorefrontRenderer` machinery exists to power *our* templates, not a merchant editor.
+- ⏳ Pending (remaining) — slug-change rate-limit/alias (optional); keep the reserved-list in sync across `tenant.ts` ↔ the SQL guard (verify-noted MEDIUM — add a parity test). *(Reserved-slug DB guard + the `/business`+`/eat`→apex redirect are now DONE in `60b7831`.)*
+- ⏳ Pending — **native:** Capacitor per-merchant build pipeline (Growth/Enterprise tier; outline only).
+
+**Benchmark framing:** measurably better than Bopple/Shopline/Shopify for small AU merchants — one org row drives a branded subdomain + installable app + the discovery marketplace + the dashboard with zero per-merchant code or theme store. See `docs/POSITIONING_STOREFRONT.md` (in repo) for the competitive positioning.
 
 ---
 
@@ -80,7 +102,7 @@ Email infrastructure is fully hardened: stale-claim self-heal + structured loggi
 | Edge Functions | Deno (Supabase Functions) |
 | SMS | Clicksend API |
 | Email | Resend API (email-send + email-webhook edge functions) |
-| Payments | Stripe (env var exists, billing not yet integrated) |
+| Payments | Stripe — Connect Express online card payments built + Connect **live-activated** (2026-06-07); Stripe Billing (subscriptions) not yet built |
 | Charts | Recharts |
 | Testing | Vitest + Testing Library + JSDOM |
 
@@ -162,7 +184,7 @@ supabase/
     staff-manage/index.ts             # Edge Function: owner-only staff account CRUD (PIN-based)
     staff-pin-login/index.ts          # Edge Function: staff PIN login → createSession; 5-attempt lockout
     owner-verify/index.ts             # Edge Function: owner phone OTP + ABN checksum validation
-  migrations/                         # All DB migrations (41 total as of last update)
+  migrations/                         # All DB migrations (~86 as of 2026-06)
 ```
 
 ---
@@ -277,7 +299,8 @@ TierGate in `App.tsx`:
 | Subscription tier system | ✅ Complete | solo/marketplace/growth/enterprise; apply_tier_caps trigger; top-up credits |
 | KitchenSettings | ✅ Complete | Courier credentials config, kitchen display settings |
 | Unified customer identity | ✅ Complete | growthhub_profiles + merchant_connections tables; merge by email + phone on sign-in; cross-merchant Account hub (My Merchants, Orders, Notifications tabs); per-merchant per-channel consent; GH badge in owner CRM; post-order account prompt on Shop + ReservationBooking |
-| Stripe / billing | ❌ Not started | Env var only — no subscription management UI |
+| Stripe online payments | ✅ Built + Connect **live-activated** (2026-06-07) | Connect Express **destination charges** (founding merchant = `application_fee` 0); edge fns `stripe-payment-intent` / `stripe-webhook` / `stripe-connect-onboard` / `order-respond` (manual capture on owner-confirm); `pk_live` in prod. ⚠️ **C1 (server-side order-total validation) is staged/ON-HOLD** for the restaurant-inventory rebuild — the order RPC currently trusts the client total, so **do not take real cards until C1's fix is applied**. |
+| Stripe Billing (subscriptions) | ❌ Not started | No subscription-management UI yet (separate from the order-payment flow above). |
 | Reservation timezone | ✅ Complete | settings.reservations.timezone selector in Operations; list_available_slots RPC uses AT TIME ZONE; defaults to Australia/Brisbane |
 | Analytics dashboard | ✅ Complete | 7 togglable widgets: revenue trend, fulfillment mix, top products, peak hours heatmap, new/returning customers, categories, marketing; 90-day synthetic demo history; date range tabs (Today/7d/30d/90d); widget customisation via localStorage |
 | In-person loyalty codes | ✅ Complete | McDonald's-style 5-min rotating 6-digit codes; earn + redeem; customer Account In-Store tab + dashboard Loyalty validator panel; loyalty_code_sessions table + upsert/validate RPCs |
@@ -302,6 +325,7 @@ TierGate in `App.tsx`:
 | Staff PIN 3-step verify | ✅ Complete | `staff-pin-login` edge function actions: `verify_org` (returns minimal org info), `verify_user` (checks username), `login` (verifies PIN). Generic 404 prevents handle enumeration. |
 | Products realtime | ✅ Complete | `useProductsRealtime` hook + `ALTER TABLE products REPLICA IDENTITY FULL` + supabase_realtime publication. Owner adds menu item → KDS, walk-in dialog, public storefront update without refresh. |
 | Ingredient availability | ✅ Complete (branch `feat/ingredient-availability`, committed not pushed) | Org-wide "temporarily unavailable ingredient" registry. Staff toggle an ingredient Out in the Shift Availability panel ("Menu availability" sheet on Orders + KDS); every restaurant dish whose `ingredients_list` contains it shows "temporarily unavailable" on the storefront card + struck-through in the customize dialog, **but stays orderable**. Out ingredients are stamped into `removed_ingredients` at add-to-cart so the kitchen ticket/KDS/receipt show "− No X". `ingredient_shortages` table (migration `20260602100000`, APPLIED to live DB) + RLS via `current_org_id()` + anon `get_public_ingredient_shortages` RPC (mirrors `get_public_menu`). Adversarial-reviewed (17 agents) + Playwright-verified end-to-end (incl. real order → KDS ticket "NO Coriander"). Out-of-stock ingredients computed **live at order time** (commit `0351633`). **Essential-ingredient hard-block shipped** (commit `cd758a3`, migration `20260602120000`): per-product `required_ingredients`; a required ingredient out → item "Temporarily sold out" + Add disabled + checkout guard; optional ingredients still stay-orderable. Menu editor ★ toggle marks required. **Deferred:** demo-mode seeding. |
+| Storefront platform (subdomains + config UI + per-merchant PWA) | 🚧 Scaffolded, not merged/deployed (branch `feat/storefront-platform`) | Three additive pillars: (1) `<slug>.woahh.app` wildcard subdomain → branded storefront via `src/lib/tenant.ts` resolution (wired into `App.tsx` root route + `Shop.tsx` `forcedSlug`); (2) config-driven UI — `storefront_config` table + `get_public_storefront_config` anon RPC (migration `20260603010000`, NOT applied to live), `src/lib/storefrontConfig.ts` + `StorefrontRenderer` + `sections/*` (merchant **picks from curated premium ready-made templates — NOT a builder**, founder decision 2026-06-07; theme tokens reuse the `useStorefrontSettings` HSL guard); (3) per-merchant installable PWA via dynamic blob manifest (`src/lib/pwaManifest.ts`, applied subdomain-only; apex keeps static "Woahh" manifest), Capacitor native later. **Isolation unchanged** — subdomain → one slug → one org via the existing `get_public_storefront` RPC; apex byte-for-byte unchanged. **PENDING:** wildcard DNS/TLS + Pages custom domain (human), wiring `StorefrontRenderer`+RPC into the render path (default config = today's layout), a **template-picker** dashboard page (curated templates, NOT a builder), native app. (Hardening — CSP, apex-guard, reserved-slug DB guard, config bounds — **DONE** in `60b7831`.) See **Storefront Platform** section above the feature table. |
 
 ---
 
@@ -346,11 +370,11 @@ Both follow the same pattern:
 - Growth: $150/month — up to 7 locations
 - Enterprise: custom — unlimited locations
 
-**Commission per order** (half each to charity and Woahh):
-- **Online orders:** 4% merchant fee + 2% customer service fee → 3% charity, 3% Woahh
-- **In-person orders (dine-in, counter, POS):** 4% merchant fee only → 2% charity, 2% Woahh; no customer-facing service fee shown; merchant absorbs the commission
+**Commission per order** — **LOCKED financial model (2026-06-02)**, split half charity / half Woahh:
+- **Online orders:** 3% merchant fee + 1% customer service fee = **4% gross → 2% charity, 2% Woahh**
+- **In-person orders (dine-in, counter, POS):** lower merchant fee, no customer-facing service fee (merchant absorbs); same half-charity/half-Woahh split. (Exact in-person % per the locked model — see `docs/BUSINESS_STRATEGY` / the financial-model note; don't invent.)
 
-The 2% customer service fee is collected via `application_fee_amount` on online Stripe charges only. In-person terminal charges use a reduced `application_fee_amount` (4% only).
+The customer service fee is collected via `application_fee_amount` on online Stripe charges only. **⚠️ The earlier 4%+2%=6% → 3%/3% numbers are DEAD** — superseded by the locked 3%+1%=4% → 2%/2% model.
 
 **Stripe Connect model (phased):**
 - **Founding merchants:** Connect Express, `application_fee_amount: 0` — zero commission, pass-through, works at launch
@@ -385,22 +409,18 @@ APP_URL                    # Used by email-send for unsubscribe links
 
 ## Working Conventions
 
-- Repo is on **Lovable** — we review/plan here, implement there
-- Local code lives in `/workspaces/GrowthHub/repo/` (Lovable-managed git repo)
-- Planning docs (this file, todos, strategy) live one level up in `/workspaces/GrowthHub/`
-- All DB changes go through Supabase migrations (never manual edits)
-- Tier gating: email/promote = `solo`; CRM/SMS/loyalty = `marketplace`; donate = no gate
-- Do not add Stripe billing until explicitly scoped
-- Always `git pull` in the `repo/` subfolder before reviewing — Lovable pushes directly to the remote
-- Update this file whenever a feature moves from "in progress" to "complete"
-- Local edits + push from the repo subfolder IS a valid workflow when Lovable's prompt-based UX would be slow; Lovable's CI picks up the commits automatically
-- Lovable's hosting has no edge-redirect / `_redirects` / `vercel.json` support — pre-mount JS redirects are the only option for cross-domain logic
+- **App code** lives in `/workspaces/GrowthHub/repo` (+ feature **worktrees**: `repo-pay`, `repo-audit`, `repo-ai`, `repo-sms`, …) — GitHub `devsup76/business-growth-hub`. **Planning docs** (this file, todos, strategy) live one level up in `/workspaces/GrowthHub/` — GitHub `devsup76/hub-files`.
+- **Edit code directly + push to `main`** → Cloudflare rebuilds prod from `main`; a branch push = a Cloudflare *preview*. `git pull`/`git fetch` before reviewing.
+- All DB changes go through Supabase migrations; the **owner runs them in the Supabase SQL editor** (no GitOps auto-apply). Edge functions deploy via `npx supabase functions deploy`.
+- Cloudflare Pages **supports `public/_headers` + `_redirects`** (we use `_headers` for CSP) — the old "Lovable can't do edge redirects, use pre-mount JS" constraint no longer applies (the legacy `business.woahh.app` pre-mount redirect in `main.tsx` stays for back-compat).
+- Tier gating: email/promote = `solo`; CRM/SMS/loyalty = `marketplace`; donate = no gate.
+- Update this file whenever a feature moves from "in progress" to "complete", or a key decision is made.
 
 ---
 
-## Supabase + Lovable gotchas (learned the hard way)
+## Supabase gotchas (learned the hard way)
 
-These are non-obvious Lovable-specific behaviors that have caused real bugs. Future debugging should consider them first.
+These are non-obvious behaviors that have caused real bugs. Future debugging should consider them first.
 
 ### 1. `handle_new_user_org` fires for staff users → phantom orgs
 
@@ -466,6 +486,8 @@ Top items as of 2026-05-28:
 **POS & in-person payments** — see `/workspaces/GrowthHub/docs/POS_TERMINAL_PLAN.md`. Stripe Terminal (smart reader S700/WisePOS E from the web app, Phase 1) + Tap to Pay via a React Native merchant app (Phase 2). Preserves the in-person 4% → 2%/2% charity split via `application_fee_amount`. Long-lead blockers: Apple Tap to Pay entitlement + Stripe AFSL written confirmation for Connect Custom.
 
 **Franchise / multi-location** — see `/workspaces/GrowthHub/docs/FRANCHISE_ARCHITECTURE.md` (todo `6.5`). Designed + approved 2026-06-02, **not built yet** (build later, post-onboarding). Strictly **additive**: a franchise layer *above* organizations (each location stays its own org); cross-org access via a `franchise_members` membership overlay (so `organizations.owner_id`/`staff_accounts.user_id` UNIQUE are NOT relaxed); nullable `organizations.franchise_id` (NULL = standalone, unaffected); additive grant-only RLS via `franchise_org_ids()`; reuses `growthhub_profiles`/`merchant_connections` for configurable shared loyalty + franchise-wide campaigns. 10 additive stages. Only non-additive item: a `kind='franchise'` skip branch in `handle_new_user_org()`.
+
+**Storefront platform — finish + ship (todo `6.6`, branch `feat/storefront-platform`)** — SCAFFOLDED 2026-06-07, **not merged/deployed**. See the **Storefront Platform** section under Hosting & Domain Architecture for the full scaffolded-vs-pending breakdown. Three additive pillars (per-merchant `<slug>.woahh.app` subdomains; config-driven storefront UI via `storefront_config` + `StorefrontRenderer`; per-merchant dynamic-manifest PWA → Capacitor native later), all riding the existing `subdomain_slug` + `get_public_storefront` RPC so isolation + apex are unchanged. **Remaining to ship:** (1) human/infra — wildcard `*.woahh.app` CNAME → Cloudflare Pages project + add `*.woahh.app` as a Pages custom domain + wildcard TLS (one level only; single-label slugs enforced by regex); (2) wire `StorefrontRenderer` + `get_public_storefront_config` into the storefront render path (default config reproduces today's layout so unconfigured merchants are unchanged) + apply migration `20260603010000` to live (`pmnyhbhtkcfoozkinieo`) + regen `types.ts`; (3) **design N premium, state-of-the-art ready-made templates** + a simple **template-picker** dashboard page (merchant selects a template + basic branding/logo/colors/copy; **NOT a section builder** — founder decision 2026-06-07; route + sidebar link; solo tier-gate); (4) PWA polish — per-merchant 192/512 maskable icons; (5) native — Capacitor per-merchant build pipeline (Growth/Enterprise, outline only); (6) optional slug-change rate-limit/alias + a reserved-list parity test (`tenant.ts` ↔ SQL). *(DONE in `60b7831`: reserved-slug DB guard, apex-only route guard, CSP manifest fix, config bounds, tenant tests.)* Positioning in `docs/POSITIONING_STOREFRONT.md` (frame as better-than-Bopple/Shopline/Shopify for small AU merchants).
 
 **New TODOs added 2026-06-02** (see `WOAHH_FIXES_TODO.md`): `6.1` make delivery temporarily unavailable behind a feature flag (needs funding+code; keep courier code dormant); `6.2` founding launch promo — free subscription (1yr/lifetime OPEN) + temporary zero commission for first N sign-ups (reconcile with existing founding terms); `6.3` UI uplift (scope TBD); `6.4` restrict customer/CRM details to owner+manager only — drop the `"Staff view customers"` RLS policy (client already gates it; check `current_org_id()` doesn't still cover staff); `6.5` franchise (above).
 
