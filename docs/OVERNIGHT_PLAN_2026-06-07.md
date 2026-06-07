@@ -140,12 +140,42 @@ Fonts reuse the 6 already-loaded families (CSP-clean) in NEW pairings; each new 
 `data-template` typography block in index.css. New template enum values added in storefrontConfig.ts
 (code only — DB CHECK not needed for the code-driven preview). Final restaurant set = **8 templates**.
 
+## GOAL 1 — ✅ DONE (pending founder review), branch `feat/storefront-platform`
+
+8 distinct restaurant templates, each functional across **home + menu + checkout** (desktop + mobile,
+verified via headless-chromium screenshots). All committed + pushed.
+
+**REVIEW IN THE MORNING:** `/storefront-preview` — Cloudflare branch preview
+`https://feat-storefront-platform.woahh-app.pages.dev/storefront-preview`. Use the top switcher to flip
+the 8 templates + restaurant/retail; use the bottom-left **Home/Menu/Cart/Checkout** jumper to see each
+of the 3 judge-screens per template.
+- 4 KEEPERS (section-based, customizable by font/vibe/color): Aurora (modern-minimal), Atelier
+  (editorial-boutique), Noir (luxe-noir, dark), Harvest (fresh-organic).
+- 4 NEW bespoke (completely different layouts): **Kerb** (food truck — parked-at card, route table),
+  **Daily** (cafe — chalkboard specials, punch card), **Maison** (fine dining — reservation-first,
+  degustation), **Rush** (QSR — deal hero, combos, app band).
+
+**Key commits:** `4f36ed8` foundation (CartTrigger/Checkout/ThemeShell/registry/preview) · `68529ba`
+seams (theming fix + homes registry + 4 enums/typographies/presets/blueprints) · `28afb96` 4 bespoke
+homes · `44edaa6` fixes (page-checkout full-screen takeover, preview-nav clearance, Kerb/Rush food hero).
+
+**Self-critique fixes applied:** ThemeShell wasn't theming the chrome → fixed; page-based checkouts
+rendered off-screen → now full-screen takeover; preview-nav was hidden behind Kerb's sticky bar → moved;
+food-truck/QSR showed a dining-room photo → food-forward hero.
+
+**Deferred (note for review, NOT blockers):**
+- These 8 are **preview-only** — the LIVE published storefront (`Shop.tsx`/`PublishedStorefront`) + the
+  dashboard template-picker still use the OLD section renderer. Wiring ThemeShell + the 8 into the live
+  path + picker is the next integration step AFTER the founder picks favorites (keeps "previews only").
+- Keepers Aurora/Harvest share a centered-hero layout (accepted — customizable). Noir vs Maison are the
+  closest pair (both dark-elegant); could push Noir toward a nightlife/bar identity later.
+- Per-archetype product imagery uses shared fixtures (merchants supply real photos); only Kerb/Rush
+  covers were swapped to food shots.
+
 ## LIVE STATUS (update + commit after every milestone)
-- [2026-06-07] Context recovered; WIP checkpoint `b1c66e3` committed+pushed on `feat/storefront-platform`.
-- [2026-06-07] Goal-1 FOUNDATION complete + pushed (`4f36ed8`): CartTrigger, Checkout(5), ThemeShell,
-  6 blueprints, navigable preview. 0 storefront tsc errors, vite build green. The 6-blueprint system
-  is functional end-to-end (home→menu→product→cart→checkout).
-- [2026-06-07] Archetype map decided (above). NEXT: build seams + 4 bespoke new-archetype homes; cut
-  picker to the 8-template set; screenshot-verify (Playwright installing in bg).
-- Goal 2: NOT STARTED.
+- [2026-06-07] Context recovered; WIP checkpoint `b1c66e3`.
+- [2026-06-07] Goal 1 foundation `4f36ed8` → seams `68529ba` → 4 bespoke homes `28afb96` → fixes
+  `44edaa6`. 8 templates, screenshot-verified desktop+mobile. **GOAL 1 DONE (pending review).**
+- [2026-06-07] NEXT: Goal 2 — website UI upgrade (3 home-page directions preview), new branch
+  `feat/marketing-home-redesign`.
 - Goal 3: NOT STARTED.
