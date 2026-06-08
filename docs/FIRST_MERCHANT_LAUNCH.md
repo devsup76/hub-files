@@ -67,7 +67,7 @@
 | Online ordering (menu→cart) | ✅ verified (default + bespoke) |
 | Guest checkout | ✅ built, adversarially reviewed, **bugs fixed + re-verified** (`bcf80fa`): phone-collision, anon-as-guest (T&C now recorded), in-place anon→account upgrade (no orphaned order), email-merge, marketing/SMS consent, card-capture gate. Functional once migration #2 + anon-auth toggle applied. |
 | Online card payments | ✅ safe to enable after migration #3 applied + tested (C1 done; charge path reads server order total); needs Stripe Connect live + the test pass |
-| CRM | ⏳ to verify this run |
+| CRM | ✅ verified — Customers list (name/email/phone/marketing opt-in), Bulk SMS + Email broadcast, Invite-customer, order→customer linkage |
 | Website redesign (6 directions) | ✅ built/pushed; preview on `feat/marketing-home-redesign` |
 
 ## ✅ VERIFIED THIS RUN (headless-chromium E2E vs LIVE test-bistro)
