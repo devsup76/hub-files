@@ -55,7 +55,7 @@
 | Bespoke template publish → live render | ✅ verified (maison/kerb on test-bistro) |
 | Cloud POS (walk-in) + KDS | ✅ verified functional |
 | Online ordering (menu→cart) | ✅ verified (default + bespoke) |
-| Guest checkout | ✅ built + verified (tsc/build/tests); functional once migration #2 + anon-auth toggle applied |
+| Guest checkout | 🔧 built + UI-verified, but an adversarial review found real bugs (phone-collision crash, returning-anon misclassified → T&C dropped, magic-link orphaned the order, email-dup, card-capture gate). **Being fixed + re-verified now** (`wi1ap0hqw`) before it's "functional". |
 | Online card payments | ✅ safe to enable after migration #3 applied + tested (C1 done; charge path reads server order total); needs Stripe Connect live + the test pass |
 | CRM | ⏳ to verify this run |
 | Website redesign (6 directions) | ✅ built/pushed; preview on `feat/marketing-home-redesign` |
