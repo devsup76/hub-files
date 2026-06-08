@@ -19,4 +19,9 @@ metadata:
 
 **ALL 3 GOALS COMPLETE + STAGED (branches+previews only, nothing merged/deployed). Morning-review guide in `docs/OVERNIGHT_PLAN_2026-06-07.md` ("MORNING REVIEW — START HERE").**
 
+**2026-06-08 — MERCHANT-OPERATIONAL HARD E2E (headless chromium vs LIVE test-bistro, on `feat/storefront-platform`):**
+- **Storefront** ✅ renders. **Online ordering** ✅ (menu → add-to-cart → order lands in Kitchen "Awaiting approval"). **Cloud POS** ✅ = `WalkInOrderDialog` ("New walk-in order": menu grid, Counter/Dine-in/Takeaway, discount/tax/tip, Charge) + KDS kanban (New/Cooking/Ready/Completed) + a completed walk-in order present. Merchant login ✅ (`/business/auth?as=business`, Owner tab, email-or-username field is type=text).
+- **2 real robustness bugs found + fixed (commit `da3140b`):** (1) `CardPayment` `loadStripe(undefined)` white-screened the WHOLE storefront when `VITE_STRIPE_PUBLISHABLE_KEY` missing → guarded (stripePromise=null, card disabled, order still places). (2) `storefrontConfigApi.getPublic` threw on the `get_public_storefront_config` 404 → React-Query retry-storm → storefront stuck on skeleton → now fail-safe (return null → default renders instantly). Both also matter for prod resilience.
+- **Bespoke-template storefront E2E still BLOCKED on the 3 migrations** (`20260603010000`→`020000`→`20260607010000`) not yet applied to live + types regen. Online ordering + POS need NO new migrations (already live). C1 "no real cards until server-side total validation" hold still stands (orders create as `awaiting_confirmation`).
+
 Crash-safe: `/workspaces` persists across container crashes (prior crash kept committed + untracked work); app-repo branch pushes are extra safety; docs-repo push may 401 (needs devsup76 PAT) — commit locally regardless.
