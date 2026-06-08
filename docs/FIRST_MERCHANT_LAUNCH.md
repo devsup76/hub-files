@@ -24,7 +24,9 @@
 ### A. Database migrations (Supabase SQL editor, in order)
 1. ✅ **Storefront config** (DONE — you ran these): `20260603010000` → `20260603020000` → `20260607010000`.
 2. ✅ **Guest-checkout consent** — READY to run: `repo-audit/supabase/migrations/20260608010000_guest_checkout_consent.sql` (adds `customers.tos_accepted_at`/`tos_accept_method` + the `upsert_my_consent` SECURITY DEFINER RPC). Verified its `ON CONFLICT` index (`customers_org_user_uidx`) exists. Build done + pushed (`581bbad`). Needs **B (anon sign-ins)** enabled to function.
-3. ⏳ **C1 — server-side order-total validation** — hardens `create_order_with_inventory` to recompute the authoritative total server-side before any card capture. **Required before taking real cards.** *(SQL will be pasted here after the C1 work + review.)*
+3. ✅ **C1 — server-side order-total validation** — READY to run: `repo-audit/supabase/migrations/20260608020000_c1_server_side_order_total.sql`. Recomputes the authoritative item subtotal+promo server-side and REJECTS a client total below that floor (untrusted guest/customer callers only; trusted POS skipped so comps work). **Required before taking real cards.** Adversarial-reviewed (correctness/bypass/regression) → **safe to apply; blocks the catastrophic undercharge (1¢-for-$80); byte-for-byte identical otherwise; idempotent.** Pushed `a981b89`.
+   - **After applying: TEST before enabling real cards** — place a few real orders (guest + signed-in, pickup + delivery, with/without a promo) and confirm the charged total matches what the customer saw. Then enable card acceptance.
+   - **Known residuals (bounded, documented in the migration; v2 hardening, not blockers):** (a) *fee-skip* — a deliberately-tampered client could drop the 1% service / delivery fee from its own charge (item revenue is always protected); (b) *promo-race / sale-window-expiry* false-reject if a code/sale lapses while the item sits in the cart. **v2 = full server-authoritative total incl. server-computed fees** (closes both) — recommended before broad scale; fine for the first pilot.
 4. ⏳ After all migrations: **regenerate types** — `npx supabase gen types typescript --project-id pmnyhbhtkcfoozkinieo > src/integrations/supabase/types.ts` (or Dashboard → API → generate). Clears the `as any` casts + the 8 pre-existing tsc errors.
 
 ### B. Supabase Auth settings (Dashboard → Authentication)
@@ -52,7 +54,7 @@
 | Cloud POS (walk-in) + KDS | ✅ verified functional |
 | Online ordering (menu→cart) | ✅ verified (default + bespoke) |
 | Guest checkout | ✅ built + verified (tsc/build/tests); functional once migration #2 + anon-auth toggle applied |
-| Online card payments | ⏳ pending C1 (#3) + Stripe config |
+| Online card payments | ✅ safe to enable after migration #3 applied + tested (C1 done; charge path reads server order total); needs Stripe Connect live + the test pass |
 | CRM | ⏳ to verify this run |
 | Website redesign (6 directions) | ✅ built/pushed; preview on `feat/marketing-home-redesign` |
 
@@ -61,4 +63,5 @@
 
 ## LIVE LOG (append per milestone)
 - [2026-06-08] 6h mission started; guest-checkout build running (`weex56az3`).
-- [2026-06-08] ✅ Guest checkout DONE + pushed (`581bbad`): both storefronts, email+T&C+marketing, anon-auth, account nudge, preview inert, C1 honored. Migration #2 ready. NEXT: C1 server-side total validation (online payments).
+- [2026-06-08] ✅ Guest checkout DONE + pushed (`581bbad`): both storefronts, email+T&C+marketing, anon-auth, account nudge, preview inert, C1 honored. Migration #2 ready.
+- [2026-06-08] ✅ C1 server-side total validation DONE + pushed (`a981b89`); adversarial-reviewed safe; migration #3 ready (test before real cards). NEXT: verify CRM + guest-checkout UI; confirm website preview; finalize handoff.
