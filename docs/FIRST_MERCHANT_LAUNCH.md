@@ -76,6 +76,7 @@
 - **Online ordering (menu→cart)** — default + bespoke; add-to-cart + cart sheet work.
 - **Bespoke storefront render** — published maison/kerb → `/shop/test-bistro` renders the bespoke template with the live menu.
 - **Guest checkout UI (post-fix smoke-tested)** — Contact step: Name / Phone / **Email (receipt)** + **required Terms** + **"Email me deals…unsubscribe anytime"** + **"Text me deals…Reply STOP"** (SMS opt-in, appears with phone) + **"Sign in for deals"** (optional). **No forced sign-in, zero errors.** Underlying fixes (phone-collision, anon-as-guest T&C, in-place account upgrade, email-merge) verified. (Order *placement* gated on B-anon-auth + migration #2.)
+- **Day-1 dashboard toolkit** — all key pages load with zero page-errors as the merchant: Menu, Operations, Branding, Reservations, Loyalty, Analytics, Promotions, Overview (+ CRM, Kitchen Orders/KDS above).
 
 ## ⏳ NEEDS YOUR ACTION, THEN VERIFY (post-apply checklist)
 After you run `FOUNDER_RUN_THESE.sql` + enable anonymous sign-ins (+ Turnstile) + regen types:
@@ -97,4 +98,5 @@ After you run `FOUNDER_RUN_THESE.sql` + enable anonymous sign-ins (+ Turnstile) 
 - [2026-06-08] ✅ Guest checkout DONE + pushed (`581bbad`): both storefronts, email+T&C+marketing, anon-auth, account nudge, preview inert, C1 honored. Migration #2 ready.
 - [2026-06-08] ✅ C1 server-side total validation DONE + pushed (`a981b89`); adversarial-reviewed safe; migration #3 ready (test before real cards).
 - [2026-06-08] ✅ Verified live: CRM, cloud POS+KDS, online ordering, bespoke render, guest-checkout UI.
-- [2026-06-08] ✅ Guest-checkout adversarial review FOUND real bugs (phone-collision/anon/orphan/email) → FIXED + re-verified + pushed (`bcf80fa`); card-capture safety gate added. Consolidated `FOUNDER_RUN_THESE.sql` regenerated. **Guest checkout + payments now genuinely ready (pending your migrations + toggles).**
+- [2026-06-08] ✅ Guest-checkout adversarial review FOUND real bugs (phone-collision/anon/orphan/email) → FIXED + re-verified + pushed (`bcf80fa`); card-capture safety gate added. Consolidated `FOUNDER_RUN_THESE.sql` regenerated.
+- [2026-06-08] ✅ Post-fix smoke green (storefront + guest checkout render, no errors). ✅ Day-1 dashboard toolkit smoke (8 pages) all load, no errors. **MISSION DELIVERED — everything code-side built/reviewed/verified/pushed; founder actions in the TL;DR. Standing by.**
