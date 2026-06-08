@@ -7,6 +7,15 @@
 > only after the restaurant approves.** Crash-recovery: read this + memory
 > `woahh-overnight-3goals` + `docs/OVERNIGHT_PLAN_2026-06-07.md`.
 
+## ✅ TL;DR — WHEN YOU'RE BACK, DO THIS IN ORDER
+1. Run **`docs/FOUNDER_RUN_THESE.sql`** in the Supabase SQL editor (migrations #2 guest-consent + #3 C1) → regenerate `types.ts`.
+2. Supabase → Auth: **enable Anonymous sign-ins** + **Turnstile/hCaptcha** (section B).
+3. **Test** (ping me to drive it): a guest order places + appears in Kitchen; C1 totals match; consent shows in CRM.
+4. Confirm Stripe Connect; then per-merchant flip **`settings.payments.online_card_enabled = true`** to turn on real card capture (section C) — only after #3 passes.
+5. Review the **website redesign** (6 directions) at `/home-preview` and pick one.
+6. Create the first merchant account **with me** (section E) → name.woahh.app via `MERCHANT_ONBOARDING_RUNBOOK.md`.
+**Everything code-side is built, reviewed, verified, committed + pushed (branches only — NOT merged). Nothing is live until you do the above.**
+
 ## Mission (6h autonomous, founder away)
 1. Finish **guest checkout** (anon-auth + email/T&C/marketing consent + account nudge).
 2. **C1 — server-side order-total validation** so **online card payments are safe + functional** (no more client-trusted total).
@@ -66,7 +75,7 @@
 - **Cloud POS** — "New walk-in order" dialog (menu + Counter/Dine-in/Takeaway + discount/tax/tip + Charge) + KDS kanban + a completed walk-in order.
 - **Online ordering (menu→cart)** — default + bespoke; add-to-cart + cart sheet work.
 - **Bespoke storefront render** — published maison/kerb → `/shop/test-bistro` renders the bespoke template with the live menu.
-- **Guest checkout UI** — Contact step shows Name/Phone/**Email (for receipt)** + **required Terms checkbox** + **optional "Email me deals… unsubscribe anytime"** + "Sign in for deals" (optional). **No forced sign-in.** (Order *placement* is gated on B-anon-auth + #2 below.)
+- **Guest checkout UI (post-fix smoke-tested)** — Contact step: Name / Phone / **Email (receipt)** + **required Terms** + **"Email me deals…unsubscribe anytime"** + **"Text me deals…Reply STOP"** (SMS opt-in, appears with phone) + **"Sign in for deals"** (optional). **No forced sign-in, zero errors.** Underlying fixes (phone-collision, anon-as-guest T&C, in-place account upgrade, email-merge) verified. (Order *placement* gated on B-anon-auth + migration #2.)
 
 ## ⏳ NEEDS YOUR ACTION, THEN VERIFY (post-apply checklist)
 After you run `FOUNDER_RUN_THESE.sql` + enable anonymous sign-ins (+ Turnstile) + regen types:
