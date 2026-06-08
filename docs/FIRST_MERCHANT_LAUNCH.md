@@ -23,7 +23,7 @@
 
 ### A. Database migrations (Supabase SQL editor, in order)
 1. ✅ **Storefront config** (DONE — you ran these): `20260603010000` → `20260603020000` → `20260607010000`.
-2. ⏳ **Guest-checkout consent** (`20260608010000_guest_checkout_consent.sql`) — T&C columns + `upsert_my_consent` RPC. *(SQL will be pasted here when the build lands.)*
+2. ✅ **Guest-checkout consent** — READY to run: `repo-audit/supabase/migrations/20260608010000_guest_checkout_consent.sql` (adds `customers.tos_accepted_at`/`tos_accept_method` + the `upsert_my_consent` SECURITY DEFINER RPC). Verified its `ON CONFLICT` index (`customers_org_user_uidx`) exists. Build done + pushed (`581bbad`). Needs **B (anon sign-ins)** enabled to function.
 3. ⏳ **C1 — server-side order-total validation** — hardens `create_order_with_inventory` to recompute the authoritative total server-side before any card capture. **Required before taking real cards.** *(SQL will be pasted here after the C1 work + review.)*
 4. ⏳ After all migrations: **regenerate types** — `npx supabase gen types typescript --project-id pmnyhbhtkcfoozkinieo > src/integrations/supabase/types.ts` (or Dashboard → API → generate). Clears the `as any` casts + the 8 pre-existing tsc errors.
 
@@ -51,7 +51,7 @@
 | Bespoke template publish → live render | ✅ verified (maison/kerb on test-bistro) |
 | Cloud POS (walk-in) + KDS | ✅ verified functional |
 | Online ordering (menu→cart) | ✅ verified (default + bespoke) |
-| Guest checkout | ⏳ building (needs migration #2 + anon-auth toggle) |
+| Guest checkout | ✅ built + verified (tsc/build/tests); functional once migration #2 + anon-auth toggle applied |
 | Online card payments | ⏳ pending C1 (#3) + Stripe config |
 | CRM | ⏳ to verify this run |
 | Website redesign (6 directions) | ✅ built/pushed; preview on `feat/marketing-home-redesign` |
@@ -61,3 +61,4 @@
 
 ## LIVE LOG (append per milestone)
 - [2026-06-08] 6h mission started; guest-checkout build running (`weex56az3`).
+- [2026-06-08] ✅ Guest checkout DONE + pushed (`581bbad`): both storefronts, email+T&C+marketing, anon-auth, account nudge, preview inert, C1 honored. Migration #2 ready. NEXT: C1 server-side total validation (online payments).
