@@ -36,8 +36,9 @@
 - ⏳ **Enable bot protection** (Turnstile/hCaptcha) on the same screen — guards anon-sign-in abuse.
 - For `name.woahh.app` later: add `https://*.woahh.app/**` to the redirect allow-list.
 
-### C. Stripe (online payments)
-- ⏳ Confirm Connect Express is live + the merchant is onboarded (Connect onboarding link). *(Details after the payments pass.)*
+### C. Stripe (online payments) — enable LAST, after C1 (#3) is applied + tested
+- ⏳ Confirm Connect Express is live + the merchant has completed Connect onboarding.
+- ⏳ **Card capture is OFF by default (safety gate).** Online card capture is gated behind a per-merchant setting `settings.payments.online_card_enabled` (default `false`). After you've applied migration #3 (C1) AND placed test orders confirming totals match, flip it ON for the merchant (Operations/settings or `UPDATE organizations SET settings = jsonb_set(settings,'{payments,online_card_enabled}','true') WHERE id = <merchant>`). Until then, orders place at `awaiting_confirmation` (pay at venue / owner-confirm) — no real card is charged.
 - Local/preview testing of cards needs `VITE_STRIPE_PUBLISHABLE_KEY` in the env (prod already has `pk_live`).
 
 ### D. name.woahh.app (when ready to go live for the merchant)
@@ -55,7 +56,7 @@
 | Bespoke template publish → live render | ✅ verified (maison/kerb on test-bistro) |
 | Cloud POS (walk-in) + KDS | ✅ verified functional |
 | Online ordering (menu→cart) | ✅ verified (default + bespoke) |
-| Guest checkout | 🔧 built + UI-verified, but an adversarial review found real bugs (phone-collision crash, returning-anon misclassified → T&C dropped, magic-link orphaned the order, email-dup, card-capture gate). **Being fixed + re-verified now** (`wi1ap0hqw`) before it's "functional". |
+| Guest checkout | ✅ built, adversarially reviewed, **bugs fixed + re-verified** (`bcf80fa`): phone-collision, anon-as-guest (T&C now recorded), in-place anon→account upgrade (no orphaned order), email-merge, marketing/SMS consent, card-capture gate. Functional once migration #2 + anon-auth toggle applied. |
 | Online card payments | ✅ safe to enable after migration #3 applied + tested (C1 done; charge path reads server order total); needs Stripe Connect live + the test pass |
 | CRM | ⏳ to verify this run |
 | Website redesign (6 directions) | ✅ built/pushed; preview on `feat/marketing-home-redesign` |
@@ -85,4 +86,6 @@ After you run `FOUNDER_RUN_THESE.sql` + enable anonymous sign-ins (+ Turnstile) 
 ## LIVE LOG (append per milestone)
 - [2026-06-08] 6h mission started; guest-checkout build running (`weex56az3`).
 - [2026-06-08] ✅ Guest checkout DONE + pushed (`581bbad`): both storefronts, email+T&C+marketing, anon-auth, account nudge, preview inert, C1 honored. Migration #2 ready.
-- [2026-06-08] ✅ C1 server-side total validation DONE + pushed (`a981b89`); adversarial-reviewed safe; migration #3 ready (test before real cards). NEXT: verify CRM + guest-checkout UI; confirm website preview; finalize handoff.
+- [2026-06-08] ✅ C1 server-side total validation DONE + pushed (`a981b89`); adversarial-reviewed safe; migration #3 ready (test before real cards).
+- [2026-06-08] ✅ Verified live: CRM, cloud POS+KDS, online ordering, bespoke render, guest-checkout UI.
+- [2026-06-08] ✅ Guest-checkout adversarial review FOUND real bugs (phone-collision/anon/orphan/email) → FIXED + re-verified + pushed (`bcf80fa`); card-capture safety gate added. Consolidated `FOUNDER_RUN_THESE.sql` regenerated. **Guest checkout + payments now genuinely ready (pending your migrations + toggles).**

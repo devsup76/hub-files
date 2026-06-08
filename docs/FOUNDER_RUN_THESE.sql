@@ -2,11 +2,11 @@
 -- WOAHH — FOUNDER: run these in the Supabase SQL editor (project pmnyhbhtkcfoozkinieo)
 -- IN ORDER. The 3 storefront migrations (20260603010000 / 020000 / 20260607010000)
 -- are ALREADY applied. These two are NEW. Safe to re-run (idempotent).
--- After running: regenerate types (Dashboard -> API -> generate, or supabase gen types).
--- Also enable: Auth -> Providers -> Anonymous sign-ins (for guest checkout) + Turnstile.
+-- After running: regenerate types (Dashboard -> API, or supabase gen types).
+-- Also enable: Auth -> Providers -> Anonymous sign-ins (guest checkout) + Turnstile.
 -- =============================================================================
 
--- ========== #2 GUEST-CHECKOUT CONSENT (T&C columns + upsert_my_consent RPC) ==========
+-- ========== #2 GUEST-CHECKOUT CONSENT (T&C cols + claim-or-reject upsert_my_consent) ==========
 -- Guest checkout — consent plumbing (single-writer shared layer).
 --
 -- Adds an auditable T&C acceptance trail to `customers` (mirrors the existing
@@ -19,6 +19,23 @@
 -- it's just an authenticated user flagged `is_anonymous = true`). This RPC keys
 -- the write to that auth.uid() server-side, so it never depends on a public
 -- table policy and never elevates beyond the caller's own (org, uid) row.
+--
+-- IDENTITY / CLAIM-OR-REJECT rule (the function ALWAYS returns a row whose
+-- user_id = auth.uid(), so the order RPC's customer_id_for_user(auth.uid())
+-- deterministically links the order to it):
+--   1. Row already exists for (org, auth.uid()) -> UPDATE consent, return it.
+--   2. Else a candidate row matches in the org by phone OR email:
+--        - if its user_id IS NULL (an unclaimed CRM contact / prior guest):
+--          CLAIM it (set user_id = auth.uid()), merge name/email/phone/consent,
+--          return it. This avoids the customers_org_phone_uidx /
+--          customers_org_user_uidx unique collisions a blind INSERT would hit,
+--          and folds an email match into the same identity instead of forking a
+--          duplicate.
+--        - if its user_id IS NOT NULL and != auth.uid() (a REAL registered
+--          account): RAISE a friendly error ("an account already exists ...")
+--          and DO NOT take over their row.
+--   3. Else INSERT a fresh row (org, auth.uid(), name, email, phone, consent).
+-- Every branch is collision-free on both (org, user_id) and (org, phone).
 --
 -- Additive only: NO change to the `customers` RLS policies, the order RPC
 -- (create_order_with_inventory), or any existing function. Idempotent.
@@ -40,8 +57,11 @@ COMMENT ON COLUMN public.customers.tos_accept_method IS
 -- 2. Consent upsert RPC — one SECURITY DEFINER entry point for guest/customer
 --    consent at checkout. Mirrors accept_customer_invite (20260530090000): the
 --    function — not a public RLS policy — owns the write, keyed to the CALLER's
---    auth.uid(). Idempotent on the existing partial unique index
---    customers_org_user_uidx (organization_id, user_id) WHERE user_id IS NOT NULL.
+--    auth.uid(). ALWAYS returns a row whose user_id = auth.uid() (claim-or-reject;
+--    see header). Idempotent. Two partial unique indexes are in play and must NOT
+--    be violated in any branch:
+--      customers_org_user_uidx  (organization_id, user_id)      WHERE user_id     IS NOT NULL
+--      customers_org_phone_uidx (organization_id, phone_number) WHERE phone_number IS NOT NULL
 CREATE OR REPLACE FUNCTION public.upsert_my_consent(
   p_org_id        uuid,
   p_name          text,
@@ -53,8 +73,18 @@ CREATE OR REPLACE FUNCTION public.upsert_my_consent(
 ) RETURNS uuid
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
-  v_uid uuid := auth.uid();
-  v_id  uuid;
+  v_uid     uuid := auth.uid();
+  v_email   text := NULLIF(trim(p_email), '');
+  v_phone   text := NULLIF(trim(p_phone), '');
+  v_name    text;
+  v_id      uuid;
+  v_owner   uuid;   -- user_id of a candidate row matched by phone/email
+  -- Derived consent values (so the INSERT and the two UPDATE branches stay in
+  -- lock-step and a phone is required before SMS consent is recorded).
+  v_email_at     timestamptz := CASE WHEN p_email_opt_in THEN now() END;
+  v_email_method text        := CASE WHEN p_email_opt_in THEN 'checkout_checkbox' END;
+  v_sms_at       timestamptz := CASE WHEN p_sms_opt_in AND v_phone IS NOT NULL THEN now() END;
+  v_sms_method   text        := CASE WHEN p_sms_opt_in AND v_phone IS NOT NULL THEN 'checkout_checkbox' END;
 BEGIN
   -- An anonymous session still has a non-null uid; only a truly-unauthenticated
   -- (anon-key, no session) caller is rejected.
@@ -71,6 +101,99 @@ BEGIN
     RAISE EXCEPTION 'Organization is required';
   END IF;
 
+  v_name := COALESCE(NULLIF(trim(p_name), ''), split_part(COALESCE(v_email, ''), '@', 1));
+
+  -- ── Branch 1: this caller already has a row in the org → just update it. ─────
+  SELECT id INTO v_id
+  FROM public.customers
+  WHERE organization_id = p_org_id AND user_id = v_uid
+  LIMIT 1;
+
+  IF v_id IS NOT NULL THEN
+    UPDATE public.customers SET
+      name                 = COALESCE(NULLIF(trim(v_name), ''), name),
+      email                = COALESCE(v_email, email),
+      -- Only adopt the supplied phone if it won't collide with ANOTHER row in
+      -- this org (the partial unique index on (org, phone_number)).
+      phone_number         = CASE
+                               WHEN v_phone IS NOT NULL AND NOT EXISTS (
+                                 SELECT 1 FROM public.customers c2
+                                 WHERE c2.organization_id = p_org_id
+                                   AND c2.phone_number = v_phone
+                                   AND c2.id <> public.customers.id
+                               ) THEN v_phone
+                               ELSE phone_number
+                             END,
+      tos_accepted_at      = COALESCE(tos_accepted_at, now()),
+      tos_accept_method    = COALESCE(tos_accept_method, 'checkout_checkbox'),
+      marketing_opt_in     = marketing_opt_in OR p_email_opt_in,
+      email_consent_at     = COALESCE(email_consent_at, v_email_at),
+      email_consent_method = COALESCE(email_consent_method, v_email_method),
+      sms_consent_at       = COALESCE(sms_consent_at, v_sms_at),
+      sms_consent_method   = COALESCE(sms_consent_method, v_sms_method),
+      updated_at           = now()
+    WHERE id = v_id;
+    RETURN v_id;
+  END IF;
+
+  -- ── Branch 2: a candidate row in the org matches the given phone OR email. ──
+  -- Phone is the stronger key (it's uniquely indexed); fall back to email.
+  IF v_phone IS NOT NULL THEN
+    SELECT id, user_id INTO v_id, v_owner
+    FROM public.customers
+    WHERE organization_id = p_org_id AND phone_number = v_phone
+    LIMIT 1;
+  END IF;
+
+  IF v_id IS NULL AND v_email IS NOT NULL THEN
+    SELECT id, user_id INTO v_id, v_owner
+    FROM public.customers
+    WHERE organization_id = p_org_id AND lower(email) = lower(v_email)
+    LIMIT 1;
+  END IF;
+
+  IF v_id IS NOT NULL THEN
+    -- Belongs to a real, registered account that isn't this caller → reject.
+    -- (Anonymous guests get a fresh uid each time, so they can never be the
+    -- v_owner here unless it's literally the same session — handled in branch 1.)
+    IF v_owner IS NOT NULL AND v_owner <> v_uid THEN
+      RAISE EXCEPTION
+        'An account already exists for this email or phone — please sign in';
+    END IF;
+
+    -- Unclaimed CRM contact / prior guest row → CLAIM it for this caller and
+    -- merge details + consent. Setting user_id is safe: branch 1 already proved
+    -- this caller has no other (org, uid) row, so customers_org_user_uidx holds.
+    UPDATE public.customers SET
+      user_id              = v_uid,
+      name                 = COALESCE(NULLIF(trim(v_name), ''), name),
+      email                = COALESCE(v_email, email),
+      -- When this row was matched by EMAIL, the supplied phone could belong to a
+      -- DIFFERENT row — only adopt it if it won't collide on (org, phone_number).
+      phone_number         = CASE
+                               WHEN v_phone IS NOT NULL AND NOT EXISTS (
+                                 SELECT 1 FROM public.customers c2
+                                 WHERE c2.organization_id = p_org_id
+                                   AND c2.phone_number = v_phone
+                                   AND c2.id <> public.customers.id
+                               ) THEN v_phone
+                               ELSE phone_number
+                             END,
+      tos_accepted_at      = COALESCE(tos_accepted_at, now()),
+      tos_accept_method    = COALESCE(tos_accept_method, 'checkout_checkbox'),
+      marketing_opt_in     = marketing_opt_in OR p_email_opt_in,
+      email_consent_at     = COALESCE(email_consent_at, v_email_at),
+      email_consent_method = COALESCE(email_consent_method, v_email_method),
+      sms_consent_at       = COALESCE(sms_consent_at, v_sms_at),
+      sms_consent_method   = COALESCE(sms_consent_method, v_sms_method),
+      updated_at           = now()
+    WHERE id = v_id;
+    RETURN v_id;
+  END IF;
+
+  -- ── Branch 3: nothing matched → insert a fresh row for this caller. ─────────
+  -- Collision-free: branch 1 ruled out an (org, uid) row, branch 2 ruled out an
+  -- (org, phone) row.
   INSERT INTO public.customers (
     organization_id, user_id, name, email, phone_number,
     tos_accepted_at, tos_accept_method,
@@ -79,30 +202,12 @@ BEGIN
     sms_consent_at,   sms_consent_method,   sms_opted_out
   ) VALUES (
     p_org_id, v_uid,
-    COALESCE(NULLIF(trim(p_name), ''), split_part(p_email, '@', 1)),
-    NULLIF(trim(p_email), ''), NULLIF(trim(p_phone), ''),
+    v_name, v_email, v_phone,
     now(), 'checkout_checkbox',
     p_email_opt_in,
-    CASE WHEN p_email_opt_in THEN now() END,
-    CASE WHEN p_email_opt_in THEN 'checkout_checkbox' END,
-    false,
-    CASE WHEN p_sms_opt_in AND NULLIF(trim(p_phone), '') IS NOT NULL THEN now() END,
-    CASE WHEN p_sms_opt_in AND NULLIF(trim(p_phone), '') IS NOT NULL THEN 'checkout_checkbox' END,
-    false
+    v_email_at, v_email_method, false,
+    v_sms_at,   v_sms_method,   false
   )
-  ON CONFLICT (organization_id, user_id) WHERE user_id IS NOT NULL
-  DO UPDATE SET
-    name                 = COALESCE(NULLIF(trim(EXCLUDED.name), ''), customers.name),
-    email                = COALESCE(EXCLUDED.email, customers.email),
-    phone_number         = COALESCE(EXCLUDED.phone_number, customers.phone_number),
-    tos_accepted_at      = COALESCE(customers.tos_accepted_at, EXCLUDED.tos_accepted_at),
-    tos_accept_method    = COALESCE(customers.tos_accept_method, EXCLUDED.tos_accept_method),
-    marketing_opt_in     = customers.marketing_opt_in OR EXCLUDED.marketing_opt_in,
-    email_consent_at     = COALESCE(customers.email_consent_at, EXCLUDED.email_consent_at),
-    email_consent_method = COALESCE(customers.email_consent_method, EXCLUDED.email_consent_method),
-    sms_consent_at       = COALESCE(customers.sms_consent_at, EXCLUDED.sms_consent_at),
-    sms_consent_method   = COALESCE(customers.sms_consent_method, EXCLUDED.sms_consent_method),
-    updated_at           = now()
   RETURNING id INTO v_id;
 
   RETURN v_id;
