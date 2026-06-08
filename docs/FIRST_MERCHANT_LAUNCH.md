@@ -21,6 +21,8 @@
 
 > Run in this order. Each item links to where the SQL/steps live. ✅ = ready, ⏳ = being prepared.
 
+> 🟢 **CONVENIENCE: `docs/FOUNDER_RUN_THESE.sql`** bundles migrations #2 + #3 (the two NEW ones) in order — paste that ONE file into the Supabase SQL editor, then regenerate types. (The 3 storefront migrations are already applied.)
+
 ### A. Database migrations (Supabase SQL editor, in order)
 1. ✅ **Storefront config** (DONE — you ran these): `20260603010000` → `20260603020000` → `20260607010000`.
 2. ✅ **Guest-checkout consent** — READY to run: `repo-audit/supabase/migrations/20260608010000_guest_checkout_consent.sql` (adds `customers.tos_accepted_at`/`tos_accept_method` + the `upsert_my_consent` SECURITY DEFINER RPC). Verified its `ON CONFLICT` index (`customers_org_user_uidx`) exists. Build done + pushed (`581bbad`). Needs **B (anon sign-ins)** enabled to function.
@@ -57,6 +59,25 @@
 | Online card payments | ✅ safe to enable after migration #3 applied + tested (C1 done; charge path reads server order total); needs Stripe Connect live + the test pass |
 | CRM | ⏳ to verify this run |
 | Website redesign (6 directions) | ✅ built/pushed; preview on `feat/marketing-home-redesign` |
+
+## ✅ VERIFIED THIS RUN (headless-chromium E2E vs LIVE test-bistro)
+- **CRM** — Customers page lists customers (name/email/phone/marketing opt-in), Bulk SMS + Email broadcast, Invite-customer; order→customer linkage works (a test order created the "pawit · GH" customer).
+- **Cloud POS** — "New walk-in order" dialog (menu + Counter/Dine-in/Takeaway + discount/tax/tip + Charge) + KDS kanban + a completed walk-in order.
+- **Online ordering (menu→cart)** — default + bespoke; add-to-cart + cart sheet work.
+- **Bespoke storefront render** — published maison/kerb → `/shop/test-bistro` renders the bespoke template with the live menu.
+- **Guest checkout UI** — Contact step shows Name/Phone/**Email (for receipt)** + **required Terms checkbox** + **optional "Email me deals… unsubscribe anytime"** + "Sign in for deals" (optional). **No forced sign-in.** (Order *placement* is gated on B-anon-auth + #2 below.)
+
+## ⏳ NEEDS YOUR ACTION, THEN VERIFY (post-apply checklist)
+After you run `FOUNDER_RUN_THESE.sql` + enable anonymous sign-ins (+ Turnstile) + regen types:
+1. **Guest order places** — on `/shop/<slug>`: add item → checkout → email + tick T&C → Place order → expect an order at `awaiting_confirmation` + a "create an account" nudge; confirm it appears in Kitchen Orders. (Ping me — I'll E2E it.)
+2. **C1 totals correct** — place a few orders (guest + signed-in, pickup + delivery, ±promo) and confirm the charged total == what the customer saw, and that a tampered low total is rejected. **Only after this passes, enable real card acceptance.**
+3. **Consent captured** — the guest's email + marketing opt-in shows in the merchant CRM.
+
+## Website redesign preview (Goal 2)
+- Branch `feat/marketing-home-redesign` (pushed). Review the **6 directions × home/marketplace/dashboard** at `/home-preview` on its Cloudflare branch preview. **Not merged** — pick a direction; I'll build the winner for real.
+
+## Note: test-bistro state
+- The test merchant is currently **published on the `kerb` template** (from this run's testing). To revert it to the default storefront: dashboard → Storefront → unpublish (or `UPDATE storefront_config SET is_published=false WHERE organization_id=(test-bistro)`). Harmless; it's the test merchant.
 
 ## Fixes already shipped this run (branch `feat/storefront-platform`)
 - `da3140b` storefront fail-safe (Stripe guard + getPublic 404) · live-wiring `7a573e4` · (more below as they land).
