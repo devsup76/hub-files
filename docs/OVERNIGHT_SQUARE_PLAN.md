@@ -47,8 +47,15 @@ multi-lens review. Fix what's found; log every fix + every slight improvement.
   network-fail mid-pay, location mismatch, token expiry, webhook replay/spoof, amount tampering (C1), currency, multi-location.
 - **Accessibility/responsive/perf** spot checks; **slight improvements** logged + applied where low-risk.
 
+## PROGRESS (2026-06-09 night)
+- ✅ Square online build done + committed LOCAL (`a9aef21`). Sandbox deploy/test = one command (deferred, needs Supabase token).
+- ✅ Runtime tests (Playwright, inert previews): 48 render combos no errors; Cantina functional; bad-input gates correct; live /shop path works. No runtime product bugs.
+- ✅ Deep adversarial audit (`wqmedoy16`) → `docs/AUDIT_FINDINGS_2026-06-09.md`. **Found real issues:** BLK-4 (money: bespoke button price ≠ cart), BLK-3 (bespoke no sold-out block), BLK-1 (order-respond confirm/cron race → double-charge), BLK-2 (single Square token = all funds to 1 acct → OAuth needed), H-1..H-12 (fulfillment/sanitise/price-divergence/cantina-CHECK/webhook-URL/RPC-leaks-square-ids/idempotency/owner-self-set-payment-cols/inventory-DoS).
+- ▶ Fix pass 1 (`wa9fq5z96`, RUNNING): tonight-local correctness/money — BLK-4, BLK-3, H-4, H-8, H-9, H-10, H-11(+migration), H-12 → review → verify.
+- NEXT: fix pass 2 (payment hardening — BLK-1 claim-before-capture, H-1 provider-from-order, BLK-2 guard, H-3/H-7 idempotency, H-6 payment-col trigger, H-5 masking migration). Then scale build (Square OAuth one-and-done + multi-location + GMV + refunds = fixes BLK-2 properly + founder asks). Then cleanup + CLAUDE.md + report. Stage for founder decision: H-2 (inventory release).
+
 ## Status log
-- [~] 1. Square online build (wzi6jmhua) → verify → commit local
+- [x] 1. Square online build (wzi6jmhua) → verified → committed local `a9aef21`
 - [ ] 1b. Deploy + sandbox E2E (authorize/capture/refund) — DEFERRED (needs Supabase token); one-command-ready for morning
 - [ ] 2. Multi-location + one-and-done OAuth connect + GMV + refunds (build + adversarial review)
 - [ ] 3. RIGOROUS exhaustive testing (matrix above) → find + FIX issues (loop-until-dry)
