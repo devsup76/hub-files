@@ -62,3 +62,10 @@ multi-lens review. Fix what's found; log every fix + every slight improvement.
 - [ ] 4. Templates-functional + scalability + data-integrity audit + fixes
 - [ ] 5. Repo cleanup + CLAUDE.md + memory + docs
 - [ ] 6. Morning report: what's functional/verified, issues found+fixed, improvements, what needs you
+
+## PROGRESS (cont.)
+- ✅ Fix pass 1 (correctness/money) committed LOCAL `46df6cc`: BLK-3, BLK-4, H-4/8/9/10/11/12 + cantina CHECK migration + parity test. 76/76 tests.
+- ✅ Fix pass 2 (payment hardening) committed LOCAL `c01bcf6`: BLK-1 (claim CAS), H-1, BLK-2 guard, H-3/H-7, H-6, H-5 + 3 additive migrations (20260609040000/050000/060000). tsc/build green.
+- ▶ Scale features (`wmzasllnk`, RUNNING): org-level one-and-done Square OAuth connect (per-org tokens, fixes BLK-2) + multi-location + GMV view + refunds (+ REFUND_POLICY.md).
+- NEXT: repo cleanup + fix CLAUDE.md + update memory + MORNING REPORT (consolidated: built/verified, issues found+fixed, migrations to run in order, deploy steps, decisions for founder).
+- Local commits ahead of origin (unpushed): demos+cantina+square+fix1+fix2 (5). ONE final app push when founder approves.
