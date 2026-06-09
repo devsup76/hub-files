@@ -559,3 +559,100 @@ TO anon, authenticated;
 --          cents). If any flat code stores dollars, fix the data or the floor
 --          could over-reject flat-promo orders.
 -- =============================================================================
+
+-- ========== #4 GUARD ANON USER TRIGGERS (run this to fix 'Database error creating anonymous user') ==========
+-- =============================================================================
+-- Guard the auth.users INSERT triggers against ANONYMOUS users (guest checkout).
+-- =============================================================================
+-- Enabling Supabase Anonymous sign-ins surfaced "Database error creating
+-- anonymous user": an AFTER INSERT trigger on auth.users runs merchant/customer
+-- provisioning that must NOT run for an anonymous guest. We add an explicit
+-- `is_anonymous` short-circuit to BOTH auth.users triggers so a guest sign-in
+-- never touches org/profile provisioning. This also corrects any live drift.
+--
+-- A guest's identity for an order is its `customers` row (created by
+-- upsert_my_consent keyed to the anon auth.uid()); the cross-merchant
+-- growthhub_profile is created when the guest UPGRADES to a real account.
+--
+-- Bodies below are the EXACT current definitions (handle_new_user_org from
+-- 20260601090000; handle_new_customer_profile from 20260425120106) plus the one
+-- guard line. Pure CREATE OR REPLACE — idempotent, no DDL/data change.
+-- NOT auto-applied — run in the Supabase SQL editor.
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION public.handle_new_user_org()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_name text;
+  v_base text;
+  v_slug text;
+  v_n int := 0;
+  v_kind text;
+  v_username text;
+BEGIN
+  -- Guest checkout: an anonymous user is never a merchant.
+  IF COALESCE(NEW.is_anonymous, false) THEN
+    RETURN NEW;
+  END IF;
+
+  v_kind := COALESCE(NEW.raw_user_meta_data->>'kind', '');
+
+  IF v_kind IN ('staff', 'customer') THEN
+    RETURN NEW;
+  END IF;
+
+  v_name := NULLIF(trim(COALESCE(NEW.raw_user_meta_data->>'business_name', '')), '');
+  IF v_name IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  v_base := trim(both '-' from regexp_replace(
+    lower(COALESCE(NEW.raw_user_meta_data->>'subdomain_slug', v_name)),
+    '[^a-z0-9]+', '-', 'g'
+  ));
+
+  IF v_base = '' OR length(v_base) < 2 THEN
+    v_base := 'shop-' || substr(md5(NEW.id::text), 1, 8);
+  END IF;
+
+  v_slug := v_base;
+  WHILE EXISTS (SELECT 1 FROM public.organizations WHERE subdomain_slug = v_slug) LOOP
+    v_n := v_n + 1;
+    v_slug := v_base || '-' || v_n;
+  END LOOP;
+
+  INSERT INTO public.organizations (owner_id, name, subdomain_slug, trial_ends_at, marketplace_visible)
+  VALUES (NEW.id, v_name, v_slug, now() + interval '60 days', true);
+
+  v_username := lower(trim(COALESCE(NEW.raw_user_meta_data->>'username', '')));
+  IF v_username ~ '^[a-z0-9._-]{3,30}$' THEN
+    INSERT INTO public.usernames (user_id, username)
+    VALUES (NEW.id, v_username);
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.handle_new_customer_profile()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  -- Guest checkout: anon users get no cross-merchant profile (created on upgrade).
+  IF COALESCE(NEW.is_anonymous, false) THEN
+    RETURN NEW;
+  END IF;
+
+  INSERT INTO public.growthhub_profiles (id)
+  VALUES (NEW.id)
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
