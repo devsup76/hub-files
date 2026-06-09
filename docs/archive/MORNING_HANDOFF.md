@@ -1,3 +1,10 @@
+> ⚠️ **SUPERSEDED 2026-06-02.** This handoff is stale. The SMS feature + security SQL are merged to
+> `origin/main`. A separate "harden-critical-and-high" merge already covered most of the hardening backlog
+> (owner-verify OTP counter, webhook fail-closed). The genuinely-remaining work was re-audited and implemented
+> on branch **`security/sms-hardening-remainder`** (8 fixes), and reservations are now **email-only** by
+> default. **Current source of truth: `docs/SMS_ARCHITECTURE.md` → "2026-06-02 RECONCILE" section.** The SQL
+> block below was already run on the live DB (anon blocked); keep only for reference.
+
 # ☀️ Morning handoff — 2026-05-31 night → 06-01
 
 Hi pawit. Per-merchant SMS is **built, deployed, and verified end-to-end** on the new backend

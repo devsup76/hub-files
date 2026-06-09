@@ -61,7 +61,7 @@
 ## STATUS (functional vs pending)
 | Capability | State |
 |---|---|
-| Storefront templates (8) | ✅ render live (migrations applied); preview at `/storefront-preview` |
+| Storefront templates (11, incl. Cantina) | ✅ render live (migrations applied); preview at `/storefront-preview` |
 | Bespoke template publish → live render | ✅ verified (maison/kerb on test-bistro) |
 | Cloud POS (walk-in) + KDS | ✅ verified functional |
 | Online ordering (menu→cart) | ✅ verified (default + bespoke) |

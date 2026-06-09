@@ -4,9 +4,25 @@
 
 > This file is the single source of truth for woahh development sessions.
 > Update it whenever a feature is completed, a key decision is made, or significant progress occurs.
-> Last updated: 2026-06-07
+> Last updated: 2026-06-10 (see "## Current state (2026-06-10)" below for the delta; sections dated 2026-06-07 and earlier remain the baseline)
 >
 > **How we work now (2026-06-07) — woahh.app is OFF Lovable.** It runs on **Cloudflare Pages** (frontend) → **Supabase `pmnyhbhtkcfoozkinieo`** (Postgres/RLS, Auth, Storage, Edge Functions). We **edit code directly and push to `main` of `devsup76/business-growth-hub`**; Cloudflare rebuilds prod from `main` (a branch push = a Cloudflare *preview*). DB changes = SQL migrations the owner runs in the Supabase SQL editor; edge functions deploy via `npx supabase functions deploy`. The "Lovable prompt" workflow described below is historical.
+
+---
+
+## Current state (2026-06-10)
+
+> Additive update on top of the 2026-06-07 baseline below. Everything in this section is **committed LOCAL only on `feat/storefront-platform`** (worktree `repo-audit`), **NOT pushed / NOT merged to `main` / NOT deployed** — awaiting founder approval. The 2026-06-07 sections that follow remain accurate; this section is the "what changed since" delta. Run-this-to-go-live steps live in `docs/FOUNDER_RUN_THESE.sql` + `docs/MERCHANT_ONBOARDING_RUNBOOK.md`.
+
+**Guest checkout — DONE + LIVE-VERIFIED.** True guest checkout on both the default `RestaurantStorefront` and the bespoke storefront: place an order with email receipt + required Terms accept + email/SMS marketing opt-in + an optional "sign in for deals" nudge (no forced sign-in). Mechanism: a Supabase **anonymous** session minted at place-order time carries a non-null `auth.uid()` (the `authenticated` role) so consent + the customer row are written via a SECURITY DEFINER `upsert_my_consent` RPC keyed to that uid — no new public-table policy, no privilege elevation. Needed an anon-trigger guard migration (`20260609010000`) so the org-provisioning triggers don't fire for guests. Design: `docs/GUEST_CHECKOUT_DESIGN.md`. **Verified live** on test-bistro (real guest order placed end-to-end). Founder action: enable Auth → Providers → **Anonymous sign-ins** (+ Turnstile/captcha before scale).
+
+**C1 — server-side order-total validation — DONE + LIVE-VERIFIED.** The order RPC now recomputes the authoritative item subtotal + promo server-side and **REJECTS** any client total below that floor (untrusted guest/customer callers only; trusted POS skipped so comps still work). This closes the catastrophic undercharge (the old "1¢ for an $80 order" hole). Migration `20260608020000_c1_server_side_order_total.sql`. **Verified live** (a tampered $0.01 order was rejected: "below the authoritative minimum"). This **un-blocks taking real online cards** — the prior CLAUDE.md "do not take real cards until C1" hold is satisfied. Online card capture is still gated per-merchant behind `settings.payments.online_card_enabled` (default `false`); flip it on only after the merchant's test orders confirm totals match.
+
+**Storefront templates + bespoke render path — DONE (local).** 11 curated ready-made templates (incl. `cantina`) + per-merchant `/storefront-preview`; the bespoke `StorefrontRenderer`/`ThemeShell` path now renders the live menu on a published merchant (verified `maison`/`kerb`/`cantina` on test-bistro) and carries the **online-card checkout** path. This delivers the "merchant picks a curated premium template, not a builder" decision from the Storefront Platform section below.
+
+**Square payments — integrated as a SECOND provider — sandbox-built, NOT deployed.** Square added alongside Stripe via a payment **adapter** (`organizations.payment_provider ∈ {stripe, square}`, default `stripe`; the Stripe path is byte-for-byte unchanged). Online = Web Payments SDK `card.tokenize()` → `CreatePayment(autocomplete:false, app_fee_money)` → capture on owner-confirm / void on decline (manual-capture parity with Stripe; the 7-min auto-decline cron sits inside Square's 7-day hold). **One-and-done org-level OAuth connect** (per-org `square_connections` access/refresh tokens; one connection covers all of a merchant's **locations**); per-location order routing; **GMV** visibility; **refunds** (`RefundPayment` + Orders refund action, see `docs/REFUND_POLICY.md` in `repo-audit/docs/`). In-person (Terminal API) designed/stubbed for later. Plan: `docs/SQUARE_POS_INTEGRATION.md`; build/audit run log: `docs/OVERNIGHT_SQUARE_PLAN.md`. **Sandbox only — not deployed; needs an AU Square dev account + AU bank + PAAF PDS/FSG review before live.**
+
+**Deep audit (`docs/AUDIT_FINDINGS_2026-06-09.md`) — money/correctness/payment-race issues FOUND + FIXED (local).** A multi-lens adversarial audit of the storefront + payment-state-machine + multi-tenant-isolation + Square surfaces found and fixed: bespoke add-to-cart button under-quoting priced extras (BLK-4), the bespoke storefront missing the shipped sold-out/required-ingredient hard-block (BLK-3), the `order-respond` confirm/decline/auto-decline-cron race that could double-charge or leave money uncaptured (BLK-1, fixed via claim-before-capture), provider-derived-from-order-row at capture (H-1), Square idempotency keyed on order+amount (H-3), org/order-RPC denylist that leaked Square ids/financial counters (masked via additive migrations), and the single-global-Square-token cross-tenant fund-routing risk (BLK-2, addressed by the per-org `square_connections` OAuth model + a guard). **Deferred / staged for founder decision:** H-2 (release committed stock when a card payment fails — inventory-DoS guard), the Square go-live compliance items, and `payment_provider`/`square_payment_ready` write-boundary hardening. See the audit doc's "FIX PLAN" for the exact tonight-vs-deploy-vs-decision split.
 
 ---
 
@@ -102,7 +118,7 @@ Email infrastructure is fully hardened: stale-claim self-heal + structured loggi
 | Edge Functions | Deno (Supabase Functions) |
 | SMS | Clicksend API |
 | Email | Resend API (email-send + email-webhook edge functions) |
-| Payments | Stripe — Connect Express online card payments built + Connect **live-activated** (2026-06-07); Stripe Billing (subscriptions) not yet built |
+| Payments | **Provider abstraction** (`organizations.payment_provider ∈ {stripe, square}`, default `stripe`). **Stripe** — Connect Express online card, Connect **live-activated** (2026-06-07). **Square** — second connector (online Web Payments SDK + Terminal in-person, org-level OAuth, multi-location, GMV, refunds), sandbox-built, NOT deployed (see "Current state" §). Stripe Billing (subscriptions) not yet built. |
 | Charts | Recharts |
 | Testing | Vitest + Testing Library + JSDOM |
 
@@ -299,7 +315,9 @@ TierGate in `App.tsx`:
 | Subscription tier system | ✅ Complete | solo/marketplace/growth/enterprise; apply_tier_caps trigger; top-up credits |
 | KitchenSettings | ✅ Complete | Courier credentials config, kitchen display settings |
 | Unified customer identity | ✅ Complete | growthhub_profiles + merchant_connections tables; merge by email + phone on sign-in; cross-merchant Account hub (My Merchants, Orders, Notifications tabs); per-merchant per-channel consent; GH badge in owner CRM; post-order account prompt on Shop + ReservationBooking |
-| Stripe online payments | ✅ Built + Connect **live-activated** (2026-06-07) | Connect Express **destination charges** (founding merchant = `application_fee` 0); edge fns `stripe-payment-intent` / `stripe-webhook` / `stripe-connect-onboard` / `order-respond` (manual capture on owner-confirm); `pk_live` in prod. ⚠️ **C1 (server-side order-total validation) is staged/ON-HOLD** for the restaurant-inventory rebuild — the order RPC currently trusts the client total, so **do not take real cards until C1's fix is applied**. |
+| Stripe online payments | ✅ Built + Connect **live-activated** (2026-06-07); **C1 hold lifted** (2026-06-10) | Connect Express **destination charges** (founding merchant = `application_fee` 0); edge fns `stripe-payment-intent` / `stripe-webhook` / `stripe-connect-onboard` / `order-respond` (manual capture on owner-confirm); `pk_live` in prod. ✅ **C1 (server-side order-total validation) is now DONE + live-verified** (migration `20260608020000`; a tampered $0.01 order was rejected) — the prior "do not take real cards until C1" hold is **satisfied**. Card capture still gated per-merchant behind `settings.payments.online_card_enabled` (default off). See "Current state (2026-06-10)" §. |
+| Square payments (2nd provider) | 🚧 Sandbox-built, committed LOCAL on `feat/storefront-platform`, NOT deployed/merged | Provider adapter (`payment_provider ∈ {stripe, square}`, default stripe; Stripe path unchanged). Online (Web Payments SDK → `CreatePayment(autocomplete:false, app_fee_money)` → capture-on-confirm), org-level one-and-done OAuth (`square_connections`), multi-location, GMV view, refunds (`RefundPayment`, `docs/REFUND_POLICY.md`). In-person Terminal API stubbed for later. Audit-fixed (`docs/AUDIT_FINDINGS_2026-06-09.md`). Needs AU Square account + AU bank + PAAF PDS/FSG before live. See "Current state (2026-06-10)" § + `docs/SQUARE_POS_INTEGRATION.md`. |
+| Guest checkout | ✅ Complete + LIVE-VERIFIED (2026-06-10) | Anon-auth session at place-order + email receipt + required Terms + email/SMS marketing opt-in + optional sign-in nudge; both default + bespoke storefronts; `upsert_my_consent` SECURITY DEFINER RPC keyed to `auth.uid()`; anon-trigger guard migration `20260609010000`. See "Current state (2026-06-10)" § + `docs/GUEST_CHECKOUT_DESIGN.md`. |
 | Stripe Billing (subscriptions) | ❌ Not started | No subscription-management UI yet (separate from the order-payment flow above). |
 | Reservation timezone | ✅ Complete | settings.reservations.timezone selector in Operations; list_available_slots RPC uses AT TIME ZONE; defaults to Australia/Brisbane |
 | Analytics dashboard | ✅ Complete | 7 togglable widgets: revenue trend, fulfillment mix, top products, peak hours heatmap, new/returning customers, categories, marketing; 90-day synthetic demo history; date range tabs (Today/7d/30d/90d); widget customisation via localStorage |
@@ -472,6 +490,13 @@ DELETE FROM auth.users WHERE id = '11111111-1111-1111-1111-111111111111';
 ## Outstanding TODOs
 
 See `/workspaces/GrowthHub/docs/WOAHH_FIXES_TODO.md` for the current punch list.
+
+**Go-live + Square deploy steps (2026-06-10) — what the founder runs to ship the local `feat/storefront-platform` work:**
+- **Migrations to run in order:** `/workspaces/GrowthHub/docs/FOUNDER_RUN_THESE.sql` (Supabase SQL editor, project `pmnyhbhtkcfoozkinieo`, idempotent) — guest-consent (#2), C1 server-side total (#3), anon-trigger guard (#4), + the audit-fix + Square additive migrations. Regenerate `types.ts` after. Then enable Auth → Providers → **Anonymous sign-ins** (+ Turnstile).
+- **First-merchant onboarding:** `/workspaces/GrowthHub/docs/FIRST_MERCHANT_LAUNCH.md` (founder action list) + `/workspaces/GrowthHub/docs/MERCHANT_ONBOARDING_RUNBOOK.md` (dependency-ordered zero-to-live runbook).
+- **Square (sandbox → live):** `/workspaces/GrowthHub/docs/SQUARE_POS_INTEGRATION.md` (architecture + API refs) + `/workspaces/GrowthHub/docs/OVERNIGHT_SQUARE_PLAN.md` (build/audit run log + deploy checklist). Square needs an AU Square dev account + AU bank + PAAF PDS/FSG review before live.
+- **Audit findings + deferred items:** `/workspaces/GrowthHub/docs/AUDIT_FINDINGS_2026-06-09.md` — money/correctness/payment-race issues found + fixed; **staged-for-decision items not yet done:** H-2 (release committed stock on card-payment failure — inventory-DoS guard), Square go-live compliance, and `payment_provider`/`square_payment_ready` write-boundary hardening.
+- **Refunds:** `/workspaces/GrowthHub/repo-audit/docs/REFUND_POLICY.md` — refund mechanics (full/partial, who/when, per-provider routing, GMV/donation reconciliation).
 
 Top items as of 2026-05-28:
 - **`-1.2` Founding-merchant sign-up code gating** — not started. Hidden admin page + `founding_access_codes` table + redeem RPC.
