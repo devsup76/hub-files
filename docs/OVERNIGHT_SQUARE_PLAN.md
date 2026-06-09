@@ -28,9 +28,30 @@ Sandbox-only Square testing (founder's live account NOT needed). Crash-recovery:
 - Square connection + tokens stored at **org level** (not per-staff/device); refresh-token cron for OAuth.
 - C1 server-validated total is the ONLY charge amount (Square + Stripe). No client-trusted amounts.
 
+## ⚡ FOUNDER DIRECTIVE (2026-06-09 night): RIGOROUS TESTING — every scenario, good AND bad.
+"State-of-the-art level, find issues we missed, slight improvements, keep being better." No Supabase
+token provided → Square = BUILD + heavy adversarial review + a one-command deploy/test ready for morning;
+pour runtime-testing rigor into everything testable LOCALLY. Use loop-until-dry bug hunting + adversarial
+multi-lens review. Fix what's found; log every fix + every slight improvement.
+
+### Exhaustive test matrix (local, Playwright + code review)
+- **Storefront × all 11 templates**: render; every button/flow — browse, category filter, search, add-to-cart,
+  customize (extras/required ingredients/removed), quantity, remove, cart, checkout steps (fulfillment ×4,
+  contact, payment), guest checkout (email/T&C/marketing/SMS), sign-in path, deep-links (?screen=, ?t=, ?mode=, ?accent=).
+- **Good + BAD inputs**: empty cart, invalid/empty email, T&C unchecked, 0/huge/negative qty, special chars/emoji/very
+  long names, sold-out/required-ingredient-out items, promo edge cases, dine-in vs delivery vs pickup vs shipping,
+  no-image fallbacks, demo/preview inertness, missing Stripe/Square key fallback.
+- **Multi-tenant + scale**: isolation (no cross-merchant leak), no per-merchant code, additive schema, data-loss
+  risks, order/payment state machine, concurrency (multi-tablet), realtime + polling fallback.
+- **Square (code-review, can't runtime w/o deploy)**: good payment, declined, partial/full refund, double-submit,
+  network-fail mid-pay, location mismatch, token expiry, webhook replay/spoof, amount tampering (C1), currency, multi-location.
+- **Accessibility/responsive/perf** spot checks; **slight improvements** logged + applied where low-risk.
+
 ## Status log
-- [ ] 1. Square online build (wzi6jmhua) → verify → commit local
-- [ ] 1b. Deploy + sandbox E2E (authorize/capture/refund) — needs Supabase token
-- [ ] 2. Multi-location + one-and-done OAuth connect + GMV + refunds
-- [ ] 3. Templates-functional + scalability audit + fixes
-- [ ] 4. Repo cleanup + CLAUDE.md + memory + docs
+- [~] 1. Square online build (wzi6jmhua) → verify → commit local
+- [ ] 1b. Deploy + sandbox E2E (authorize/capture/refund) — DEFERRED (needs Supabase token); one-command-ready for morning
+- [ ] 2. Multi-location + one-and-done OAuth connect + GMV + refunds (build + adversarial review)
+- [ ] 3. RIGOROUS exhaustive testing (matrix above) → find + FIX issues (loop-until-dry)
+- [ ] 4. Templates-functional + scalability + data-integrity audit + fixes
+- [ ] 5. Repo cleanup + CLAUDE.md + memory + docs
+- [ ] 6. Morning report: what's functional/verified, issues found+fixed, improvements, what needs you
