@@ -30,10 +30,11 @@ You asked to fully build **Square online payments** + run **rigorous testing** t
 - **H-5:** anon/staff RPCs leaked `square_merchant_id`/`location_id` + financial counters → **fixed** (masked).
 - **H-6:** an owner could self-flip payment flags → **fixed** (owner-immutable trigger).
 - Plus H-1/3/4/7/8/9/10/11/12 (capture-by-order-provider, idempotency, fulfillment-from-settings, sanitisation, empty-cart guard, single price source, Cantina CHECK, webhook fail-closed).
+- **Final integration review** (the payment code was assembled across 3 passes; reviewed the combined state) caught **3 more deploy blockers** the per-pass reviews couldn't see — all **fixed**: INT-B1 (a refund-state clobber that re-marked refunded orders `paid` / re-inflated GMV), INT-H1 (anon order-tracker leaked `square_location_id` via migration ordering), INT-H2 (a refund lock-order deadlock). See `AUDIT_FINDINGS_2026-06-09.md` → "Integration review".
 - **Staged (need your decision), not silently shipped:** H-2 (release inventory on payment failure), Square AU/AFSL go-live, in-person Terminal.
 
 ## ⚡ FOUNDER ACTIONS — to take a Square sandbox payment (in order)
-1. **Run `docs/FOUNDER_RUN_NEXT.sql`** in the Supabase SQL editor — it bundles the 10 new migrations in order. (Review `20260609050000` payment-col guard + `20260610010000` square_connections — they're security-boundary tables — before applying.) Then **regenerate `types.ts`**.
+1. **Run `docs/FOUNDER_RUN_NEXT.sql`** in the Supabase SQL editor — it bundles the **11** new migrations in order (the last, `20260610060000_remask_get_order_by_id`, MUST stay last). (Review `20260609050000` payment-col guard + `20260610010000` square_connections — they're security-boundary tables — before applying.) Then **regenerate `types.ts`**.
 2. **Square OAuth app** (Square Developer Dashboard): set the OAuth Redirect URL to the `square-oauth-connect` function URL; enable scopes `PAYMENTS_WRITE PAYMENTS_READ ORDERS_WRITE MERCHANT_PROFILE_READ PAYMENTS_WRITE_IN_PERSON`; subscribe the webhook to `payment.*` + `refund.*`.
 3. **Edge secrets:** `SQUARE_OAUTH_CLIENT_ID`, `SQUARE_OAUTH_CLIENT_SECRET`, `SQUARE_OAUTH_REDIRECT`, `SQUARE_WEBHOOK_SIGNATURE_KEY`, `SQUARE_WEBHOOK_URL` (+ `SQUARE_ACCESS_TOKEN` already set; optional `SQUARE_SINGLE_ORG_ID`; prod: `SQUARE_API_BASE=https://connect.squareup.com`).
 4. **Deploy edge fns:** `square-payment square-webhook order-respond square-oauth-connect square-token-refresh refund-order stripe-webhook`.

@@ -1,10 +1,10 @@
 -- =============================================================================
 -- WOAHH — FOUNDER: run these UNRUN migrations IN ORDER in the Supabase SQL editor
 -- (project pmnyhbhtkcfoozkinieo). All additive + idempotent (safe to re-run).
--- Already-run earlier: storefront 010000/020000/070..010000, guest 20260608010000,
--- C1 20260608020000, anon-guard 20260609010000. These 10 are NEW from the overnight run.
--- After running ALL: regenerate src/integrations/supabase/types.ts.
--- Then deploy edge fns + set Square OAuth secrets (see MORNING_REPORT_2026-06-10.md).
+-- 11 NEW migrations from the overnight run. The LAST one (remask_get_order_by_id)
+-- MUST run last (it re-masks get_order_by_id after the location column is added).
+-- After ALL: regenerate src/integrations/supabase/types.ts; then deploy edge fns +
+-- set Square OAuth secrets (see MORNING_REPORT_2026-06-10.md).
 -- =============================================================================
 
 -- ========== 20260609020000_square_payments ==========
@@ -1330,7 +1330,16 @@ BEGIN
 
   -- Only move the order forward for money-moving refunds.
   IF p_status IN ('pending','succeeded') THEN
-    v_new_total := COALESCE(v_order.refund_amount_cents, 0) + p_amount_cents;
+    -- INT-H2 (consistency with set_refund_status): recompute the running total
+    -- AUTHORITATIVELY from the per-refund ledger (the just-inserted row is now
+    -- visible in this transaction) under the order lock, rather than adding to the
+    -- possibly-stale column. This keeps the summary == SUM(ledger) regardless of
+    -- how concurrent refunds + webhook back-outs interleave, matching the
+    -- recompute in set_refund_status.
+    SELECT COALESCE(SUM(amount_cents), 0)::integer INTO v_new_total
+    FROM public.payment_refunds
+    WHERE order_id = p_order_id
+      AND status IN ('pending','succeeded');
     -- A fully-refunded order is 'refunded'; anything less is 'partially_refunded'.
     UPDATE public.orders
     SET
@@ -1372,20 +1381,37 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_refund   public.payment_refunds%ROWTYPE;
-  v_order    public.orders%ROWTYPE;
+  v_refund    public.payment_refunds%ROWTYPE;
+  v_order     public.orders%ROWTYPE;
+  v_order_id  uuid;
   v_new_total integer;
 BEGIN
   IF p_status NOT IN ('pending','succeeded','failed','canceled') THEN
     RAISE EXCEPTION 'Invalid refund status %', p_status USING ERRCODE = 'check_violation';
   END IF;
 
+  -- INT-H2 (lock ordering): record_order_refund() locks the ORDER row first, then
+  -- touches payment_refunds. If we locked the refund row first here we'd acquire
+  -- the two rows in the OPPOSITE order → a classic deadlock under a concurrent
+  -- refund + webhook. So we resolve the order id WITHOUT locking, lock the ORDER
+  -- row FIRST (matching record_order_refund), and only THEN lock the refund row.
+  SELECT order_id INTO v_order_id
+  FROM public.payment_refunds
+  WHERE provider = p_provider AND provider_refund_id = p_provider_refund_id;
+  IF NOT FOUND THEN
+    RETURN;  -- nothing to update (webhook for a refund we never recorded)
+  END IF;
+
+  -- Lock the ORDER row first (same order as record_order_refund) ...
+  SELECT * INTO v_order FROM public.orders WHERE id = v_order_id FOR UPDATE;
+  -- ... then the refund row, re-read under its own lock (its status may have moved
+  -- between the unlocked lookup above and acquiring the order lock).
   SELECT * INTO v_refund
   FROM public.payment_refunds
   WHERE provider = p_provider AND provider_refund_id = p_provider_refund_id
   FOR UPDATE;
   IF NOT FOUND THEN
-    RETURN;  -- nothing to update (webhook for a refund we never recorded)
+    RETURN;  -- refund vanished (cascade delete) — nothing to do
   END IF;
 
   -- No-op if unchanged, or if already terminal-success (don't downgrade a
@@ -1397,30 +1423,33 @@ BEGIN
     END IF;
   END IF;
 
-  -- Lock the order to adjust its summary atomically.
-  SELECT * INTO v_order FROM public.orders WHERE id = v_refund.order_id FOR UPDATE;
-
   UPDATE public.payment_refunds
   SET status = p_status, updated_at = now()
   WHERE id = v_refund.id;
 
-  -- If a PENDING (counted) refund FAILED/was CANCELED, back its amount out of the
-  -- order summary so the refunded total reflects only money that actually moved.
-  IF v_refund.status = 'pending' AND p_status IN ('failed','canceled') THEN
-    v_new_total := GREATEST(0, COALESCE(v_order.refund_amount_cents, 0) - v_refund.amount_cents);
-    UPDATE public.orders
-    SET
-      refund_amount_cents = v_new_total,
-      payment_status = CASE
-        WHEN v_new_total <= 0 THEN 'paid'
-        WHEN v_new_total >= COALESCE(v_order.total_amount, 0) THEN 'refunded'
-        ELSE 'partially_refunded'
-      END,
-      refunded_at = CASE WHEN v_new_total <= 0 THEN NULL ELSE v_order.refunded_at END
-    WHERE id = v_order.id;
-  END IF;
-  -- pending→succeeded needs no summary change (the amount was already counted
-  -- when the pending row was recorded).
+  -- INT-H2 (lost-update / drift): recompute the order's refunded total
+  -- AUTHORITATIVELY from the per-refund ledger inside the locked section, rather
+  -- than incrementally adjusting the prior column value. The incremental approach
+  -- could drift when concurrent partial + full refunds and webhook back-outs
+  -- interleave (each reading a stale refund_amount_cents). Summing the ledger
+  -- (only refunds that still move money: pending/succeeded) under the order lock is
+  -- self-correcting and order-independent. Both money-moving and back-out
+  -- transitions recompute the same way, so the summary always equals the ledger.
+  SELECT COALESCE(SUM(amount_cents), 0)::integer INTO v_new_total
+  FROM public.payment_refunds
+  WHERE order_id = v_order.id
+    AND status IN ('pending','succeeded');
+
+  UPDATE public.orders
+  SET
+    refund_amount_cents = v_new_total,
+    payment_status = CASE
+      WHEN v_new_total <= 0 THEN 'paid'
+      WHEN v_new_total >= COALESCE(v_order.total_amount, 0) THEN 'refunded'
+      ELSE 'partially_refunded'
+    END,
+    refunded_at = CASE WHEN v_new_total <= 0 THEN NULL ELSE COALESCE(v_order.refunded_at, now()) END
+  WHERE id = v_order.id;
 END;
 $$;
 
@@ -1590,3 +1619,92 @@ GRANT EXECUTE ON FUNCTION public.get_gmv_analytics(integer) TO authenticated;
 --      (e) GMV widget: a partially-refunded order contributes (total − refund);
 --          a fully-refunded order contributes 0 and drops from the count.
 -- =============================================================================
+
+-- ========== 20260610060000_remask_get_order_by_id ==========
+-- =============================================================================
+-- INT-H1 — re-mask get_order_by_id after orders.square_location_id was added.
+-- =============================================================================
+-- ORDERING BUG (caught in the 2026-06-10 integration review): the anon order
+-- tracker RPC get_order_by_id was last re-created in
+-- 20260609060000_rpc_mask_square_and_counters.sql (the H-5 denylist), which masks
+--   r.courier_driver_phone, r.stripe_payment_intent_id,
+--   r.square_payment_id, r.square_order_id.
+-- THEN 20260610030000_orders_square_location.sql ADDED orders.square_location_id.
+-- Because RETURNS SETOF public.orders projects the WHOLE (now wider) row and the
+-- denylist is exposed-by-default, the anon RPC has been returning the merchant's
+-- Square location id UNMASKED to anyone with a receipt_token — a payment-processor
+-- identity leak on the public order tracker (the same exposed-by-default failure
+-- mode H-5 itself called out).
+--
+-- FIX (this migration — must run LAST, after 20260610030000 added the column):
+-- CREATE OR REPLACE get_order_by_id IDENTICAL to the 060000 version, PLUS
+-- r.square_location_id := NULL. We also RE-CONFIRM the existing masks
+-- (courier_driver_phone, stripe_payment_intent_id, square_payment_id,
+-- square_order_id) so the function is self-contained and correct regardless of
+-- which earlier definition last touched it. The public tracker shows
+-- payment_status (paid/unpaid) and courier progress — never any payment-processor
+-- identity or reference id — so nulling the location id breaks nothing in src/
+-- (no consumer reads square_location_id off this RPC; verified by grep).
+--
+-- STRICTLY ADDITIVE + IDEMPOTENT: CREATE OR REPLACE only; no table/RLS change
+-- (grant restated for self-containment). Safe to re-run. Sorts AFTER
+-- 20260610050000_order_refunds.sql, so it is the authoritative last definition.
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION public.get_order_by_id(p_id uuid)
+RETURNS SETOF public.orders
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  r public.orders%ROWTYPE;
+  v_auth_uid uuid := auth.uid();
+BEGIN
+  SELECT * INTO r
+  FROM public.orders
+  WHERE receipt_token = p_id
+  LIMIT 1;
+
+  IF NOT FOUND AND v_auth_uid IS NOT NULL THEN
+    SELECT * INTO r
+    FROM public.orders o
+    WHERE o.id = p_id
+      AND (
+        o.customer_id = public.customer_id_for_user(o.organization_id)
+        OR EXISTS (
+          SELECT 1
+          FROM public.organizations org
+          WHERE org.id = o.organization_id
+            AND org.owner_id = v_auth_uid
+        )
+        OR public.is_staff_of_org(v_auth_uid, o.organization_id)
+      )
+    LIMIT 1;
+  END IF;
+
+  IF NOT FOUND THEN
+    RETURN;
+  END IF;
+
+  -- Existing courier mask (unchanged from 20260609060000).
+  r.courier_driver_phone := NULL;
+
+  -- H-5: provider payment-reference ids — the public order tracker shows
+  -- payment_status (paid/unpaid), never the raw PI/payment ids. Re-confirmed here.
+  r.stripe_payment_intent_id := NULL;
+  r.square_payment_id := NULL;
+  r.square_order_id := NULL;
+
+  -- INT-H1 ADDED: orders.square_location_id was added by 20260610030000 AFTER the
+  -- H-5 denylist was written, so it leaked through this anon RPC. Mask it — the
+  -- Square location id is the merchant's payment-processor identity and the public
+  -- tracker never needs it.
+  r.square_location_id := NULL;
+
+  RETURN NEXT r;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_order_by_id(uuid) TO anon, authenticated;
