@@ -30,11 +30,18 @@ ON CONFLICT (org_id) DO UPDATE
       updated_at   = now();
 
 -- 2) Flip test-bistro to Square + enable online card capture.
+--    NOTE: jsonb_set does NOT create the intermediate 'payments' key on an empty
+--    settings object (create_missing only applies to the final path element), so
+--    we merge the payments object explicitly.
 UPDATE public.organizations
 SET payment_provider     = 'square',
     square_payment_ready = true,
-    settings = jsonb_set(coalesce(settings, '{}'::jsonb),
-                         '{payments,online_card_enabled}', 'true')
+    settings = jsonb_set(
+      coalesce(settings, '{}'::jsonb),
+      '{payments}',
+      coalesce(settings->'payments', '{}'::jsonb) || '{"online_card_enabled": true}'::jsonb,
+      true
+    )
 WHERE id = '35cf67fb-bd48-45ec-8032-32debbca84b1';
 
 -- Verify:
