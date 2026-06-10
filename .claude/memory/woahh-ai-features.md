@@ -1,6 +1,6 @@
 ---
 name: woahh-ai-features
-description: "woahh AI features (menu copilot, campaign copy, decline reasons) — MERGED to main + deployed 2026-06-02 (origin/main f9a881d); browser-signed-off; edge fns on Sonnet 4.6; full state in docs/AI_ARCHITECTURE.md"
+description: "woahh AI features (menu copilot, campaign copy, decline reasons) — MERGED to main + deployed 2026-06-02 (origin/main f9a881d); browser-signed-off; edge fns on Sonnet 4.6; full state was in docs/AI_ARCHITECTURE.md (deleted 2026-06-10 docs cleanup; in hub-files git history)"
 metadata: 
   node_type: memory
   type: project
@@ -17,6 +17,6 @@ Four server-side Claude (Anthropic) features for woahh, built 2026-05-31 on bran
 
 Shared edge modules: `_shared/anthropic.ts` (Claude client — note `completeJSON` must **not** prefill the assistant turn; `claude-sonnet-4-6` rejects prefill) + `_shared/auth.ts` (`resolveCaller`). Key is server-side only; never in the frontend bundle.
 
-**Full architecture + the morning handoff checklist live in `/workspaces/GrowthHub/docs/AI_ARCHITECTURE.md` — read that first.**
+**The old `docs/AI_ARCHITECTURE.md` handoff was deleted in the 2026-06-10 docs cleanup (stale; all actions done; recoverable from hub-files git history). Current AI-feature state: merged + deployed per above.**
 
 Action items: (1) browser-test the menu-copilot **import save path** (the only flow not exercised end-to-end; edge brain is proven via `node /tmp/copilot_test.js`); (2) merge `feature/ai-features` → `main` when happy; (3) **ROTATE** the Anthropic key + the Supabase access token — both were pasted into chat. Test merchant: `pawitsingh23+merchant@gmail.com` / `WoahhTest2026!` at `/business/auth`. Supabase CLI ran via `npx supabase@latest … --project-ref pmnyhbhtkcfoozkinieo` (no local Docker — deploys through the API bundler). Related: [[woahh-sms-architecture]].

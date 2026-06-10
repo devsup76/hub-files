@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-**Overnight autonomous build launched 2026-06-07** (founder asleep ~10h, wants industry-level results by morning). Full live plan + status: `docs/OVERNIGHT_PLAN_2026-06-07.md` (the crash-recovery anchor — read it first).
+**Overnight autonomous build launched 2026-06-07** (founder asleep ~10h, wants industry-level results by morning). Full live plan + status was `docs/OVERNIGHT_PLAN_2026-06-07.md` (deleted 2026-06-10 docs cleanup — run complete; in git history).
 
 **Founder decisions (before sleep):**
 - **Authority = branches + previews ONLY.** No merge to main/master, no deploys, no live DB migrations. Review in the morning.
@@ -17,7 +17,7 @@ metadata:
 2. **Website UI upgrade** — branch `feat/marketing-home-redesign` off main (worktree `repo-home`). **✅ v2 ELEVATED 2026-06-08 (pending founder pick).** Founder feedback on v1: "looks good but elevate more — state-of-the-art / high IT industry grade, refine + build more." Now **6 directions** at top-tier-tech bar, each across **home + /eat marketplace + merchant dashboard**, non-destructive preview at `/home-preview`: **Momentum** (bold SaaS), **Warmth** (editorial/charity), **Clarity** (product-led, dark-native) — all REFINED with motion toolkits (IntersectionObserver staggered reveals, rAF count-ups, marquees, aurora/grain, 3D-tilt floating product mockups), bento, glass/depth, fluid clamp() type; + 3 NEW: **Nebula** (aurora gradient-mesh + glassmorphism), **Carbon** (developer-grade dark/mono/terminal — ⌘ command bar, `$ overview` console), **Lumen** (oversized-type bento, Awwwards energy). All reduced-motion + AA gated. Commits v1 `408b904`→`21c9f01`, review-fixes, v2 `3223c7f` + carbon count-up fix `5d56a81` (all pushed). Screenshot-verified all 18 screens; tsc clean, build green. Gotcha: local `vite preview` can serve stale dist (rebuild before serving); Cloudflare builds fresh.
 3. **Native merchant app** — branch `feat/native-app-platform` off main (worktree `repo-native`). **✅ DONE 2026-06-07.** Decision-ready plan `docs/NATIVE_APP_PLATFORM.md` (Capacitor 8, phased PWA→single-app→white-label; Apple 4.2.6/4.3 trap + compliant Model A/Model C; IAP physical-goods exemption→keep Stripe; Capgo OTA) + committed Capacitor scaffold: `capacitor.config.ts`, `android/` project, `src/lib/native.ts` (isNativePlatform/nativeRedirectBase/forcedSlug), 10 auth/Stripe redirect sites migrated, SW gated web-only, forcedSlug seam, `scripts/build-merchant-app.mjs`. Verified tsc clean + build green + cap sync ok. Commits `eb61f2f`→`89f5ee0` (pushed). iOS needs a Mac; human store steps documented.
 
-**ALL 3 GOALS COMPLETE + STAGED (branches+previews only, nothing merged/deployed). Morning-review guide in `docs/OVERNIGHT_PLAN_2026-06-07.md` ("MORNING REVIEW — START HERE").**
+**ALL 3 GOALS COMPLETE + STAGED (branches+previews only, nothing merged/deployed). Morning-review guide was in the now-deleted `docs/OVERNIGHT_PLAN_2026-06-07.md` (run complete; in git history).**
 
 **2026-06-08 — MERCHANT-OPERATIONAL HARD E2E (headless chromium vs LIVE test-bistro, on `feat/storefront-platform`):**
 - **Storefront** ✅ renders. **Online ordering** ✅ (menu → add-to-cart → order lands in Kitchen "Awaiting approval"). **Cloud POS** ✅ = `WalkInOrderDialog` ("New walk-in order": menu grid, Counter/Dine-in/Takeaway, discount/tax/tip, Charge) + KDS kanban (New/Cooking/Ready/Completed) + a completed walk-in order present. Merchant login ✅ (`/business/auth?as=business`, Owner tab, email-or-username field is type=text).
