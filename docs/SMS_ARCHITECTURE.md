@@ -1,7 +1,7 @@
 # Woahh SMS Architecture & Migration Status
 
 > **Durable record** — kept in the repo so it survives container/memory resets.
-> Last updated: 2026-05-31 (audit-confirmed). Owner: pawit. Companion to `docs/MIGRATION_OFF_LOVABLE.md`.
+> Last updated: 2026-05-31 (audit-confirmed). Owner: pawit. (The off-Lovable migration handoff docs were deleted in the 2026-06-10 docs cleanup — migration long done; history in git.)
 > Status legend: ✅ built · 🟡 partial · ⬜ missing · ♻️ orphaned (defined but unused)
 
 ## TL;DR — where we are
@@ -136,11 +136,11 @@ All AU, ex-GST (+10%), per 160-char GSM-7 segment (marketing msgs often 2–3 se
   Confirmed live: anon reached the function body (could hijack a merchant's `sms_number` / mint
   permanent zero-commission founding codes). **Fix:** `IS DISTINCT FROM` (NULL-safe) + `REVOKE
   EXECUTE FROM PUBLIC`. SMS RPC fixed on the branch; founding fix + both live-DB re-applies are the
-  morning SQL in `docs/MORNING_HANDOFF.md`. **`founding_access_codes` is already in `main`/prod.**
+  morning SQL in `docs/MORNING_HANDOFF.md` (run live; doc deleted 2026-06-10, in git history). **`founding_access_codes` is already in `main`/prod.**
 - **Lesson:** static review missed both; the live anon attack test caught them. Attack-test every
   SECURITY DEFINER admin gate.
 
-**Hardening backlog (not live-exploitable; full list + priority in `docs/MORNING_HANDOFF.md`):**
+**Hardening backlog (not live-exploitable; original list lived in the deleted `MORNING_HANDOFF.md` — items reconciled below):**
 owner-verify OTP lacks brute-force lockout (top); `reservation-remind` uses `.includes(SERVICE_KEY)`
 substring auth; `sms-webhook` fail-open secret gate + PII payload log + NULL-`to` opt-out guard;
 explicit `REVOKE FROM PUBLIC` on the intentionally-public token RPCs. Confirmed NON-issues: `sms_log`
@@ -202,7 +202,7 @@ backend is `pmnyhbhtkcfoozkinieo`** (CSP `connect-src` + bundle), so the deploye
 what woahh.app uses → the verified signup-OTP test already covers woahh.app.
 
 **Remaining:** ⬜ **rotate exposed keys** (ClickSend, GitHub PATs, Supabase `sbp_`/`sb_secret_` incl. the deploy
-token `sbp_c40f…` pasted 2026-06-02, Anthropic). ✅ live UI click-through signup-OTP test PASSED on
+token `sbp_c40f…` pasted 2026-06-02, Anthropic, **Resend `re_…`/`whsec_…`** — pasted in chat ~2026-05-30 during the off-Lovable migration, never recorded as rotated). ✅ live UI click-through signup-OTP test PASSED on
 woahh.app (Playwright: login → Operations → "Change & verify" → "Send code" → code received → verified). ✅
 `owner-verify` now surfaces the real ClickSend send result (500 unset / 502 on `{ok:false}` + rolls back the
 stored OTP; previously returned `{ok:true}` even on failure — this hid the empty-balance failure during testing) —

@@ -75,7 +75,7 @@ is byte-for-byte unchanged; commission is hardcoded `0` identically on both
   4. **Post-apply RPC smoke test that *invokes* every re-created public RPC** (the
      verification that caught the drift must become permanent, not ad hoc).
   > Until this is done, every Square migration the founder runs carries the same silent
-  > runtime-failure risk. See `OVERNIGHT_SQUARE_PLAN.md:83` "STANDING FOLLOW-UP".
+  > runtime-failure risk. Tracked in `docs/SCHEMA_DRIFT_RECONCILIATION.md` (the overnight run log was deleted 2026-06-10; in git history).
 
 ### Stage 1 — Square production account & app (external lead time)
 
