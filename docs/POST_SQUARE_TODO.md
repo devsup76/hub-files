@@ -24,6 +24,6 @@
   or a missing/guarded send on confirm. Edge fn + possibly NotificationSettings.
 
 ## Status
-- [ ] 1. Refund on tracker (frontend)
-- [ ] 2. Receipt on confirm (diagnose → fix)
+- [x] 1. Refund on tracker (frontend) — DONE (OrderStatus banner)
+- [x] 2. Receipt on confirm — FIXED (email_type CHECK was rejecting 'order_respond'; now 'order_confirmation'). Combined confirmation+receipt, AU receipt content, pickup#/table#, online-only. Verified live (delivered).
 - Tackle AFTER the Square verification + readiness sign-off is complete.
