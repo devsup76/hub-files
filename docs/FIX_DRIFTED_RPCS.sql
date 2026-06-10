@@ -71,6 +71,65 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.get_public_storefront(text) TO anon, authenticated;
 
+-- get_member_org (staff org resolver) masks the same nonexistent phone_otp_attempts
+-- in its staff branch -> 42703 for STAFF callers (owners skip the mask). Re-create
+-- faithfully, minus that one line. Resolution order (staff-first) preserved.
+CREATE OR REPLACE FUNCTION public.get_member_org()
+RETURNS public.organizations
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_org_id uuid;
+  v_is_owner boolean := false;
+  r public.organizations%ROWTYPE;
+BEGIN
+  SELECT organization_id INTO v_org_id
+  FROM public.staff_accounts
+  WHERE user_id = auth.uid() AND is_active = true
+  LIMIT 1;
+
+  IF v_org_id IS NULL THEN
+    SELECT id INTO v_org_id FROM public.organizations WHERE owner_id = auth.uid() LIMIT 1;
+    IF v_org_id IS NOT NULL THEN
+      v_is_owner := true;
+    END IF;
+  END IF;
+
+  IF v_org_id IS NULL THEN
+    RETURN NULL;
+  END IF;
+
+  SELECT * INTO r FROM public.organizations WHERE id = v_org_id;
+
+  IF NOT v_is_owner THEN
+    r.owner_phone := NULL;
+    r.owner_full_name := NULL;
+    r.abn := NULL;
+    r.business_address := NULL;
+    r.stripe_account_id := NULL;
+    r.phone_otp_hash := NULL;
+    r.phone_otp_expires_at := NULL;
+
+    r.square_merchant_id := NULL;
+    r.square_location_id := NULL;
+    -- NOTE: organizations.phone_otp_attempts does NOT exist on this DB -> mask removed.
+
+    r.email_used_this_month := NULL;
+    r.email_topup_credits := NULL;
+    r.sms_used_this_month := NULL;
+    r.sms_topup_credits := NULL;
+    r.total_donations_cents := NULL;
+  END IF;
+
+  RETURN r;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_member_org() TO authenticated;
+
 CREATE OR REPLACE FUNCTION public.get_order_by_id(p_id uuid)
 RETURNS SETOF public.orders
 LANGUAGE plpgsql
