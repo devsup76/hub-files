@@ -1,0 +1,516 @@
+account_recovery_log.id uuid
+account_recovery_log.org_id uuid
+account_recovery_log.email text
+account_recovery_log.action text
+account_recovery_log.attempted_at timestamp with time zone
+account_recovery_log.success boolean
+active_promotions.id uuid
+active_promotions.organization_id uuid
+active_promotions.amount_cents integer
+active_promotions.charity_cents integer
+active_promotions.platform_cents integer
+active_promotions.charity_cause text
+active_promotions.starts_at timestamp with time zone
+active_promotions.ends_at timestamp with time zone
+active_promotions.is_active boolean
+active_promotions.payment_status text
+active_promotions.created_at timestamp with time zone
+combo_items.id uuid
+combo_items.combo_id uuid
+combo_items.product_id uuid
+combo_items.quantity integer
+combo_items.created_at timestamp with time zone
+combos.id uuid
+combos.organization_id uuid
+combos.title text
+combos.description text
+combos.image_url text
+combos.bundle_price integer
+combos.sale_price integer
+combos.sale_starts_at timestamp with time zone
+combos.sale_ends_at timestamp with time zone
+combos.category_id uuid
+combos.is_available boolean
+combos.sort_order integer
+combos.created_at timestamp with time zone
+combos.updated_at timestamp with time zone
+courier_credentials.id uuid
+courier_credentials.organization_id uuid
+courier_credentials.provider text
+courier_credentials.api_key text
+courier_credentials.webhook_secret text
+courier_credentials.is_active boolean
+courier_credentials.created_at timestamp with time zone
+courier_credentials.updated_at timestamp with time zone
+customer_invites.id uuid
+customer_invites.organization_id uuid
+customer_invites.email text
+customer_invites.name text
+customer_invites.token uuid
+customer_invites.status text
+customer_invites.created_at timestamp with time zone
+customer_invites.expires_at timestamp with time zone
+customer_invites.accepted_at timestamp with time zone
+customer_invites.customer_id uuid
+customers.id uuid
+customers.organization_id uuid
+customers.name text
+customers.phone_number text
+customers.email text
+customers.marketing_opt_in boolean
+customers.created_at timestamp with time zone
+customers.updated_at timestamp with time zone
+customers.user_id uuid
+customers.total_points integer
+customers.milestone_spend_cents integer
+customers.dietary_preferences ARRAY
+customers.saved_addresses jsonb
+customers.birthday date
+customers.sms_opted_out boolean
+customers.sms_opted_out_at timestamp with time zone
+customers.sms_consent_at timestamp with time zone
+customers.sms_consent_method text
+customers.email_opted_out boolean
+customers.email_opted_out_at timestamp with time zone
+customers.email_consent_at timestamp with time zone
+customers.email_consent_method text
+customers.email_unsubscribe_token uuid
+customers.tos_accepted_at timestamp with time zone
+customers.tos_accept_method text
+donation_ledger.id uuid
+donation_ledger.organization_id uuid
+donation_ledger.amount_cents integer
+donation_ledger.source text
+donation_ledger.cause text
+donation_ledger.period_start timestamp with time zone
+donation_ledger.period_end timestamp with time zone
+donation_ledger.promotion_id uuid
+donation_ledger.notes text
+donation_ledger.created_at timestamp with time zone
+donation_ledger.paid_out_at timestamp with time zone
+email_campaigns.id uuid
+email_campaigns.organization_id uuid
+email_campaigns.name text
+email_campaigns.subject text
+email_campaigns.preview_text text
+email_campaigns.body_html text
+email_campaigns.status text
+email_campaigns.audience text
+email_campaigns.scheduled_at timestamp with time zone
+email_campaigns.sent_at timestamp with time zone
+email_campaigns.recipient_count integer
+email_campaigns.delivered_count integer
+email_campaigns.opened_count integer
+email_campaigns.clicked_count integer
+email_campaigns.bounced_count integer
+email_campaigns.unsubscribed_count integer
+email_campaigns.created_at timestamp with time zone
+email_campaigns.updated_at timestamp with time zone
+email_log.id uuid
+email_log.organization_id uuid
+email_log.campaign_id uuid
+email_log.customer_id uuid
+email_log.email_address text
+email_log.subject text
+email_log.email_type text
+email_log.status text
+email_log.provider_message_id text
+email_log.sent_at timestamp with time zone
+email_log.opened_at timestamp with time zone
+email_log.clicked_at timestamp with time zone
+email_log.bounced_at timestamp with time zone
+email_log.failed_reason text
+feedback.id uuid
+feedback.organization_id uuid
+feedback.submitted_by uuid
+feedback.category text
+feedback.subject text
+feedback.message text
+feedback.screenshot_url text
+feedback.page_url text
+feedback.app_version text
+feedback.status text
+feedback.admin_reply text
+feedback.admin_replied_at timestamp with time zone
+feedback.created_at timestamp with time zone
+feedback.updated_at timestamp with time zone
+founding_access_codes.code text
+founding_access_codes.created_at timestamp with time zone
+founding_access_codes.used_at timestamp with time zone
+founding_access_codes.used_by_email text
+founding_access_codes.used_by_user uuid
+founding_access_codes.revoked_at timestamp with time zone
+founding_access_codes.note text
+growthhub_profiles.id uuid
+growthhub_profiles.display_name text
+growthhub_profiles.phone text
+growthhub_profiles.avatar_url text
+growthhub_profiles.created_at timestamp with time zone
+growthhub_profiles.updated_at timestamp with time zone
+ingredient_shortages.id uuid
+ingredient_shortages.organization_id uuid
+ingredient_shortages.name_normalized text
+ingredient_shortages.display_name text
+ingredient_shortages.created_at timestamp with time zone
+ingredient_shortages.created_by uuid
+loyalty_code_sessions.id uuid
+loyalty_code_sessions.org_id uuid
+loyalty_code_sessions.customer_id uuid
+loyalty_code_sessions.code character
+loyalty_code_sessions.expires_at timestamp with time zone
+loyalty_code_sessions.created_at timestamp with time zone
+marketplace_organizations.id uuid
+marketplace_organizations.name text
+marketplace_organizations.subdomain_slug text
+marketplace_organizations.business_type USER-DEFINED
+marketplace_organizations.logo_url text
+marketplace_organizations.marketplace_tagline text
+marketplace_organizations.marketplace_description text
+marketplace_organizations.marketplace_cover_url text
+marketplace_organizations.marketplace_featured boolean
+marketplace_organizations.marketplace_rating numeric
+marketplace_organizations.marketplace_rating_count integer
+marketplace_organizations.cuisine_tags ARRAY
+marketplace_organizations.latitude numeric
+marketplace_organizations.longitude numeric
+marketplace_organizations.delivery_radius_km numeric
+marketplace_organizations.total_donations_cents bigint
+marketplace_organizations.founding_merchant boolean
+marketplace_organizations.created_at timestamp with time zone
+marketplace_organizations.settings jsonb
+menu_categories.id uuid
+menu_categories.organization_id uuid
+menu_categories.name text
+menu_categories.sort_order integer
+menu_categories.color text
+menu_categories.is_limited_time boolean
+menu_categories.starts_at timestamp with time zone
+menu_categories.ends_at timestamp with time zone
+menu_categories.discount_percent integer
+menu_categories.created_at timestamp with time zone
+menu_categories.updated_at timestamp with time zone
+merchant_connections.id uuid
+merchant_connections.profile_id uuid
+merchant_connections.organization_id uuid
+merchant_connections.customer_id uuid
+merchant_connections.email_marketing_consent boolean
+merchant_connections.sms_marketing_consent boolean
+merchant_connections.connected_at timestamp with time zone
+order_notification_log.id uuid
+order_notification_log.order_id uuid
+order_notification_log.channel text
+order_notification_log.event text
+order_notification_log.sent_at timestamp with time zone
+orders.id uuid
+orders.organization_id uuid
+orders.customer_id uuid
+orders.total_amount integer
+orders.status USER-DEFINED
+orders.notes text
+orders.created_at timestamp with time zone
+orders.updated_at timestamp with time zone
+orders.line_items jsonb
+orders.fulfillment_type USER-DEFINED
+orders.shipping_address jsonb
+orders.table_number text
+orders.dine_in boolean
+orders.denial_reason text
+orders.confirmed_at timestamp with time zone
+orders.declined_at timestamp with time zone
+orders.courier_provider text
+orders.courier_delivery_id text
+orders.courier_tracking_url text
+orders.courier_status text
+orders.courier_driver_name text
+orders.courier_driver_phone text
+orders.courier_driver_photo_url text
+orders.courier_fee_cents integer
+orders.courier_dispatched_at timestamp with time zone
+orders.courier_picked_up_at timestamp with time zone
+orders.courier_delivered_at timestamp with time zone
+orders.payment_status text
+orders.stripe_payment_intent_id text
+orders.payment_method text
+orders.loyalty_awarded boolean
+orders.square_payment_id text
+orders.square_order_id text
+orders.square_location_id text
+orders.refund_amount_cents integer
+orders.refunded_at timestamp with time zone
+orders.refund_reason text
+organizations.id uuid
+organizations.owner_id uuid
+organizations.name text
+organizations.subdomain_slug text
+organizations.tier USER-DEFINED
+organizations.created_at timestamp with time zone
+organizations.updated_at timestamp with time zone
+organizations.business_type USER-DEFINED
+organizations.settings jsonb
+organizations.stripe_account_id text
+organizations.logo_url text
+organizations.loyalty_config jsonb
+organizations.trial_ends_at timestamp with time zone
+organizations.sms_number text
+organizations.sms_sender_id text
+organizations.sms_monthly_cap integer
+organizations.sms_used_this_month integer
+organizations.sms_reset_at timestamp with time zone
+organizations.email_monthly_cap integer
+organizations.email_used_this_month integer
+organizations.email_reset_at timestamp with time zone
+organizations.email_sending_domain text
+organizations.marketplace_visible boolean
+organizations.marketplace_tagline text
+organizations.marketplace_description text
+organizations.marketplace_cover_url text
+organizations.marketplace_featured boolean
+organizations.cuisine_tags ARRAY
+organizations.latitude numeric
+organizations.longitude numeric
+organizations.marketplace_rating numeric
+organizations.marketplace_rating_count integer
+organizations.total_donations_cents bigint
+organizations.voluntary_donation_rate_bp smallint
+organizations.delivery_radius_km numeric
+organizations.sms_topup_credits integer
+organizations.email_topup_credits integer
+organizations.reservation_accept_online boolean
+organizations.tos_accepted_at timestamp with time zone
+organizations.tos_version text
+organizations.owner_phone text
+organizations.spam_act_acknowledged boolean
+organizations.owner_full_name text
+organizations.legal_entity_type text
+organizations.abn text
+organizations.abn_verified boolean
+organizations.phone_verified boolean
+organizations.phone_otp_hash text
+organizations.phone_otp_expires_at timestamp with time zone
+organizations.business_address jsonb
+organizations.onboarding_completed_at timestamp with time zone
+organizations.security_questions jsonb
+organizations.founding_merchant boolean
+organizations.reorder_threshold_default integer
+organizations.pos_enabled boolean
+organizations.contact_email text
+organizations.marketplace_hidden_at timestamp with time zone
+organizations.marketplace_reminder_stage integer
+organizations.marketplace_reminders_opted_out boolean
+organizations.marketplace_paused_until timestamp with time zone
+organizations.charges_enabled boolean
+organizations.payouts_enabled boolean
+organizations.payment_provider text
+organizations.square_merchant_id text
+organizations.square_location_id text
+organizations.square_payment_ready boolean
+payment_refunds.id uuid
+payment_refunds.order_id uuid
+payment_refunds.organization_id uuid
+payment_refunds.provider text
+payment_refunds.provider_refund_id text
+payment_refunds.amount_cents integer
+payment_refunds.currency text
+payment_refunds.reason text
+payment_refunds.status text
+payment_refunds.created_by uuid
+payment_refunds.created_at timestamp with time zone
+payment_refunds.updated_at timestamp with time zone
+products.id uuid
+products.organization_id uuid
+products.title text
+products.description text
+products.price integer
+products.is_available boolean
+products.image_url text
+products.created_at timestamp with time zone
+products.updated_at timestamp with time zone
+products.ingredients_list ARRAY
+products.extras_list jsonb
+products.allow_customization boolean
+products.stock_quantity integer
+products.tags ARRAY
+products.category text
+products.category_id uuid
+products.sale_price integer
+products.sale_starts_at timestamp with time zone
+products.sale_ends_at timestamp with time zone
+products.barcode text
+products.sku text
+products.price_unit text
+products.cost_price_cents integer
+products.reorder_threshold integer
+products.supplier text
+products.variants jsonb
+products.required_ingredients ARRAY
+promo_codes.id uuid
+promo_codes.organization_id uuid
+promo_codes.code text
+promo_codes.discount_type USER-DEFINED
+promo_codes.value integer
+promo_codes.usage_limit integer
+promo_codes.usage_count integer
+promo_codes.expires_at timestamp with time zone
+promo_codes.is_active boolean
+promo_codes.created_at timestamp with time zone
+promo_codes.updated_at timestamp with time zone
+promotions.id uuid
+promotions.organization_id uuid
+promotions.amount_cents integer
+promotions.charity_cents integer
+promotions.platform_cents integer
+promotions.charity_cause text
+promotions.starts_at timestamp with time zone
+promotions.ends_at timestamp with time zone
+promotions.is_active boolean
+promotions.payment_status text
+promotions.stripe_payment_intent_id text
+promotions.created_at timestamp with time zone
+push_subscriptions.id uuid
+push_subscriptions.customer_id uuid
+push_subscriptions.org_id uuid
+push_subscriptions.endpoint text
+push_subscriptions.p256dh text
+push_subscriptions.auth text
+push_subscriptions.created_at timestamp with time zone
+reservation_waitlist.id uuid
+reservation_waitlist.organization_id uuid
+reservation_waitlist.customer_name text
+reservation_waitlist.customer_email text
+reservation_waitlist.customer_phone text
+reservation_waitlist.party_size integer
+reservation_waitlist.preferred_date date
+reservation_waitlist.special_requests text
+reservation_waitlist.status text
+reservation_waitlist.notified_at timestamp with time zone
+reservation_waitlist.created_at timestamp with time zone
+reservations.id uuid
+reservations.organization_id uuid
+reservations.table_id uuid
+reservations.customer_id uuid
+reservations.customer_name text
+reservations.customer_email text
+reservations.customer_phone text
+reservations.party_size integer
+reservations.start_at timestamp with time zone
+reservations.end_at timestamp with time zone
+reservations.status USER-DEFINED
+reservations.notes text
+reservations.cancellation_token uuid
+reservations.cancelled_at timestamp with time zone
+reservations.cancellation_reason text
+reservations.created_at timestamp with time zone
+reservations.updated_at timestamp with time zone
+reservations.reminder_24h_sent_at timestamp with time zone
+reservations.reminder_2h_sent_at timestamp with time zone
+reservations.deposit_paid boolean
+reservations.deposit_amount_cents integer
+reservations.confirmation_sms_sent_at timestamp with time zone
+reviews.id uuid
+reviews.organization_id uuid
+reviews.order_id uuid
+reviews.customer_id uuid
+reviews.customer_name text
+reviews.rating smallint
+reviews.body text
+reviews.is_visible boolean
+reviews.created_at timestamp with time zone
+signup_codes.id uuid
+signup_codes.code text
+signup_codes.plan_label text
+signup_codes.tier USER-DEFINED
+signup_codes.max_uses integer
+signup_codes.uses integer
+signup_codes.is_active boolean
+signup_codes.expires_at timestamp with time zone
+signup_codes.created_at timestamp with time zone
+sms_campaigns.id uuid
+sms_campaigns.organization_id uuid
+sms_campaigns.name text
+sms_campaigns.message_body text
+sms_campaigns.status text
+sms_campaigns.audience text
+sms_campaigns.scheduled_at timestamp with time zone
+sms_campaigns.sent_at timestamp with time zone
+sms_campaigns.recipient_count integer
+sms_campaigns.delivered_count integer
+sms_campaigns.opted_out_count integer
+sms_campaigns.created_at timestamp with time zone
+sms_campaigns.updated_at timestamp with time zone
+sms_log.id uuid
+sms_log.organization_id uuid
+sms_log.campaign_id uuid
+sms_log.customer_id uuid
+sms_log.phone_number text
+sms_log.message_body text
+sms_log.sender_number text
+sms_log.status text
+sms_log.provider_message_id text
+sms_log.sent_at timestamp with time zone
+sms_log.delivered_at timestamp with time zone
+sms_log.failed_reason text
+square_connections.org_id uuid
+square_connections.access_token text
+square_connections.refresh_token text
+square_connections.expires_at timestamp with time zone
+square_connections.merchant_id text
+square_connections.locations jsonb
+square_connections.default_location_id text
+square_connections.scopes text
+square_connections.token_type text
+square_connections.connected_at timestamp with time zone
+square_connections.updated_at timestamp with time zone
+staff_accounts.id uuid
+staff_accounts.organization_id uuid
+staff_accounts.user_id uuid
+staff_accounts.role USER-DEFINED
+staff_accounts.username text
+staff_accounts.display_name text
+staff_accounts.is_active boolean
+staff_accounts.created_at timestamp with time zone
+staff_accounts.updated_at timestamp with time zone
+staff_accounts.created_by uuid
+staff_accounts.pin_hash text
+staff_accounts.failed_pin_attempts integer
+staff_accounts.pin_locked_until timestamp with time zone
+stock_movements.id uuid
+stock_movements.organization_id uuid
+stock_movements.product_id uuid
+stock_movements.variant_id text
+stock_movements.movement_type text
+stock_movements.quantity_delta integer
+stock_movements.quantity_before integer
+stock_movements.quantity_after integer
+stock_movements.reason text
+stock_movements.source text
+stock_movements.created_by uuid
+stock_movements.created_at timestamp with time zone
+storefront_config.organization_id uuid
+storefront_config.template text
+storefront_config.sections jsonb
+storefront_config.theme jsonb
+storefront_config.hero jsonb
+storefront_config.is_published boolean
+storefront_config.updated_at timestamp with time zone
+storefront_config.updated_by uuid
+table_zones.id uuid
+table_zones.organization_id uuid
+table_zones.name text
+table_zones.sort_order integer
+table_zones.created_at timestamp with time zone
+tables.id uuid
+tables.organization_id uuid
+tables.number text
+tables.seats integer
+tables.zone text
+tables.is_active boolean
+tables.notes text
+tables.created_at timestamp with time zone
+tables.updated_at timestamp with time zone
+user_roles.id uuid
+user_roles.user_id uuid
+user_roles.role USER-DEFINED
+user_roles.created_at timestamp with time zone
+usernames.user_id uuid
+usernames.username text
+usernames.created_at timestamp with time zone
