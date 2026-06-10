@@ -69,3 +69,15 @@ multi-lens review. Fix what's found; log every fix + every slight improvement.
 - ▶ Scale features (`wmzasllnk`, RUNNING): org-level one-and-done Square OAuth connect (per-org tokens, fixes BLK-2) + multi-location + GMV view + refunds (+ REFUND_POLICY.md).
 - NEXT: repo cleanup + fix CLAUDE.md + update memory + MORNING REPORT (consolidated: built/verified, issues found+fixed, migrations to run in order, deploy steps, decisions for founder).
 - Local commits ahead of origin (unpushed): demos+cantina+square+fix1+fix2 (5). ONE final app push when founder approves.
+
+## 2026-06-10 — DRIFT HOTFIX VERIFIED + SANDBOX GO-LIVE PREPPED
+- Founder ran FOUNDER_RUN_NEXT.sql (11 migs) → verification CAUGHT schema drift: 3 RPCs broken on live
+  (repo assumed organizations.phone_otp_attempts + orders.receipt_token which don't exist on live).
+- Hotfix `FIX_DRIFTED_RPCS.sql` (mig 20260610070000, local commit 6433356) run by founder → ALL 3 VERIFIED OK.
+- FULL CHAIN re-verified live post-all-migrations: anon → consent → guest order placed (2887de84) →
+  fixed tracker reads it masked → C1 rejects tampered total. square_connections exists (RLS deny-by-default);
+  claim_order_for_response service-role-only (correct).
+- NEXT: deploy 7 edge fns (needs sbp_ token or founder) → founder runs SQUARE_SANDBOX_GOLIVE.sql (seeds
+  test-bistro connection + flips flags) → Claude drives the headless sandbox card E2E (4111… authorize →
+  owner-confirm capture → refund). Webhook secrets optional for the test (reconciliation only).
+- STANDING FOLLOW-UP: repo↔live schema reconciliation (root cause of the drift).
