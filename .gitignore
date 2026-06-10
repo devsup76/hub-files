@@ -20,3 +20,14 @@ Thumbs.db
 
 # Microsoft Office temp/lock files
 ~$*
+
+# Feature worktrees of the app repo (own git histories)
+repo-*/
+
+# Merchant brand asset folders (photos/logos for storefront previews)
+tacojoint/
+wingzhut/
+raisingtenders/
+
+# Supabase CLI local link state
+supabase/

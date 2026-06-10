@@ -1,0 +1,27 @@
+---
+name: woahh-restaurant-inventory
+description: "Restaurant ingredient inventory + recipes + auto-deplete + AI recipe-builder — built on branch feat/restaurant-inventory, NOT merged (next-phase launch); self-learning calibration designed as phase 2"
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 5488fec5-c083-48fd-a411-06e380d8cc03
+---
+
+**Restaurant ingredient inventory** — brings real inventory to restaurants (retail already had `ShopInventory` + `stock_movements` + `ai-inventory-assistant`). Built 2026-06-03 on branch **`feat/restaurant-inventory`** (app repo `devsup76/business-growth-hub`), commit `e14d0aa`. **NOT merged to main, NOT deployed — founder said it launches in the next phase.** Build green (`npm run build`), full demo verified via Playwright.
+
+**Why:** restaurants could only tag dishes with free-text ingredient NAMES (`products.ingredients_list`), no quantities/stock. This adds ingredient-level inventory so they stop doing paper stock-takes and stock auto-updates as food sells.
+
+**What shipped on the branch:**
+- Migration `20260603100000_restaurant_ingredient_inventory.sql`: tables `ingredients` (per-org master, base_unit g/ml/each, par_level, supplier, cost), `recipe_components` (dish→ingredient qty BOM; carries `source/confidence/last_learned_at` for phase-2 learning), `ingredient_movements` (ledger mirroring stock_movements); `adjust_ingredient_stock` RPC; depletion **BEFORE UPDATE OF status** trigger (sets `NEW.ingredients_depleted_at` on the row → no recursion; aggregates deltas locked ORDER BY ingredient_id → deadlock-safe; allows negative on sale = variance; nets out customer-removed ingredients) + AFTER INSERT companion; **auto-86**: ingredient ≤0 upserts `ingredient_shortages` (added `source manual|auto` col) so the EXISTING storefront unavailability machinery reacts with ZERO storefront changes.
+- Edge fns (restaurant-gated, reuse `_shared/auth`+`anthropic`): `ai-recipe-builder` (Sonnet; drafts per-dish recipes from menu; only uses names already on the dish so auto-86 matching stays aligned), `ai-ingredient-assistant` (Haiku; conversational "received 20kg flour"; kg/L→base conversion server-side).
+- Frontend: `RestaurantInventory.tsx` at `/business/dashboard/inventory` + sidebar nav (restaurants only; retail keeps inventory at `/menu` via MenuRouteSwitch→ShopInventory); `ingredientApi`+`recipeApi` in `services/api.ts`; full demo-mode in `lib/demo.ts` (seeded ingredients/recipes on Margherita+Pepperoni, depletion hooked into `updateOrderStatus`/`createOrder`, AI stubs).
+
+**Playwright-verified (demo `?demo=owner`, restaurant Bella's Bistro):** page render; AI restock 2kg→7kg (kg→g); recipe-builder 3 dishes/7 ingredients; auto-deplete on completing the Pepperoni order (Mozz −150g, Pepperoni −80g, Tomato −100ml); auto-86 → `/shop?demo=owner` shows Margherita "Temporarily sold out — out of Mozzarella" (required) + Pepperoni "Mozzarella temporarily unavailable" (optional). Preview server pattern: `npm run preview -- --port 4174`; pwtest harness uses `playwright-core` + `executablePath` chromium-1223 (scripts `/tmp/pwtest/inv_*.mjs`).
+
+**Self-learning vision (founder, 2026-06-03) — phase 2, designed in plan `/home/vscode/.claude/plans/flickering-spinning-glacier.md`:** "woahh does your stocktake for you." 4–5 counts give a linear system (`20×ButterChicken + 6×ChickenMasala ≈ 20kg`), NNLS solves per-dish usage → predict on-hand with confidence band → merchant confirms instead of counting → ~75% less stocktaking → verify periodically + keep learning (drift raises variance → asks for a count). v1 ledger is the training data; `recipe_components.source/confidence/last_learned_at` already present; only additive phase-2 columns needed. No incumbent (MarketMan/xtraCHEF/WISK/Apicbase) closes this loop.
+
+**Phase 3 — "Plate Economics & Margin Radar" (founder idea 2026-06-03, "could be the biggest thing"):** dynamic plate-cost + margin intelligence on top of the BOM. Live plate cost / food-cost % / contribution margin per dish; cost-spike→margin-impact alerts mapped to the exact dishes (e.g. "potatoes +180% → Loaded Fries CM $9.20→$4.10"); auto menu-engineering quadrant (Stars/Plowhorses/Puzzles/Dogs from CM × sales mix); **when-to-run-a-sale / when-not-to** (cost × learned elasticity × forecast) = the headline; forecasting (seasonality/ARIMA-LSTM + supplier-invoice OCR + AU feeds: Brisbane Markets/Brismark, Freshlogic, DAFF ABARES; global FAO/USDA) + demand-side trends. **Wedge:** incumbents (Jelly, MarginEdge, MarketMan, xtraCHEF, Apicbase) only *report* price changes; we *recommend menu actions* — a profit copilot, not a cost report. Additive phase-3 schema only (ingredient_movements.unit_cost_cents price history, products.target_food_cost_pct, ingredient↔commodity map). Fully written up as §8 in docs/RESTAURANT_INVENTORY.md (pushed to hub-files `fba1e82`).
+
+**Deferred / not done:** per-dish recipe editor inside `Menu.tsx` dish sheet (skipped to avoid risk in that big file — recipes managed via AI builder + inventory page for now); migration NOT run against live Postgres (authored + design-reviewed, applies next phase); extras/combos depletion out of v1 (documented); the self-learning loop itself (phase 2). Branch not pushed.
+
+Related: [[woahh-ingredient-availability]] (the shipped `ingredient_shortages` auto-86 machinery this feeds), [[woahh-ai-features]].

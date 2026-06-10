@@ -391,3 +391,81 @@ These are self-contained client/server edits that reduce real customer-facing ha
 - Preview↔live parity: identical `ThemeShell`+`world` tree; inert demo Checkout can't place a real order without the injected bridge.
 - a11y baseline strong: one `Overlay` does focus-trap/Esc/restore/scroll-lock; reduced-motion honoured; correct ARIA roles (the H-3/M-16 issues are the exceptions).
 - Dark mode + accent swap ride entirely on AA-derived scoped CSS vars; deterministic render (no clock/RNG; FNV-1a order number).
+
+## Integration review (2026-06-10)
+
+**VERDICT: NOT integration-sound — 1 BLOCKER + 3 HIGH must be fixed before deploy.** The combined payment surface + migration stack share two root-cause integration defects: (1) the `payment_status != 'paid'` no-downgrade guard predates the refund pass and is blind to `refunded`/`partially_refunded`, so Square re-fires/resumes silently revert refunded orders to `paid`; (2) the H-5/H-6 column-masking RPC (`get_order_by_id`) was re-created at an earlier timestamp than the migration that adds `orders.square_location_id`, so the new column is anon-readable. Both are emergent — invisible to per-pass review. The state machine token/provider/claim wiring and migration run-order/dependency chain are otherwise verified sound.
+
+This section consolidates two integration-review lenses (A = payment state machine; B = migration stack). Findings are deduped and severity-ranked. Two HIGH-class findings across the lenses (Lens A "resume-path clobber" and Lens A BLOCKER) share one root cause and are listed under the BLOCKER's fix.
+
+### BLOCKER
+
+**INT-B1 — Square `payment.updated` webhook + resume path clobber refund states back to `paid`** (Lens A BLOCKER + Lens A HIGH "resume re-mark", same root cause)
+- **Files:** `supabase/functions/square-webhook/index.ts` (`setOrderPayment`, ~125-178); `supabase/functions/square-payment/index.ts` (~223-261, 371-380); interacts with `supabase/migrations/20260610050000_order_refunds.sql` (`record_order_refund`).
+- **Scenario:** After a refund, `payment_status` is `refunded`/`partially_refunded` but the Square payment object stays `COMPLETED` (only `refunded_money` changes). Square fires `payment.updated`; `setOrderPayment` maps COMPLETED→`paid` and its only guard is `.neq('payment_status','paid')` — which does NOT block a `refunded`/`partially_refunded` row → order silently flips back to `paid`. Same clobber is reachable client-side via the `square-payment` resume branch (only short-circuits on `payment_status === 'paid'`, then re-writes `paid` for a still-COMPLETED refunded payment). Result: GMV re-inflates (settlement keys on `payment_status`), order is internally inconsistent (`payment_status='paid'` with `refund_amount_cents>0`). Stripe not currently affected (no `payment_intent.succeeded` re-fire post-refund).
+- **Fix:** Widen the no-downgrade guard to protect terminal/refund states in BOTH writers: `.not('payment_status','in','(paid,refunded,partially_refunded)')` on `square-webhook setOrderPayment` (both `square_payment_id` and `reference_id` fallback updates) and on the `square-payment` order-row write; add a top-of-handler terminal check in `square-payment`: reject when `payment_status` ∈ `paid,refunded,partially_refunded,canceled` (`code:"order_terminal"`, 400). Apply the widened guard defensively in `stripe-webhook setOrderPayment` too. Optionally route `payment.updated` carrying non-zero `refunded_money` through `set_refund_status` instead of mapping COMPLETED→paid.
+
+### HIGH
+
+**INT-H1 — Anon order-tracker leaks `orders.square_location_id` (H-5 mask not re-amended after column add)** (Lens B HIGH-1)
+- **Files:** `supabase/migrations/20260610030000_orders_square_location.sql` (adds `orders.square_location_id`); `supabase/migrations/20260609060000_rpc_mask_square_and_counters.sql` (`get_order_by_id`, earlier timestamp, denylist masks only `stripe_payment_intent_id`/`square_payment_id`/`square_order_id`).
+- **Scenario:** `get_order_by_id` is the only anon-GRANTed `RETURNS SETOF orders` RPC and returns the full row by denylist. 030000 runs AFTER 060000 and adds `square_location_id`, which the denylist never nulls → any anon caller with a `receipt_token` (customer order-status URLs) reads the merchant's Square location id. Exactly the denylist-leak failure mode 060000 warns about.
+- **Fix:** Re-create `get_order_by_id` AFTER the last column-adding migration with `r.square_location_id := NULL;` added to the denylist (place this re-create last in the run order). Preferably land the deferred allowlist-projection (mask-by-default). Scope is `get_order_by_id` only — `get_member_org`/`get_public_storefront` don't return the new orders column (Lens B MEDIUM-1).
+
+**INT-H2 — Concurrent partial-refund + webhook back-out: opposite lock order → deadlock / lost-update on refund total** (Lens A HIGH "partial+full double-fire / back-out")
+- **File:** `supabase/migrations/20260610050000_order_refunds.sql` (`set_refund_status` ~307-335 vs `record_order_refund`).
+- **Scenario:** `set_refund_status` locks the refund row then the order row (`FOR UPDATE`); `record_order_refund` locks the order row first then inserts the refund row — opposite acquisition order. A webhook back-out (e.g. refund A → FAILED) racing a new partial refund B can deadlock, or compute `v_new_total` from a stale `refund_amount_cents` snapshot → `refund_amount_cents`/`payment_status` drift from the sum of `succeeded` refund rows; GMV reads a wrong net.
+- **Fix:** Make lock order consistent — in `set_refund_status` lock the order row FIRST (`SELECT ... FROM orders WHERE id = (SELECT order_id FROM payment_refunds WHERE ...) FOR UPDATE`), then the refund row. Better: derive `refund_amount_cents` as a recomputed `SUM(amount_cents) WHERE status IN ('pending','succeeded')` inside the locked section rather than incremental add/subtract (eliminates the lost-update).
+
+### MEDIUM
+
+**INT-M1 — `notifyRefund` fires per partial with single-amount framing + no dedupe vs idempotent record** (Lens A MEDIUM)
+- **File:** `supabase/functions/refund-order/index.ts` (~294, 373, 490-534).
+- **Scenario:** Email is sent unconditionally after `recordRefund` with this-call's amount only; partial-then-completing refund sends "$30" then "$70" (never the $100 total), and a retry where `record_order_refund` was an idempotent no-op still emails. Reads as duplicate/confusing refunds → support/dispute risk.
+- **Fix:** Have `record_order_refund` return an `is_new` flag; gate `notifyRefund` on it. Phrase email with this refund amount + running refunded total / remaining balance.
+
+**INT-M2 — `order-respond` capture path not guarded against already-refunded `payment_status`** (Lens A MEDIUM)
+- **File:** `supabase/functions/order-respond/index.ts` (~115-119, 215-283).
+- **Scenario:** Early-return only checks `order.status`, not `payment_status`. Combined with INT-B1's clobber, a refunded-then-confirmed order can be marked `paid` with `refund_amount_cents>0`. Largely neutralized by fixing INT-B1; belt-and-braces.
+- **Fix:** After the claim, skip the capture write if `payStatus` ∈ `('refunded','partially_refunded','canceled')`; optionally have `record_order_refund` refuse orders in `awaiting_confirmation`.
+
+**INT-M3 — Concurrent Square token refresh (inline charge × daily cron) → no CAS, stale-token charge failures** (Lens A MEDIUM)
+- **File:** `supabase/functions/_shared/square.ts` (`getFreshAccessToken` ~153-188); callers `square-payment`/`order-respond`/`refund-order` + cron `square-token-refresh`.
+- **Scenario:** Inline refresh and cron can both see `needsRefresh` and call `obtainToken`; the losing caller proceeds with its stale in-memory `conn.access_token` → sporadic `UNAUTHORIZED`. With `withinDays=7` the window is wide (routine, not edge). An `order-respond` capture that fails silently leaves "cooked but not captured" until the webhook reconciles.
+- **Fix:** Serialize refresh with a conditional update (`UPDATE ... WHERE org_id=$ AND expires_at=$old`) so one writer wins; on lost CAS re-`loadConnection` before charging. Or short advisory lock per org.
+
+**INT-M4 — `set_square_default_location` leaves `organizations.square_location_id` stale (H-6 guard makes it a one-way door)** (Lens B MEDIUM-3)
+- **File:** `supabase/migrations/20260610010000_square_connections.sql` (~205-217).
+- **Scenario:** RPC updates `square_connections.default_location_id` only (the H-6 guard would pin the org column under the owner's JWT). Correct today because `square-payment` reads the connection first, but `organizations.square_location_id` is set once at connect (service role) and never re-synced; any future reader of the org column charges to a stale location, and no JWT path can keep it in sync.
+- **Fix:** Either mirror the value into `organizations.square_location_id` via a service-role helper/edge fn, or drop the org column and make `square_connections.default_location_id` the single source of truth. Until then, audit that no reader uses `organizations.square_location_id`.
+
+**INT-M5 — `partially_refunded` inflates `by_status.paid` count / `order_count` in final GMV RPC** (Lens B MEDIUM-2)
+- **File:** `supabase/migrations/20260610050000_order_refunds.sql` (~398).
+- **Scenario:** Partial-refund orders bucket as `paid`: `cents` are netted (line 396) but the order is counted as a full `paid` order, so AOV (`gmv_cents/order_count`) under-states for merchants with many partials. Internal BI only, org-scoped, no leak. Comment (412-416) only documents the full-refund exclusion half.
+- **Fix:** Document the semantic in the RPC comment, or compute AOV over only non-zero-net orders if fidelity matters.
+
+### LOW
+
+**INT-L1 — `square-payment` resume reports a `PENDING` Square payment as `authorized`, contradicting its own comment** (Lens A LOW)
+- **File:** `supabase/functions/square-payment/index.ts` (~60, 244-261).
+- **Scenario:** `RESUMABLE_SQUARE = ["APPROVED","PENDING","COMPLETED"]` includes `PENDING` despite the comment (~241-243) saying PENDING is NOT treated as authorized; resume returns `status:"authorized"` for a matching-amount PENDING. No money moves (order-respond won't capture a non-APPROVED), but the storefront tells the customer they're authorized while a 3DS/risk hold is unresolved.
+- **Fix:** Remove `PENDING` from `RESUMABLE_SQUARE` (or special-case to "still processing").
+
+**INT-L2 — Out-of-band dashboard refunds not reflected in `refund_amount_cents` → `remaining` over-states** (Lens A LOW)
+- **File:** `supabase/functions/refund-order/index.ts` (~157-159, 257-275).
+- **Scenario:** `remaining = total_amount - refund_amount_cents`; a refund issued directly in the Stripe/Square dashboard isn't recorded (we only `set_refund_status` for refunds we created), so `remaining` stays too high and `refund-order` can attempt to over-refund. Provider rejects (`refund_failed`) — safe but opaque.
+- **Fix:** Have `square-webhook`/`stripe-webhook` `refund.created` for an unrecorded refund call `record_order_refund` (not just `set_refund_status`) so external refunds decrement the summary. Document that dashboard refunds must be mirrored.
+
+**INT-L3 — Overloaded `square_location_id` column name across `organizations` and `orders`** (Lens B LOW-1)
+- **File:** `20260609020000` (`organizations.square_location_id`) vs `20260610030000` (`orders.square_location_id`).
+- **Scenario:** Not a composition defect (different tables, both `IF NOT EXISTS`), but the identical name underlies INT-H1 (mask author missed the order column) and INT-M4 (two stores of "location"). Authoritative source is `square_connections.default_location_id`.
+- **Fix:** Naming/documentation only (e.g. `organizations.square_default_location_id`); not worth a data migration.
+
+### IMPROVEMENT
+
+- **INT-I1 — Idempotency-key amount-coupling differs between authorize and refund** (Lens A IMPROVEMENT): `square-payment` keys on `order:amount:source_id`; `refund-order` keys on `order:alreadyRefunded:amount`. Two identical-amount partials issued back-to-back before the first records share a key → Square returns the first refund object, `record_order_refund` dedupes on `provider_refund_id`, second partial no-ops. Safe (prevents double-refund) but blocks a legitimate "refund $30 twice" until the first records. Add a code comment so a future maintainer doesn't "fix" it into a double-refund bug.
+- **INT-I2 — The 10 migrations are not bundled into `docs/FOUNDER_RUN_NEXT.sql`** (Lens B IMPROVEMENT-1): the file is absent in `repo-audit`. Inter-file ordering is load-bearing exactly at INT-H1 (mask re-create vs `orders.square_location_id` add). Generate the bundle in strict timestamp order, append the INT-H1 `get_order_by_id` re-mask as the final statement, run as one transaction.
+- **INT-I3 — Migration→edge-fn deploy-order coupling documented only in 050000** (Lens B IMPROVEMENT-2): `claim_order_for_response` (040000) has no missing-RPC guard — if `order-respond` deploys before 040000 runs, every confirm/decline 500s. State the apply-then-deploy order once at the top of the bundle: run all 10 migrations → deploy `order-respond`/`refund-order`/`square-*` → verify the two crons.
+
+### Verified sound (no action)
+Per-org OAuth path consistent across `square-payment`/`order-respond`/`refund-order` (all via `loadConnection`→`getFreshAccessToken`, no stale global `SQUARE_ACCESS_TOKEN`); H-1 provider detection identical across callers; claim-CAS correctly gates only capture/cancel and is absent from the (post-capture) refund path. Migration run-order/column dependencies satisfied in order; `payment_status` CHECK widening complete (final = `unpaid,authorized,paid,pay_in_person,refunded,partially_refunded,failed,canceled`); `get_gmv_analytics` double-create (040000→050000) later-wins, identical `(integer)` signature; H-6 guard passes service-role webhook/connect writes; `claim_order_for_response` enum/columns pre-exist; `square_connections` deny-by-default RLS correct; C1 prerequisite migration present.

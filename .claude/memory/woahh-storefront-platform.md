@@ -1,0 +1,25 @@
+---
+name: woahh-storefront-platform
+description: "Per-merchant subdomain storefront platform initiative (to beat Bopple) — branch, what's built, the templates-not-builder decision, and pause state"
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 5cc244e8-c455-42e8-b8b8-d97c5fa82054
+---
+
+**Initiative (started 2026-06-07):** turn Woahh into a true per-merchant storefront platform to out-compete Bopple/Shopline/Shopify for small AU merchants. Three pillars: (1) every merchant gets `<slug>.woahh.app`; (2) per-merchant custom UI; (3) per-merchant app. Marketplace stays. "Compete with Bopple" = benchmark to *beat*, not a label — frame docs around our product.
+
+**KEY DECISION (2026-06-07): templates, NOT a merchant builder.** Do NOT ship a dashboard design/page-builder to merchants ("above their level + time-consuming"). Instead build **multiple state-of-the-art, ready-made templates** (look like billion-$ companies) that merchants **select**; merchant customization = pick a template + basic branding (logo / colors / copy). `StorefrontRenderer`'s `template` field already supports this — a template = a curated `storefront_config`, not a builder.
+
+**App:** per-merchant installable PWA now → Capacitor-wrapped native later (premium tier). **Domains:** every merchant gets `<theirname>.woahh.app` (wildcard `*.woahh.app`); own-domains designed-for, not built.
+
+**Branch `feat/storefront-platform`** (app repo devsup76/business-growth-hub), off main `25df918`. **Foundation committed + pushed `8b29b03`** (build + tsc green; apex woahh.app byte-unchanged; all additive):
+- `src/lib/tenant.ts` (resolve `<slug>.woahh.app` + reserved-host guard, SSR-safe), `src/lib/storefrontConfig.ts` (types/defaults/parser), `supabase/migrations/20260603010000_storefront_config.sql` (table + RLS + validate trigger + `get_public_storefront_config` anon RPC), `src/components/storefront/StorefrontRenderer.tsx` + `sections/*` (8 sections, config-driven, NOT yet wired), `src/lib/pwaManifest.ts`, `App.tsx` root route → `<Shop forcedSlug>` on subdomains (apex → `<Storefront/>` unchanged), `Shop.tsx` forcedSlug + post-load manifest injection. Docs: `docs/ARCHITECTURE_STOREFRONT_PLATFORM.md`, `docs/POSITIONING_STOREFRONT.md`. CLAUDE.md (parent repo) updated by the run.
+
+**Hardening run `wadq5fcxu` (edits in working tree, UNCOMMITTED at pause 2026-06-07):** CSP `manifest-src 'self' blob:` (public/_headers), apex-only route guard (`src/components/ApexOnly.tsx` + App.tsx — redirect /business,/eat to apex on subdomains), reserved-slug guard trigger migration `20260603020000_guard_subdomain_slug.sql` (blocks reserved/malformed `subdomain_slug` — NOTE subdomain_slug is now security-identity and was NOT in the C2 revoke), storefront_config size/URL bounds (edited 20260603010000), `src/lib/tenant.test.ts`. → COMMIT after verify-phase findings reviewed.
+
+**PAUSED 2026-06-07 for user review. NOT merged.** Pending TODO at pause: (a) commit the hardening edits after reviewing verify findings; (b) **clean up CLAUDE.md to be forward-looking + accurate, NO ASSUMPTIONS (verify every claim vs git/files)**; (c) update ARCHITECTURE/POSITIONING docs to the templates-not-builder model. Next build phase (after review): design N premium templates + a simple template-picker in the dashboard + wire `StorefrontRenderer` (browser-test before replacing the live storefront).
+
+**2026-06-07 — PREMIUM TEMPLATE SYSTEM built (additive, opt-in, NOT merged) on `feat/storefront-platform`:** checkpoint `be66f76` (6 curated presets `src/lib/storefrontTemplates.ts`; premium sections + `templates/{primitives,theme}.ts`; `StorefrontRenderer`; preview route `/storefront-preview/:templateId` ApexOnly+noindex with DemoStore data; dashboard PICKER `src/pages/dashboard/StorefrontTemplates.tsx` at `/business/dashboard/storefront` (pick+publish, solo tier, NOT a builder); `PublishedStorefront` opt-in render — live storefront byte-unchanged unless a config is published; `src/services/storefrontConfig.ts`; migration `20260607010000` widens template CHECK to 7 variants). Polish `d7f7af9`: removed Impact; 6 distinct font systems (Geist/Bricolage/Fraunces/Cormorant Garamond/Space Grotesk/Archivo) via `data-template` CSS vars + fluid clamp() scales; per-template motion personality; AA contrast across all 6 (residual: accent eyebrow small-text ~AA-large on 3 presets — minor); a11y CardShell/ProductCard focus+keyboard FIXED; CSP-clean fonts; apex+live default unchanged; build+tsc+16 smoke tests green. **REVIEW PREVIEW:** `https://feat-storefront-platform.woahh-app.pages.dev/storefront-preview` (flip the 6 templates, restaurant⇄retail toggle). Migrations pending to apply (storefront_config + reserved-slug + template-variants): `20260603010000`, `20260603020000`, `20260607010000`.
+
+**Human-only to go live:** Cloudflare wildcard `*.woahh.app` DNS + SSL + Pages custom domain; run migrations `20260603010000` + `20260603020000` + `20260607010000`; Supabase Auth redirect allowlist for `*.woahh.app`; review preview + pick templates; merge. Related: [[woahh-overnight-security-sweep]], [[woahh-restaurant-inventory]], [[woahh-payments-stripe]].

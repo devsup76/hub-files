@@ -146,23 +146,68 @@ substring auth; `sms-webhook` fail-open secret gate + PII payload log + NULL-`to
 explicit `REVOKE FROM PUBLIC` on the intentionally-public token RPCs. Confirmed NON-issues: `sms_log`
 RLS (proper org-scoped SELECT policy), `sms-send` exact bearer compare.
 
-### ✅ Hardening #1–#3 IMPLEMENTED (2026-06-02, branch `security/sms-hardening-backlog` off `origin/main`)
+### ⚠️ 2026-06-02 RECONCILE — the section below CORRECTS the stale "branch security/sms-hardening-backlog" claim
 
-Code written + reviewed locally; **NOT yet pushed, deployed, or applied to the live DB.** Three items:
-1. **`owner-verify` OTP brute-force lockout** — 5 wrong codes → 15-min cooldown, mirroring
-   `staff-pin-login`. New migration `20260602000000_owner_verify_otp_lockout.sql` adds
-   `organizations.phone_otp_attempts` + `phone_otp_locked_until`. `verify_otp` checks/increments/locks
-   (only a valid-format wrong guess burns an attempt; counter resets on success or once a past lock
-   expires); `send_otp` also honours the lock so resend-cycling can't reset the counter.
-2. **`reservation-remind`** — substring `auth.includes(SERVICE_KEY)` → strip-prefix + exact
-   `bearer === SERVICE_KEY` (matches `marketplace-reminders`).
-3. **`sms-webhook`** — secret gate now **fail-CLOSED** (401 when `SMS_WEBHOOK_SECRET` unset);
-   dropped the raw-payload `console.log` (was logging phone + body = PII); guards empty/NULL inbound
-   `from`/`to` before the org lookup.
+**What the old notes got wrong:** they said the hardening backlog (#1 owner-verify OTP lockout, #2
+reservation-remind, #3 sms-webhook) was implemented on a branch `security/sms-hardening-backlog` off
+`origin/main`. Git did NOT match: that branch points at *old* main (`cace9df`), and the hardening commit
+(`397a289`) was actually stranded on `feat/ingredient-availability` mixed with unrelated WIP. Meanwhile a
+**separate** security merge — `origin/main` `2f485ec` "harden-critical-and-high" — had landed *after* those
+notes and **already covered most of the backlog**: it added an `owner-verify` OTP **attempt-counter** (a
+simpler variant than the docs' timed-lockout, migration `20260602101000_owner_otp_attempts.sql`), made
+`sms-webhook` **fail-closed**, and fixed STOP exact-word matching + the `deliveryStatusRaw` crash. So #1 and
+most of #3 were already done; only a slice of the backlog genuinely remained.
 
-**Remaining to ship #1–#3:** ⬜ run migration `20260602000000` on the live DB (`pmnyhbhtkcfoozkinieo`) ·
-⬜ deploy `owner-verify`, `reservation-remind`, `sms-webhook` · ⬜ merge branch → `main`.
-Item #4 (explicit `REVOKE FROM PUBLIC` on intentionally-public token RPCs — defense-in-depth only) still open.
+**Ground-truth audit (2026-06-02, workflow `wf_95ed0ae7-41c`, 22 agents, adversarially verified)** against the
+REAL `origin/main` code found **8 still-open gaps**. All 8 implemented on a clean branch
+**`security/sms-hardening-remainder`** off `origin/main` (worktree `/workspaces/GrowthHub/repo-sms`):
+
+1. `reservation-remind` — substring `auth.includes(SERVICE_KEY)` → strip-prefix + exact `bearer === SERVICE_KEY`.
+2. `sms-webhook` — dropped the raw-payload `console.log` (logged customer phone + body = PII); logs only contentType + byte length now.
+3. **`sms-send` atomic campaign claim** (HIGH) — mirrors `email-send`; a user double-click / cron-retry no longer double-sends + double-charges. *Required a client change:* `SMSCampaigns.tsx` now inserts an immediate send as `'draft'` (not `'sending'`) so the claim `draft→sending` genuinely serializes (a `'sending'→'sending'` claim is a no-op both racers would match). NOTE: `email-send` + `EmailCampaigns.tsx` carry the **same latent shape** — out of scope here, follow-up.
+4. **`sms-send` atomic `increment_sms_usage` RPC** (new migration `20260602120000`) replaces the read-modify-write that lost updates under concurrent sends.
+5. `sms-send` outer try/catch + status-guarded `revertDraft` + stale-`sending`(>10min) re-claim guarded by `.lt(updated_at, tenMinAgo)` so a crashed send can't wedge a campaign and two recoverers can't both win.
+6. **`sms-webhook` STOP E.164 normalization** (HIGH, Spam Act) — `phoneVariants()` matches the inbound `to`/`from` across `+61…/61…/0…/bare` so a format mismatch can't silently drop a STOP; warns (no PII) on a zero-row opt-out; guards empty `from`/`to`.
+7. `admin_assign_sms_number` E.164 validation (new migration `20260602120500`) + client check in `AdminSmsNumbers.tsx` — can't store an unroutable/alpha number that would break that merchant's STOP.
+8. **`reservation-confirm` SMS idempotency** (new migration `20260602121000` adds `reservations.confirmation_sms_sent_at`) — a conditional UPDATE makes the unauth endpoint's SMS leg once-only (kills the SMS-bomb / credit-drain), with revert-on-failure so a transient provider error still allows a retry.
+
+**Already in `origin/main` (NO work needed):** owner-verify OTP attempt-counter; reservation-confirm "growerr"
+sender gone; admin-gate NULL-safety + REVOKE-FROM-PUBLIC; webhook fail-closed; STOP exact-word match; frontend routing/consent wiring.
+
+### 📵 Reservations = EMAIL-ONLY for now (cost decision, 2026-06-02)
+
+Per owner: conserve SMS credits → **SMS is reserved for sign-up OTP (`owner-verify`) only**; reservations
+stick with email; marketing is held (naturally — no per-merchant numbers provisioned). Implemented as an env
+flag **`RESERVATION_SMS_ENABLED`** (default **OFF** = email-only) gating the SMS leg of both
+`reservation-confirm` and `reservation-remind`; the email legs are untouched. Re-enable globally by setting it
+`true`, or upgrade to a per-merchant/per-tier `settings.reservations.sms_enabled` (a possible "SMS reminders"
+upsell — SMS reminders cut no-shows harder than email).
+
+### Review + state
+
+Pre-commit adversarial review (`wf_29ca92ed-6a4`) caught 1 BLOCKING regression (the `'sending'`-on-insert →
+new claim rejected "Send now") + 1 HIGH (`reservation-confirm` burned the idempotency flag before send, so a
+transient failure suppressed the confirmation) + 1 MEDIUM (stale-claim double-match) — all fixed; re-verify
+(`wf_b1a642d6-444`) returned clean (0 problems). **Status: ✅ COMMITTED `0c009b2` + DEPLOYED LIVE
+2026-06-02 05:03 UTC on `pmnyhbhtkcfoozkinieo`.**
+
+**Shipped:** ✅ committed `security/sms-hardening-remainder` · ✅ 3 migrations
+(`20260602120000`, `20260602120500`, `20260602121000`) run in the SQL editor (owner) · ✅ deployed `sms-webhook`,
+`sms-send`, `reservation-confirm`, `reservation-remind` (all v14 ACTIVE; `sms-webhook` stays `verify_jwt=false`
+per `config.toml`) · ✅ `RESERVATION_SMS_ENABLED` left unset → **reservations email-only LIVE**.
+✅ **MERGED to `main`** (FF push `2f485ec..0c009b2` → origin/main) and the **frontend is LIVE on woahh.app** —
+Lovable/Cloudflare rebuilt to bundle `index-CfTQPqSn.js`; the `AdminSmsNumbers-BTTnnZ6O.js` chunk contains the
+E.164 marker, confirming the `0c009b2` frontend (incl. `SMSCampaigns` insert-`draft`) shipped. **woahh.app's
+backend is `pmnyhbhtkcfoozkinieo`** (CSP `connect-src` + bundle), so the deployed functions/migrations are exactly
+what woahh.app uses → the verified signup-OTP test already covers woahh.app.
+
+**Remaining:** ⬜ **rotate exposed keys** (ClickSend, GitHub PATs, Supabase `sbp_`/`sb_secret_` incl. the deploy
+token `sbp_c40f…` pasted 2026-06-02, Anthropic). ✅ live UI click-through signup-OTP test PASSED on
+woahh.app (Playwright: login → Operations → "Change & verify" → "Send code" → code received → verified). ✅
+`owner-verify` now surfaces the real ClickSend send result (500 unset / 502 on `{ok:false}` + rolls back the
+stored OTP; previously returned `{ok:true}` even on failure — this hid the empty-balance failure during testing) —
+committed `d13ff19`, deployed v14. Follow-up (still open): `email-send`/`EmailCampaigns` carry the same latent
+"Send now" claim shape fixed here for SMS (out of scope).
 
 ---
-_Audit: 32 agents, 14 confirmed / 13 rejected findings, 2026-05-31. Full transcript under the workflow run `wf_2c9262fe-f61`. Security sweep: `wf_2a109cbd-20e`._
+_Audit: 32 agents, 14 confirmed / 13 rejected findings, 2026-05-31. Full transcript under the workflow run `wf_2c9262fe-f61`. Security sweep: `wf_2a109cbd-20e`. Remainder audit: `wf_95ed0ae7-41c`; review: `wf_29ca92ed-6a4`; re-verify: `wf_b1a642d6-444` (2026-06-02)._

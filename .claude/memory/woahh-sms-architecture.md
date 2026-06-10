@@ -73,8 +73,46 @@ live-exploitable bug = `generate_founding_codes` (already in morning SQL). Rest 
 (owner-verify OTP no lockout [top]; reservation-remind `.includes(SERVICE_KEY)` substring auth;
 sms-webhook fail-open secret + PII log + NULL-`to` guard; defense-in-depth REVOKE-FROM-PUBLIC on
 intentionally-public token RPCs). Confirmed non-issues: sms_log RLS (org-scoped policy exists),
-sms-send exact bearer. NOT applied overnight (kept verified state intact). Branch `feat/per-merchant-sms`
-complete + pushed; NOT merged to main. Still TODO: create tracked migration for the founding fix.
+sms-send exact bearer. hardening NOT applied (kept verified state). **MERGED TO MAIN 2026-06-01** (origin/main `c0d99b2`):
+main had moved twice (parallel `feature/ai-features` + auth-route cleanup); resolved 1 conflict in
+`api.ts` updateConsent (kept set_sms_consent RPC, used `customerSupabase` client), re-synced, built
+green, pushed. Tracked founding-fix migration `20260601090000` added. Security SQL was run on the live
+DB (anon now blocked, verified). Post-merge OPEN: hardening backlog (owner-verify OTP lockout etc. in
+docs/MORNING_HANDOFF.md); rotate exposed keys; SMS *frontend* (AdminSmsNumbers page + consent toggle)
+not yet exercised against the live site; confirm whether the main push triggered a Lovable/Cloudflare
+frontend rebuild.
 
-Full durable detail: `docs/SMS_ARCHITECTURE.md` + `docs/MORNING_HANDOFF.md`. Migration:
-`docs/MIGRATION_OFF_LOVABLE.md`. See [[persistent-memory-setup]].
+UPDATE 2026-06-02 — RECONCILE + REMAINDER HARDENING (docs/MORNING_HANDOFF.md was STALE; corrected):
+git ground-truth showed `origin/main` had moved to `2f485ec` ("harden-critical-and-high" merge) which had
+ALREADY landed most of the old backlog — owner-verify OTP **attempt-counter** (simpler than docs' timed-lockout,
+migration `20260602101000`), sms-webhook **fail-closed**, STOP exact-word, deliveryStatusRaw crash fix. The old
+"branch security/sms-hardening-backlog" claim was wrong (that branch = old main `cace9df`; the hardening commit
+`397a289` was stranded on `feat/ingredient-availability`). A fresh audit (workflow `wf_95ed0ae7-41c`, 22 agents,
+adversarial) against REAL origin/main found **8 still-open gaps**; all implemented on clean branch
+**`security/sms-hardening-remainder`** off origin/main, worktree **`/workspaces/GrowthHub/repo-sms`**:
+(1) reservation-remind exact service-role auth; (2) sms-webhook drop PII payload log; (3 HIGH) sms-send atomic
+campaign claim — **required client change: `SMSCampaigns.tsx` inserts immediate sends as `'draft'` not `'sending'`**
+so the claim serializes (email-send + EmailCampaigns have the SAME latent bug = out-of-scope follow-up);
+(4) sms-send atomic `increment_sms_usage` RPC (migration `20260602120000`); (5) sms-send try/catch + revertDraft +
+stale-`sending`>10min re-claim guarded by `.lt(updated_at,tenMinAgo)`; (6 HIGH, Spam Act) sms-webhook STOP
+**E.164 normalization** `phoneVariants()` + zero-row-opt-out warning + empty from/to guard; (7) admin_assign_sms_number
+E.164 validation (migration `20260602120500`) + AdminSmsNumbers client check; (8) reservation-confirm SMS
+**idempotency** (migration `20260602121000` adds `reservations.confirmation_sms_sent_at`) kills SMS-bomb/credit-drain,
+revert-on-failure keeps retry.
+**OWNER DECISION 2026-06-02: reservations = EMAIL-ONLY** to save credits. Env flag **`RESERVATION_SMS_ENABLED`
+default OFF** gates the SMS leg of reservation-confirm + reservation-remind (email legs untouched). SMS reserved for
+**sign-up OTP (owner-verify) only**; marketing held (no per-merchant numbers provisioned). Re-enable later via the
+flag, or upgrade to per-merchant `settings.reservations.sms_enabled` (SMS-reminders upsell).
+Review `wf_29ca92ed-6a4` caught 1 BLOCKING (sending-on-insert) + 1 HIGH (reservation-confirm flag burned pre-send)
++ 1 MEDIUM (stale double-claim) → all fixed; re-verify `wf_b1a642d6-444` = clean (0 problems).
+**SIGNUP OTP SMS VERIFIED LIVE 2026-06-02** on `pmnyhbhtkcfoozkinieo`: owner-verify send_otp → text received at +61435140245 (from WOAHH_SMS_NUMBER +61448653472) → verify_otp(228596) → `phone_verified=true`. Earlier "no text" was an EMPTY CLICKSEND BALANCE (user topped up) — and owner-verify returned `{ok:true}` throughout because send_otp swallows the ClickSend result (only console.warn on !r.ok, line 114; always returns ok). **FOLLOW-UP DONE 2026-06-02: owner-verify now surfaces the real send result** — unset WOAHH_SMS_NUMBER→500, provider {ok:false}→502, both roll back the stored OTP (hash/expiry=null) so retry isn't 60s-throttled; success unchanged; all 3 frontend callers already guard on the invoke error. Reviewed clean (wf_0ede2e2d-8db), committed `d13ff19` (rebased onto the AI-features main merge `f9a881d`), pushed to main, deployed owner-verify v14 on pmnyhbhtkcfoozkinieo. (Note: AI features v2 got merged to main in parallel this session = origin/main `d13ff19`.) Also: ClickSend opt-out is ACCOUNT-WIDE (a STOP suppresses that recipient across all your numbers incl. transactional OTP) — relevant if an owner ever STOPs. NOTE: 3 migrations were ALREADY DEPLOYED LIVE + the 4 edge fns deployed (v14) earlier this session.
+
+**STATE: FULLY SHIPPED 2026-06-02.** Committed `0c009b2` → MERGED to main (FF push to origin/main). 3 migrations run (SQL editor) + 4 edge fns deployed v14 on `pmnyhbhtkcfoozkinieo`. Frontend rebuilt + LIVE on woahh.app (bundle `index-CfTQPqSn.js`; chunk `AdminSmsNumbers-BTTnnZ6O.js` has the E.164 marker → confirms 0c009b2 frontend shipped). **woahh.app backend = pmnyhbhtkcfoozkinieo** (verified via CSP + bundle), so the signup-OTP test already covers woahh.app. **UI click-through signup-OTP test PASSED on woahh.app 2026-06-02** via the recovered Playwright harness (/tmp/pwtest, chromium-1223): real login (Business→Owner→creds) → Operations → Business Details → "Change & verify" → entered +61435140245 → "Send code" → "Code sent" toast + dialog advanced to OTP entry → user received code → verify_otp → phone_verified=true. So signup SMS is proven through the live UI, not just the API. Only un-done: ROTATE KEYS (incl. `sbp_c40f…` used for deploy).
+Owner chose: keep env flag (not per-merchant toggle) + commit-to-branch (no push). TO SHIP (all owner-side):
+run 3 migrations on `pmnyhbhtkcfoozkinieo` (`20260602120000`/`120500`/`121000`) · deploy
+sms-send/sms-webhook/reservation-confirm/reservation-remind + frontend rebuild · leave RESERVATION_SMS_ENABLED
+unset (email-only) · merge→main. **Rotate exposed keys still pending.** Follow-up: email-send/EmailCampaigns
+share the same "Send now" latent claim bug (out of scope here).
+
+Full durable detail: `docs/SMS_ARCHITECTURE.md` (→ "2026-06-02 RECONCILE" section) + `docs/MORNING_HANDOFF.md`
+(superseded banner). Migration: `docs/MIGRATION_OFF_LOVABLE.md`. See [[persistent-memory-setup]].
