@@ -614,7 +614,10 @@ USING (EXISTS (
 -- backstop that also covers any DRIFT-created definer functions on live
 -- (e.g. adjust_loyalty_points, which exists only on the live DB and is not in
 -- any migration). Idempotent: it ALTERs ONLY definer functions in `public` that
--- currently have NO search_path set, to `SET search_path = public`.
+-- currently have NO search_path set, to `SET search_path = public, extensions`
+-- (the extensions schema is included so that pgcrypto functions — digest, crypt,
+-- gen_salt — resolved unqualified inside any affected SECURITY DEFINER function
+-- continue to work without fully-qualified names).
 DO $sweep$
 DECLARE
   r record;
@@ -631,7 +634,7 @@ BEGIN
         WHERE cfg ILIKE 'search_path=%'
       )
   LOOP
-    EXECUTE format('ALTER FUNCTION %s SET search_path = public', r.fn_sig);
+    EXECUTE format('ALTER FUNCTION %s SET search_path = public, extensions', r.fn_sig);
     RAISE NOTICE 'search_path pinned on %', r.fn_sig;
   END LOOP;
 END
@@ -723,6 +726,9 @@ $$;
 GRANT EXECUTE ON FUNCTION public.get_public_storefront(text) TO anon, authenticated;
 
 -- F30 — get_member_org(): close the staff-branch leak.
+-- R3 refinement: payment_provider and settings.payments are NOT masked for staff
+-- (Operations payments page needs them; they contain only {stripe|square} +
+-- online_card_enabled/pay_mode — merchant config, not secrets).
 CREATE OR REPLACE FUNCTION public.get_member_org()
 RETURNS public.organizations
 LANGUAGE plpgsql
@@ -769,7 +775,8 @@ BEGIN
     r.square_payment_ready := NULL;     -- F30
     r.charges_enabled := NULL;          -- F30
     r.payouts_enabled := NULL;          -- F30
-    r.payment_provider := NULL;         -- F30
+    -- payment_provider: NOT nulled — staff need it for the Operations payments page
+    -- (routes the card SDK; value is only {stripe|square}, not a secret).
     r.founding_merchant := NULL;        -- F30
 
     r.email_used_this_month := NULL;
@@ -778,9 +785,8 @@ BEGIN
     r.sms_topup_credits := NULL;
     r.total_donations_cents := NULL;
 
-    IF r.settings IS NOT NULL THEN
-      r.settings := r.settings - 'payments';
-    END IF;
+    -- settings.payments: NOT stripped — contains only online_card_enabled +
+    -- pay_mode (merchant config the Operations page legitimately reads).
   END IF;
 
   RETURN r;
