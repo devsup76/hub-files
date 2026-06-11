@@ -58,7 +58,12 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.get_public_storefront(text) TO anon, authenticated;
 
-CREATE OR REPLACE FUNCTION public.get_public_menu(p_org_id uuid)
+-- DROP first: get_public_menu already exists with required_ingredients (added by
+-- the ingredient-availability migration); Postgres cannot change a TABLE-returning
+-- function's return type via CREATE OR REPLACE. Keep required_ingredients.
+DROP FUNCTION IF EXISTS public.get_public_menu(uuid);
+
+CREATE FUNCTION public.get_public_menu(p_org_id uuid)
 RETURNS TABLE (
   id uuid,
   organization_id uuid,
@@ -75,6 +80,7 @@ RETURNS TABLE (
   tags text[],
   extras_list jsonb,
   ingredients_list text[],
+  required_ingredients text[],
   allow_customization boolean,
   is_available boolean,
   stock_quantity integer,
@@ -87,7 +93,7 @@ SET search_path = public
 AS $$
   SELECT p.id, p.organization_id, p.title, p.description, p.price, p.price_unit,
          p.sale_price, p.sale_starts_at, p.sale_ends_at, p.image_url, p.category,
-         p.category_id, p.tags, p.extras_list, p.ingredients_list,
+         p.category_id, p.tags, p.extras_list, p.ingredients_list, p.required_ingredients,
          p.allow_customization, p.is_available, p.stock_quantity, p.created_at
   FROM public.products p
   WHERE p.organization_id = p_org_id
