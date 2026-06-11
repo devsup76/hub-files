@@ -47,6 +47,8 @@ Most of this list is **built on the preview branch** (pushed, not merged, nothin
 
 - [ ] **22. Obvious add-to-cart feedback + add dialog.** Right now pressing "Add" gives no clear signal the item landed in the cart. Two parts: **(a)** on every Add, show a popup/sheet asking **quantity + modifications** (extras, remove-ingredients — the existing customize dialog already does this for items with options; make it consistent for all items, with a fast default path so simple items stay one-tap-ish); **(b)** unmistakable added-feedback — cart icon badge count bumps with a pop animation / item "flies" to the cart / brief "Added ✓" state on the button. Mobile especially (cart is off-screen there). *(Added 2026-06-11.)*
 
+- [ ] **23. Kitchen order screen — more convenient for staff.** Pickup vs dine-in must be tellable at a glance from across the kitchen. There IS existing color coding (fulfillment header bar: dine-in blue, pickup purple, etc.) but it's evidently not landing — go stronger: big text label/icon ("PICKUP" / "TABLE 12") not just color (color-blind + greasy-screen friendly), prominent table number / pickup name, and **filter tabs or grouped lanes by fulfillment type** so staff can work "all dine-in" or "all pickups" in one view. While in there: general staff-convenience pass with real kitchen feedback (font sizes at arm's length, tap targets, what info actually matters per ticket). *(Added 2026-06-11.)*
+
 > Original founder list skipped #15, so items 16–18 are renumbered 15–17 here.
 
 **When this list is done → check back with the founder before starting anything else.**
