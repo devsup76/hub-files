@@ -49,6 +49,8 @@ Most of this list is **built on the preview branch** (pushed, not merged, nothin
 
 - [ ] **23. Kitchen order screen — more convenient for staff.** Pickup vs dine-in must be tellable at a glance from across the kitchen. There IS existing color coding (fulfillment header bar: dine-in blue, pickup purple, etc.) but it's evidently not landing — go stronger: big text label/icon ("PICKUP" / "TABLE 12") not just color (color-blind + greasy-screen friendly), prominent table number / pickup name, and **filter tabs or grouped lanes by fulfillment type** so staff can work "all dine-in" or "all pickups" in one view. While in there: general staff-convenience pass with real kitchen feedback (font sizes at arm's length, tap targets, what info actually matters per ticket). *(Added 2026-06-11.)*
 
+- [ ] **24. Better completed-order log + staff-coded, owner-visible refunds.** Three parts: **(a)** a proper completed-orders log view (clean history: date/time, items, fulfillment, payment method, totals, search/filter — not just the kanban's tail); **(b)** refunds on a **staff** session require the staff member's **PIN/staff code re-entry to confirm** (re-auth at the moment of refund — the PIN infra already exists from staff login), and every refund is **logged with who authorised it** (staff name, amount, reason, order ref, timestamp); **(c)** an **owner-only dashboard section listing all refunds** (per staff member, per period) so the owner sees refund activity at a glance. Wire into the existing refund mechanics (`REFUND_POLICY.md` / `payment_refunds`). *(Added 2026-06-11.)*
+
 > Original founder list skipped #15, so items 16–18 are renumbered 15–17 here.
 
 **When this list is done → check back with the founder before starting anything else.**
