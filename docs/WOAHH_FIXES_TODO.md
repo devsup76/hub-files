@@ -31,6 +31,7 @@ Most of this list is **built on the preview branch** (pushed, not merged, nothin
 - [ ] **15. Checkout offers customer account before guest.** Flip the order: sign-in/create-account is the primary path, guest checkout secondary. *(Founder item 16.)*
 - [ ] **16. Smarter automatic usernames.** Auto-generated usernames get numeric suffixes (e.g. `priya`, `priya2`, `priya17`) instead of failing or producing ugly handles. *(Founder item 17.)*
 - [ ] **17. QR codes accessible without enabling dine-in.** A merchant should be able to generate/use QR codes even when dine-in is off. *(Founder item 18.)*
+- [ ] **18. Fix the free-trial banner on accounts.** It's static — currently shows "30 days" regardless of reality (the actual trial is 60 days per `trial_ends_at`). Either remove the banner or make it compute live from the org's `trial_ends_at` (real days remaining, hide when not on `free_trial`). *(Added 2026-06-11.)*
 
 > Original founder list skipped #15, so items 16–18 are renumbered 15–17 here.
 
