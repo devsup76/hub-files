@@ -18,6 +18,7 @@ Most of this list is **built on the preview branch** (pushed, not merged, nothin
 - [ ] **2. "Get set up" section auto-clears done steps.** Each setup step disappears (or collapses as ✓ done) once completed, so the section only ever shows what's left.
 - [ ] **3. Test the in-store validation code.** End-to-end test of the rotating 6-digit in-person loyalty codes (earn + redeem; customer Account "In-Store" tab ↔ dashboard Loyalty validator).
 - [ ] **4. Declutter the sidebar.** Current dashboard sidebar is overcrowded — group/collapse into a more convenient nav.
+  - **Follow-up (founder feedback 2026-06-11):** the grouped/dropdown version is **too spaced out** — tighten the vertical rhythm: smaller gaps between groups and items, denser dropdown padding, so more nav fits on screen without scrolling.
 - [ ] **5. Obvious "setting up & domain" checklist.** A prominent checklist that walks the merchant through setup including their `<slug>.woahh.app` domain/storefront go-live.
 - [ ] **6. Disable delivery everywhere, temporarily.** Hide/disable delivery across storefront, checkout, dashboard, KDS, marketing copy (keep courier code dormant behind a feature flag — carries over old TODO 6.1).
 - [ ] **7. Storefront only viewable live once the merchant publishes.** Unpublished storefronts must not be publicly reachable.
