@@ -45,6 +45,8 @@ Most of this list is **built on the preview branch** (pushed, not merged, nothin
     - **Customer login/sign-up in the templates:** every storefront template gets a visible customer sign-in / create-account entry point (header + checkout). 🔶 Mechanism TBD with founder — via the universal Woahh account or something merchant-scoped; depends on the #20 decision, build them together.
   *(Added 2026-06-11.)*
 
+- [ ] **22. Obvious add-to-cart feedback + add dialog.** Right now pressing "Add" gives no clear signal the item landed in the cart. Two parts: **(a)** on every Add, show a popup/sheet asking **quantity + modifications** (extras, remove-ingredients — the existing customize dialog already does this for items with options; make it consistent for all items, with a fast default path so simple items stay one-tap-ish); **(b)** unmistakable added-feedback — cart icon badge count bumps with a pop animation / item "flies" to the cart / brief "Added ✓" state on the button. Mobile especially (cart is off-screen there). *(Added 2026-06-11.)*
+
 > Original founder list skipped #15, so items 16–18 are renumbered 15–17 here.
 
 **When this list is done → check back with the founder before starting anything else.**
