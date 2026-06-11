@@ -5,6 +5,13 @@
 > carried over in the "Carried-over backlog" section at the bottom.
 > Work the numbered list top-to-bottom unless the founder reorders.
 
+## ⚡ Status (2026-06-11) — overnight build on branch `feat/overnight-fixes-2026-06-11`
+
+Most of this list is **built on the preview branch** (pushed, not merged, nothing to prod). See **`docs/MORNING_REPORT_2026-06-11.md`** for the full per-item table + founder action list.
+- ✅ Done on branch: **2, 4, 5, 6, 7, 9, 10, 11(already-compliant), 13, 15, 16, 17** + EXTRA "view-as-customer" + EXTRA demo-flag-scoping + card-dialog **on-top / obvious / pay-to-place**.
+- ⏸ **HELD: 1** (ABN-gated payments) · **SKIPPED: 8** (slug domain) — your call. **12** on hold (UI). **3** needs a manual test. **14** is a net-new build (not a bug) — flagged for your decision.
+- 🔑 Founder: run 4 migrations (`docs/FOUNDER_RUN_THESE.sql`), rotate keys, decide the deeper payment-first refactor + #8 DNS. Card-payment proof in `docs/proof/`.
+
 ## The list
 
 - [ ] **1. Nicer onboarding checklist — and no payments until ABN verified.** Rework the OnboardingChecklist into a clearer, nicer flow; hard-gate payment acceptance (online card + pay-at-venue config) until the merchant's ABN is verified.
