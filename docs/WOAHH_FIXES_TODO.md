@@ -42,6 +42,7 @@ Most of this list is **built on the preview branch** (pushed, not merged, nothin
     - **Logo-driven branding:** merchant's uploaded logo is used in storefront branding, and brand colors are **auto-extracted from the logo** (palette suggestion they can accept/tweak — must still pass the HSL-allowlist guard).
     - **Design-first template picker:** previews show the actual **template designs/layouts** to pick from, not just color variations — templates are design, colors are a separate knob.
     - **Pre-publish preview ("ghost link"):** before publishing, merchant sees exactly how the site looks with their picked template + colors — a tokenized/unlisted preview URL they can open on their phone or share, without the storefront going live (ties into #7 publish-gating and #8 subdomain-on-publish).
+    - **Customer login/sign-up in the templates:** every storefront template gets a visible customer sign-in / create-account entry point (header + checkout). 🔶 Mechanism TBD with founder — via the universal Woahh account or something merchant-scoped; depends on the #20 decision, build them together.
   *(Added 2026-06-11.)*
 
 > Original founder list skipped #15, so items 16–18 are renumbered 15–17 here.
