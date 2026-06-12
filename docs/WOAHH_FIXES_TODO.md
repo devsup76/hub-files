@@ -62,6 +62,8 @@
 
 - [x] **29. Apple Pay + Google Pay — RESEARCH ✅ DONE 2026-06-12** (plan delivered: `docs/APPLE_GOOGLE_PAY_PLAN.md`; verdict: fully doable in AU, zero extra fees, capture-on-confirm survives intact; build = Stripe Express Checkout Element first ~3-5 days, then subdomain register-on-publish hook, then Square parity. IMPLEMENTATION not started). Customers pay orders with Apple Pay / Google Pay on the web checkout, for BOTH providers (Stripe Express Checkout path + Square Web Payments SDK path), preserving the capture-on-confirm flow (authorize at wallet-tap, capture when the restaurant accepts). Key question being verified: Apple Pay's per-domain verification × our per-merchant `<slug>.woahh.app` subdomains (needs automated domain registration on publish). Deliverable: `docs/APPLE_GOOGLE_PAY_PLAN.md` with how-it-works + implementation phases. *(Added 2026-06-12.)*
 
+- [ ] **30. Stop per-order email spam — exactly ONE email, on confirmation.** Audit every email the order lifecycle currently fires at the customer (placed/confirmed/preparing/ready/completed via `order-notify` triggers + the receipt). New rule: the customer gets a **single email when the order is CONFIRMED**, containing the full receipt (the existing combined AU tax-invoice email) + the live order-tracker link — everything else happens on the tracker page (status changes) or via web-push if they opted in. Kill/disable the other per-status emails by default; make the NotificationSettings triggers default to confirmed-only so merchants don't accidentally re-spam. *(Added 2026-06-12.)*
+
 > Original founder list skipped #15, so items 16–18 are renumbered 15–17 here.
 
 **When this list is done → check back with the founder before starting anything else.**
