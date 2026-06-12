@@ -17,3 +17,6 @@ It used to point at `Pawit12-spec/hub-files`, but that account's PAT (`ghp_AtJg�
 
 
 **2026-06-11 PAT rotation:** old `ghp_E4cZ…`/`ghp_CA0q…` tokens revoked mid-day (pushes started 403ing). Working replacement: a classic PAT with `repo` scope (`ghp_1WzD…`), now embedded in BOTH remotes — `/workspaces/GrowthHub` (hub-files) and `/workspaces/GrowthHub/repo` (business-growth-hub; covers all repo-* worktrees via shared config). Two earlier replacement attempts are dead/inert: a fine-grained `github_pat_11CC…` (no repository grants) and `ghp_GXxp…` (zero scopes). The working token was pasted in chat → on the standard rotate-eventually list.
+
+
+**2026-06-12 night:** Supabase access tokens churning — `sbp_19a7…` expired mid-session; replaced with `sbp_537c…` (used to deploy customer-auth-otp). BOTH pasted in chat → rotate. Token lives in /tmp/sb-token (wiped on container restart; ask founder for a fresh one next session).

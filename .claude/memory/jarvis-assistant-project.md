@@ -1,0 +1,31 @@
+---
+name: jarvis-assistant-project
+description: "User's personal \"Jarvis\" (Iron Man-style voice AI + HUD) project — vision, hardware, and recommended architecture"
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: 213112d3-cbd5-4cb0-9221-3a0ba2396e4e
+---
+
+User (big Iron Man / Jarvis fan) wants to build a Tony-Stark-style **Jarvis**: high-tech HUD UI + always-on voice assistant + agentic "hands" (system/home control). Started 2026-06-12. This is a SEPARATE project from woahh.
+
+**Environment / hardware (durable constraints):**
+- Currently: Claude CLI inside a **Docker dev container** (headless — no mic/speakers/display/GPU; good as a sandbox + build env, bad as the voice/HUD host).
+- Coming later: a **separate Mac** with **Claude running at root** (that Mac has **no sensitive info**, so broad agent permissions are acceptable). This Mac is the natural always-on Jarvis runtime host (owns mic/speakers/displays/Apple Silicon GPU/HomeKit).
+- Displays: **laptop + 2 monitors (3 screens)** + a **Google TCL TV (C635 or C645, 4K 144Hz)** — ideal as a wall/ambient Iron-Man HUD canvas.
+
+**Recommended architecture (my advice, pending his choice):** run the Jarvis RUNTIME on the **Mac** (voice I/O, wake word, TTS, HUD on TV/monitors, OS + smart-home control, Claude-at-root = "hands"); keep the **container** as the isolated SANDBOX for risky tool execution + the dev environment to scaffold the HUD web app + agent now. They talk over LAN (WebSocket/HTTP). "Both, with roles." Brain = **Claude Agent SDK** + MCP tools. Voice loop = **Pipecat** (VAD/barge-in) with **openWakeWord "hey jarvis"** + **Whisper** (local) or Deepgram STT + **ElevenLabs** British TTS (Piper local fallback). HUD = React/Three.js web app (reactive orb + clock/weather/calendar/system-stats/transcript) in Chrome kiosk/Electron, fed by WebSocket.
+
+**Phased plan:** P1 push-to-talk→STT→Claude(tools)→TTS (voice MVP on Mac). P2 wake word + barge-in + web HUD. P3 real tools (calendar/email/Home Assistant/HomeKit/media/TV/system + proactive briefings + memory). P4 multi-screen command-center + camera/vision + custom voice.
+
+**LOCKED topology (2026-06-12):** (1) **Home Mac** — always plugged in/charging, drives **2 monitors + the TCL TV** in one room = the **Jarvis CORE/brain + HUD host** (always-on resolves the reliability caveat). (2) **Roaming Mac** — moves with him (home/uni/anywhere) = mobile client; can also hold the woahh repo + work hands-on. (3) **Container ("here") = the SECRETS VAULT** — secrets live ONLY in the container and are ROTATED; it's also the secure worker. (4) **iPhone** — to be linked as a pocket client.
+
+**Security model = "container as the single secrets broker."** woahh repo (code) may live on BOTH Macs for editing, but NO secrets on the Macs/phone — every credentialed action (git push, deploy, Supabase service-role, ideally even the Anthropic API call via a proxy) routes THROUGH the container, which holds + rotates all keys. All other devices (both Macs, iPhone) are credential-free clients → losing any device leaks nothing; one rotation point. Keep `.env` out of the repo on the Macs (gitignore + gitleaks); treat the container's repo copy as canonical (it's what pushes).
+
+**Mesh VPN = Tailscale** (linchpin): home Mac exposes nothing public; roaming Mac + iPhone reach the core over the encrypted mesh as if on the same LAN. iPhone link = SECURE because it's a thin client holding no secrets: Tailscale-on-iOS → Siri Shortcut / PWA / AirPods → talk to the home-Mac Jarvis anywhere; privileged/destructive actions gated off the phone (voiceprint/confirm); instant revoke if lost.
+
+**KEY FACT (2026-06-12):** the current container (woahh repo + secrets) runs on the **ROAMING Mac** — the travelling machine. That's the *worst* long-term home for the vault (it goes to uni / public Wi-Fi / theft risk). **DECISION:** when the home Mac is set up, **re-home the vault container onto the always-on home Mac** (Option A, OrbStack + FileVault) and demote the roaming Mac to a credential-free client that reaches the home vault over Tailscale. Interim hygiene: FileVault ON on the roaming Mac now; ROTATE all keys after the migration (retire any that travelled on the laptop); wipe the old container's secrets post-move. Offline-at-uni is handled by reaching home over the mesh (not by carrying secrets); true-offline local fallback is a later edge case.
+
+**Still open:** cloud-vs-local privacy, first capabilities, HUD-first vs voice-first.
+
+**Offered next:** scaffold the HUD web app + agent skeleton NOW in the container (previewable via the chromium screenshot harness), so it's plug-and-play onto the home Mac.
