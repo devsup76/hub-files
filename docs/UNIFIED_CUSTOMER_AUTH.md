@@ -57,6 +57,15 @@ them locked with "Sign in to unlock" → opens the auth dialog. (Did not exist b
 4. Receipt PS nudge (order-respond template) + follow-up cron (opt-ins only).
 5. Verify: tsc/build, 390px Playwright run of the full flow, push branch for preview.
 
+## Status (2026-06-12, end of day)
+**BUILT + PUSHED on `feat/unified-customer-auth` — NOT merged.** Go-live order:
+1. Run migration `supabase/migrations/20260612200000_unified_customer_auth.sql` (SQL editor).
+2. `npx supabase functions deploy customer-auth-otp order-respond` (needs CLICKSEND_* +
+   WOAHH_SMS_NUMBER + RESEND_API_KEY secrets — all already set for other fns).
+3. Merge the branch → Cloudflare ships the new dialog.
+4. Staged next (small): guest follow-up email cron (opt-ins only), members-only promo
+   storefront UI ("sign in to unlock"), Turnstile on the OTP endpoint pre-scale.
+
 ## Risks accepted / deferred
 - SMS OTP at launch = per-send cost + fraud surface (mitigations above; revisit if abused).
 - Single-tick consent relies on explicit wording — do not weaken the copy without re-review.
