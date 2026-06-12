@@ -14,6 +14,12 @@
 - 🔜 Open + actionable now: **3** (manual test), **#4 spacing follow-up**, **18, 19 (money bug!), 22, 23, 24, 26, 27**.
 - 🔑 Founder side-quests: run `docs/FOUNDER_RUN_THESE.sql` migrations, run `docs/SECURITY_FIXES_RUN_THESE.sql` (audit 2026-06-11), key rotation.
 
+## ⚡ 2026-06-13 — checkout prefill + auth polish SHIPPED to main
+Account-prefilled checkout, phone mandatory at signup, single consent tick, auto-sign-in
+after code verify (+ fixed a wrong-Supabase-client bug). Edge fn redeployed. Build green,
+merged `869d676`. **Founder morning test pending** (real phone — Turnstile blocks headless):
+see `docs/MORNING_REPORT_2026-06-13.md`. This closes #11 (single tick) + advances #15/#32.
+
 ## The list
 
 - [ ] **1. Nicer onboarding checklist — and no payments until ABN verified.** Rework the OnboardingChecklist into a clearer, nicer flow; hard-gate payment acceptance (online card + pay-at-venue config) until the merchant's ABN is verified.
