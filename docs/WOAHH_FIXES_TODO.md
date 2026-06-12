@@ -25,8 +25,15 @@ This closes #11 (single tick) + advances #15/#32.
 > **Verified ALREADY DONE (no work needed):** #18 free-trial banner, **[6.4]** customer-PII RLS.
 > **Built + pushed (preview-testable tomorrow):** #28 chunk-reload · #19 pending-order urgency (flashing card + escalating Web-Audio alarm + mute) · #22 add-to-cart "Added ✓" toast on both storefronts + qty stepper · #23 KDS on-board fulfillment filter tabs w/ counts · #27 staff "View receipt" modal · #24 Order History page (completed log + owner refund ledger + staff-PIN-gated refunds) · #31 customer-queries-email field · #21-NOW storefront-edit lock flag + retail templates filtered.
 > **Tested:** all 5 new dashboard pages smoke-pass (Playwright, demo mode — render clean, zero console errors); KDS filter bar confirmed. `tsc` + `vite build` green.
-> **⚠️ Needs a founder DEPLOY to fully work on live** (edge fns, not on the Cloudflare preview): #24 staff PIN gate (`staff-pin-login` new `verify_pin` action), #30 one-email defaults (`order-notify`). Owner refunds + the receipt reply-to already work.
-> **Security audit of the night's diff: run + results folded in (see below).**
+> **🔐 SECURITY AUDIT of the night's diff (3-dim adversarial workflow, every MED+ finding verified):**
+> - **FIXED on the branch:** **AUTH-002 (CRITICAL)** — the #24 staff refund PIN was client-side only; a manager could call `refund-order` directly and skip it → now verified SERVER-SIDE in `refund-order` (constant-time + lockout). **RLS-001 (HIGH)** `payment_refunds` SELECT was any-staff → owner-only. **RLS-002 (HIGH, pre-existing)** `staff_accounts` broad policy exposed colleagues' `pin_hash` (offline-brute-forceable) → owner-only (staff keep own-row). Both RLS in migration `20260612210000`.
+> - **Verified NOT-A-BUG:** AUTH-001 cross-org PIN (user_id UNIQUE), order-isolation, XSS (toast/cart/chunkReload).
+> - **Flagged follow-ups (LOW real-risk, NOT fixed tonight):** #21 storefront lock is client-side only — a merchant could bypass via direct RPC, but it's their OWN data (no cross-tenant/privilege escalation), so it's a feature-intent gap not a breach; server-side enforcement in `validate_storefront_config` is a deferred hardening. `contact_email` has no server-side format validation — but Resend treats `reply_to` as a structured field (no header injection), so worst case is a merchant typo'ing their own reply-to.
+>
+> **⚠️ FOUNDER — DEPLOY/RUN tomorrow to activate the staged backend** (everything else is live on the preview already):
+> 1. **Run migration** `supabase/migrations/20260612210000_security_audit_rls_owner_only.sql` (RLS owner-only).
+> 2. **Deploy edge fns:** `refund-order` (server-side PIN + the audit fix) and `order-notify` (#30 one-email defaults).
+> 3. *(staff-pin-login is unchanged — no deploy.)* Then merge the branch when you're happy.
 
 ## The list
 
