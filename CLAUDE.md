@@ -10,6 +10,20 @@
 
 ---
 
+## Wallets — Apple Pay + Google Pay (2026-06-12)
+
+> **MERGED to `main` + LIVE on woahh.app** (founder explicitly authorized wallets→main; the app repo otherwise stays branch→founder-review). Apple/Google Pay on the customer checkout via **Stripe Express Checkout Element** (deferred-intent) **and** the **Square Web Payments SDK**, behind the existing per-merchant `online_card_enabled` gate. Design + risk register + a verified post-merge status section: `docs/APPLE_GOOGLE_PAY_RISK_AND_DESIGN.md`. Memory: `woahh-wallets-apple-google-pay`.
+>
+> **Adversarially double-checked 2026-06-12** (5-dim Workflow, 26 agents, every MEDIUM+ finding verified vs code):
+> - **Apple Pay (Square): WORKS — device-verified on a real iPhone on Test Pizza (PRODUCTION Square).** Sync tokenize correct; double-charge prevented (R15/R16 atomic claim migration `20260612170000` + resume-by-payment-id); wallet total in dollars. `square-payment` v16, `.well-known/apple-developer-merchantid-domain-association` hosted (`5caf888`) + serving.
+> - **Google Pay (Square): SHIPPED, not device-verified.** Render hardened — attaches into a visible container (`f718065`). Open: confirm the tap on a real **Chrome/Android** (founder is iPhone-only → can't see GP on Safari; that's expected, the button is device-adaptive). Google Pay needs **no** domain registration.
+> - **Square server + capture-path security: verified SOLID** (claim release-on-throw, decline allow-list, per-org token, server-total C1; claim-before-capture, provider routing, H-3 amount guard, decline voids holds).
+> - **Stripe wallets: WORK in code** (double-charge-safe, amount parity, sheet never hangs) — not device-tested; **Stripe Apple Pay needs woahh.app added to Stripe payment_method_domains.**
+>
+> **REAL open items (do NOT call "fully secure" yet):** (1) **R3 PENDING/3DS capture gap [HIGH, prod-only]** — `order-respond` skips a PENDING auth at owner-confirm → unpaid; fix before broad production card reliance, with founder review. (2) Stripe Apple Pay domain reg. (3) Square SDK env = prod app id + revert test-bistro sandbox (`docs/SQUARE_SANDBOX_GOLIVE.sql`). (4) CORS `*.pages.dev` tighten + Square OAuth stale-flag monitoring. **Apple Pay domain model at scale:** per-exact-host, no wildcard — path-based `woahh.app/shop/slug` = one registration covers all; subdomains/custom domains = one auto-registration per host (register-on-publish hook, designed/not-built); the `.well-known` file is one-and-done across all hosts.
+
+---
+
 ## Current state (2026-06-10)
 
 > Additive update on top of the 2026-06-07 baseline below. Everything in this section lives on `feat/storefront-platform` (worktree `repo-audit`), **pushed for Cloudflare preview (`e39b6a2`) but NOT merged to `main`** — awaiting founder approval. The 2026-06-07 sections that follow remain accurate; this section is the "what changed since" delta. All go-live DB migrations are **applied to live** and the online flow was **verified 11/11 live (2026-06-10)**; onboarding steps live in `docs/MERCHANT_ONBOARDING_RUNBOOK.md` + `docs/FIRST_MERCHANT_READINESS.md` (the one-off founder SQL bundles were run live, then deleted in the 2026-06-10 docs cleanup — in git history).

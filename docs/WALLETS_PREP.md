@@ -1,5 +1,14 @@
 # Apple/Google Pay — go-test prep (Square first)
 
+> **⚠️ SUPERSEDED 2026-06-12 — these prep steps are DONE.** Wallets are merged to `main`
+> and live on woahh.app; the migrations are applied; `square-payment` (v16) +
+> `stripe-payment-intent` (v30) are deployed; **Apple Pay is device-verified on Test
+> Pizza (production Square)**; the Apple Pay `.well-known` file is hosted + serving.
+> For the current verified status + the real open items (R3 PENDING-capture gap, Stripe
+> Apple Pay domain reg, Square SDK env, Google Pay device test), see the **"DOUBLE-CHECK
+> — verified status"** section of `docs/APPLE_GOOGLE_PAY_RISK_AND_DESIGN.md` and the
+> `woahh-wallets-apple-google-pay` memory. The historical prep checklist follows.
+
 > Everything is built, self-reviewed, and committed on branch **`feat/wallets`** (pushed,
 > build green). Nothing wallet-related is on prod except the Phase-0 fake-button removal
 > (already live). Below is the exact ordered list to run together when you're back.

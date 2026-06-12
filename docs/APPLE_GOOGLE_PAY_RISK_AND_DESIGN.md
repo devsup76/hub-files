@@ -4,6 +4,29 @@
 
 ---
 
+## DOUBLE-CHECK — verified status (2026-06-12, post-merge)
+
+> Wallets are now **MERGED to `main` and LIVE on woahh.app** (founder explicitly authorized wallets→main). This section records an **adversarial functional + security re-check** (5-dimension Workflow, 26 agents, every MEDIUM+ finding verified against the live code) layered on top of the pre-build register below. **Do not represent the surface as "fully secure" — three real items remain open (1, 4, 5).**
+
+**✅ Verified working / secure (provable from code; Apple Pay also device-tested):**
+- **Apple Pay (Square)** — **LIVE-VERIFIED on a real iPhone on Test Pizza (PRODUCTION Square account).** `tokenize()` is the first await (Safari gesture rule — verified NOT-A-BUG); double-charge prevented (R15/R16 atomic `try_claim_square_auth` + resume-by-payment-id); wallet sheet total in DOLLARS.
+- **Square server `square-payment` (v16)** — atomic claim **released on throw** + linkErr-void; R19 decline allow-list (never raw `errors[].detail`); per-org OAuth token, **no global fallback** (BLK-2); charge amount from the **server** total (C1); SHA-256 idempotency. Verdict: WORKS / SECURE.
+- **Capture-path security (`order-respond`)** — claim-before-capture, provider routing by the **order's** auth id (not the org's current flag), H-3 amount-mismatch guard, **decline/auto-decline VOID pending holds**, auto-decline gated to a service_role-claim JWT. All verified SECURE.
+- **Stripe wallets (ECE, `stripe-payment-intent` v30)** — deferred-intent (no pre-created clientSecret), double-charge prevented, amount parity wallet==Elements==PI, `event.paymentFailed()` on every error path, idempotency bound to amount, separate Elements groups. WORKS in code (not device-tested).
+
+**Register items now CLOSED:** R10/R11 (fake wallet buttons removed, live), R7 (guest-PII snapshot — migration `20260612160000`), R15/R16 (atomic claim — migration `20260612170000`, applied live), R13/R17 (ECE deferred-intent rebuilt), R2 (1% service fee dropped), R1 (built on `feat/wallets` off main, merged).
+
+**🔶 REAL OPEN ITEMS (do not call "fully secure" until done):**
+1. **R3 — PENDING-capture gap [HIGH, production-only].** `order-respond` SILENTLY SKIPS a Square `PENDING` (3DS/async) / Stripe `processing` authorization at owner-confirm → order confirmed but **never captured** (cook-but-unpaid). Sandbox approves instantly so it never surfaces there; **production can return PENDING.** Lower-probability for WALLETS (Apple/Google tokens are pre-authenticated, rarely 3DS-challenged) but a real gap. **Fix before broad production card reliance — with founder review (order-respond is incident-prone).**
+2. **GPAY-002 — Google Pay tap unverified [MEDIUM].** GPAY-001 (button rendered into a collapsed container) **fixed** (`f718065`: attach into a visible container). Remaining: confirm the Square-rendered button's click bubbles to the container `onClick` on a real **Chrome/Android** device; fallback if not = a direct click listener. Google Pay needs **no** domain registration/file.
+3. **Stripe Apple Pay domain registration [MEDIUM].** Add `woahh.app` to Stripe's **payment_method_domains** before Stripe merchants' Apple Pay renders. (Square's `woahh.app` is already verified + `.well-known/apple-developer-merchantid-domain-association` hosted at `5caf888`, confirmed serving HTTP 200 raw token — not SPA-shadowed.)
+4. **Square SDK env [config, production].** woahh.app's `VITE_SQUARE_APPLICATION_ID` must be the PROD app id (`sq0idp-`) so the production Web Payments SDK loads; `window.Square` is cached per session, so ONE build cannot mix sandbox + prod Square merchants. **Revert test-bistro's Square-sandbox flip** (`docs/SQUARE_SANDBOX_GOLIVE.sql`) before relying on it on prod.
+5. **CORS `*.pages.dev` [MEDIUM] + Square OAuth stale-flag [MEDIUM].** Payment fns accept ANY `*.pages.dev` origin (`_shared/cors.ts`, preview convenience) — tighten to the project's own preview hosts (mitigated by per-order capability checks). `square_payment_ready` can be stale if a token expires without a flag update — the refresh cron mitigates; add monitoring.
+
+**Verified NOT bugs (don't re-chase):** Apple Pay gesture timing; Square + Stripe double-charge protections; idempotency keys; `charges_enabled` handling; wallet-init failure never blocks the card fallback.
+
+---
+
 ## 1. Risk register
 
 Sorted CRITICAL → LOW. No CRITICAL items survived adjudication. The most load-bearing items for go/no-go are **R1 (branch direction)**, **R10 (live fake-wallet buttons)**, and **R7 (cross-guest receipt redirection)** — fix those before any wallet code.
