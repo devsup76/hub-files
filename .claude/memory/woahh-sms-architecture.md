@@ -1,6 +1,6 @@
 ---
 name: woahh-sms-architecture
-description: "Woahh per-merchant SMS architecture, audit findings + migration status; full detail in docs/SMS_ARCHITECTURE.md"
+description: "Woahh per-merchant SMS architecture, audit findings + migration status; full detail in docs/architecture/SMS_ARCHITECTURE.md"
 metadata: 
   node_type: memory
   type: project
@@ -114,5 +114,5 @@ sms-send/sms-webhook/reservation-confirm/reservation-remind + frontend rebuild �
 unset (email-only) · merge→main. **Rotate exposed keys still pending.** Follow-up: email-send/EmailCampaigns
 share the same "Send now" latent claim bug (out of scope here).
 
-Full durable detail: `docs/SMS_ARCHITECTURE.md` (→ "2026-06-02 RECONCILE" section) + `docs/MORNING_HANDOFF.md`
+Full durable detail: `docs/architecture/SMS_ARCHITECTURE.md` (→ "2026-06-02 RECONCILE" section) + `docs/MORNING_HANDOFF.md`
 (superseded banner). Migration: `docs/MIGRATION_OFF_LOVABLE.md`. See [[persistent-memory-setup]].

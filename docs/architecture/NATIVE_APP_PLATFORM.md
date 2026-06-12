@@ -2,7 +2,7 @@
 
 > Status: decision-ready, 2026-06-07. Branch `feat/native-app-platform` (worktree `repo-native`).
 > Founder decision: **Capacitor scaffold + plan** — wrap the existing Vite/React PWA, do not rewrite.
-> Pairs with the **Storefront Platform** section in `CLAUDE.md` (per-merchant `<slug>.woahh.app` + dynamic-manifest PWA, branch `feat/storefront-platform`) and the POS / Tap-to-Pay plan (`docs/POS_TERMINAL_PLAN.md`).
+> Pairs with the **Storefront Platform** section in `CLAUDE.md` (per-merchant `<slug>.woahh.app` + dynamic-manifest PWA, branch `feat/storefront-platform`) and the POS / Tap-to-Pay plan (`docs/architecture/POS_TERMINAL_PLAN.md`).
 > Honesty notes baked in: iOS builds need a Mac + Xcode; Apple Tap-to-Pay distribution entitlement has a ~1–2 week lead; `tenant.ts`/`pwaManifest.ts` from `feat/storefront-platform` are **NOT** in this worktree (the per-merchant seam is built here, not assumed).
 
 ---
@@ -210,7 +210,7 @@ Map to existing `org_tier` (`free_trial | solo | marketplace | growth | enterpri
 - Pilot Model C with 2–3 Growth merchants **under their own developer accounts**; require unique listing copy/screenshots; document the rejection-fix loop. Then productize as a self-serve Growth/Enterprise add-on.
 
 **Future — Tap to Pay (separate native track):**
-- AU is supported via Stripe Terminal; **Tap to Pay is NOT supported on Capacitor** (needs the Terminal iOS/React-Native SDK → a native/RN shell, not the WebView build). Requires **two Apple entitlements** (`com.apple.developer.proximity-reader.payment.acceptance`): development (~1–2 days) + **distribution (~1–2 weeks Apple review)**. iPhone XS+ / iOS 16.4+ (18.0+ for the merchant-education overlay). Preserves the in-person 4% → 2%/2% charity split via `application_fee_amount`. Start AU entitlement requests early. See `docs/POS_TERMINAL_PLAN.md`.
+- AU is supported via Stripe Terminal; **Tap to Pay is NOT supported on Capacitor** (needs the Terminal iOS/React-Native SDK → a native/RN shell, not the WebView build). Requires **two Apple entitlements** (`com.apple.developer.proximity-reader.payment.acceptance`): development (~1–2 days) + **distribution (~1–2 weeks Apple review)**. iPhone XS+ / iOS 16.4+ (18.0+ for the merchant-education overlay). Preserves the in-person 4% → 2%/2% charity split via `application_fee_amount`. Start AU entitlement requests early. See `docs/architecture/POS_TERMINAL_PLAN.md`.
 
 ---
 
@@ -221,7 +221,7 @@ Scaffolded + verified on `feat/native-app-platform` (2026-06-07). Capacitor **8.
 `keyboard@8.0.3`, `network@8.0.1`; CLI as devDep — all version-pinned). The web app is
 **behaviour-unchanged**: web `npm run build` is green, `tsc -p tsconfig.app.json --noEmit`
 shows only the 8 known pre-existing errors, and every native seam returns today's web
-value on the web. See `docs/NATIVE_SCAFFOLD.md` for the run guide.
+value on the web. See `docs/architecture/NATIVE_SCAFFOLD.md` for the run guide.
 
 ### Files added
 - **`capacitor.config.ts`** — `appId: com.woahh.app`, `appName: Woahh`, `webDir: "dist"`
@@ -243,7 +243,7 @@ value on the web. See `docs/NATIVE_SCAFFOLD.md` for the run guide.
   + `CAP_APP_ID`/`CAP_APP_NAME`, runs `vite build` → `cap sync`, optionally `@capacitor/assets`
   for icons, prints next `cap open`/fastlane signing+submission steps.
 - **`merchants/example.json`** — sample build-input config (slug, appId, appName, color, icon).
-- **`docs/NATIVE_SCAFFOLD.md`** — run guide (local, per-merchant build, container-vs-Mac matrix, OTA note).
+- **`docs/architecture/NATIVE_SCAFFOLD.md`** — run guide (local, per-merchant build, container-vs-Mac matrix, OTA note).
 
 ### npm scripts added
 - `cap:sync` → `npm run build && cap sync`

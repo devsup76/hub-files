@@ -3,7 +3,7 @@
 -- (pmnyhbhtkcfoozkinieo)
 -- =============================================================================
 -- PURPOSE: This file CORRECTS 5 bugs that were introduced by the SQL that the
--- founder already ran from docs/SECURITY_OVERNIGHT_RUN_THESE.sql.  Each fix
+-- founder already ran from docs/sql/SECURITY_OVERNIGHT_RUN_THESE.sql.  Each fix
 -- is a CREATE OR REPLACE / DROP+CREATE that OVERWRITES the defective live object.
 --
 -- Run the WHOLE FILE in the Supabase SQL editor in a single shot.  Every block
@@ -205,7 +205,7 @@ AS $$
 -- The function is named "committed" for call-site compatibility — the original
 -- dblink / autonomous-transaction approach was removed because app.dblink_conninfo
 -- is never set on Supabase and baking a superuser password into a GUC is a
--- security regression (see docs/SECURITY_DEFECT_FIXES_RUN_THESE.sql, fix P2).
+-- security regression (see docs/sql/SECURITY_DEFECT_FIXES_RUN_THESE.sql, fix P2).
 BEGIN
   -- Fail CLOSED on missing subject (defence-in-depth; the caller's auth gate has
   -- already rejected a null uid before reaching here).

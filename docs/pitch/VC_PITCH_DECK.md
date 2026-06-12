@@ -102,7 +102,7 @@ Online ordering + your own storefront · kitchen display · menu & recipes · **
 
 > Tools like **MarketMan and MarginEdge tell you a price went up.** **Woahh tells you what to cook, what to push, and what to put on special to make the most money** — and donates half of what it earns. A profit copilot, not a cost report.
 
-*Speaker note:* This is the slide that separates us from "another all-in-one." Because we hold the recipe BOM *and* the sales data on one spine, we connect a price spike to the exact dishes it hurts and recommend the action — in plain English, before it eats the margin. Tier 1 is built and verified in demo; tiers 2–3 are designed on additive schema atop the same foundation (`docs/RESTAURANT_INVENTORY.md`). Be honest: the predictive margin layer is the next build, the data foundation ships with v1.
+*Speaker note:* This is the slide that separates us from "another all-in-one." Because we hold the recipe BOM *and* the sales data on one spine, we connect a price spike to the exact dishes it hurts and recommend the action — in plain English, before it eats the margin. Tier 1 is built and verified in demo; tiers 2–3 are designed on additive schema atop the same foundation (`docs/architecture/RESTAURANT_INVENTORY.md`). Be honest: the predictive margin layer is the next build, the data foundation ships with v1.
 
 ---
 

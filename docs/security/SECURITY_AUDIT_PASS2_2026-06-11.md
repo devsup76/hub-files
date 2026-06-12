@@ -1,7 +1,7 @@
 # Security Audit — PASS 2 (adversarial, read-only)
 
 **Date:** 2026-06-11
-**Scope:** Fresh adversarial pass going BEYOND pass-1 (`docs/SECURITY_AUDIT_2026-06-11.md`).
+**Scope:** Fresh adversarial pass going BEYOND pass-1 (`docs/security/SECURITY_AUDIT_2026-06-11.md`).
 Focus areas: business-logic abuse (promo/loyalty/discount), race conditions (capture/refund/decline/restock/double-submit), IDOR + mass-assignment on RPCs/edge fns, JWT/session/anon lifecycle, Storage bucket policies, Realtime authz, demo-mode + view-as-customer, reservation/cancellation tokens, email/SMS header/template injection, AI functions (prompt-injection + cost abuse), supply-chain, **and an audit of the code shipped tonight** (the pass-1 remediation: branch `security/overnight-hardening-2026-06-11`, HEAD `68f8c13`).
 **Method:** read-only. Findings are VERIFIED in code; no code was changed.
 **Baseline:** `vite build` exits 0 on the audited tree (confirmed).

@@ -43,5 +43,5 @@ correct for all current storefront orders). Refund-on-tracker also shipped (Orde
 (founder lifted the push-hold to preview Taco Joint/Wingz Hut + onboard the first merchant). Build = `vite build`
 (no tsc gate; ~8 pre-existing type errors don't block). .env is tracked but holds ONLY public VITE_ keys (no
 server secret). For a real merchant on `name.woahh.app` (prod), still need: merge→main + wildcard DNS + env vars
-(see docs/FIRST_MERCHANT_READINESS.md + SCHEMA_DRIFT_RECONCILIATION + SQUARE_PRODUCTION_CHECKLIST). See
+(see docs/launch/FIRST_MERCHANT_READINESS.md + SCHEMA_DRIFT_RECONCILIATION + SQUARE_PRODUCTION_CHECKLIST). See
 [[woahh-storefront-platform]], [[woahh-payments-stripe]]. ROTATE the pasted `sbp_` Supabase token.

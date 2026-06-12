@@ -3,8 +3,8 @@
 -- =============================================================================
 -- DB migrations from the 2026-06-11 OVERNIGHT pass (medium-low code-level fixes)
 -- on top of the audit's already-shipped CRITICAL/HIGH set. Source audit:
--- docs/SECURITY_AUDIT_2026-06-11.md. Earlier (CRITICAL/HIGH) migrations are in
--- docs/SECURITY_FIXES_RUN_THESE.sql — run that FIRST if not already applied.
+-- docs/security/SECURITY_AUDIT_2026-06-11.md. Earlier (CRITICAL/HIGH) migrations are in
+-- docs/sql/SECURITY_FIXES_RUN_THESE.sql — run that FIRST if not already applied.
 --
 -- Each block is IDEMPOTENT / safe to re-run and mirrors a numbered file in
 -- supabase/migrations/. Run the WHOLE file in the Supabase SQL editor; do NOT
@@ -886,12 +886,12 @@ CREATE TRIGGER trg_reservations_input_bounds
 -- #############################################################################
 -- PASS-2 SAFE REMEDIATION (P2, P3, P6-budget, P7, P8, P10, P11)
 -- Mirrors supabase/migrations/20260611090000_pass2_safe_remediation.sql
--- Source audit: docs/SECURITY_AUDIT_PASS2_2026-06-11.md
+-- Source audit: docs/security/SECURITY_AUDIT_PASS2_2026-06-11.md
 -- #############################################################################
 
 -- =============================================================================
 -- PASS-2 SECURITY REMEDIATION (SAFE / code-level subset)
--- docs/SECURITY_AUDIT_PASS2_2026-06-11.md
+-- docs/security/SECURITY_AUDIT_PASS2_2026-06-11.md
 -- =============================================================================
 -- STRICTLY ADDITIVE + IDEMPOTENT. No change to the working money flows (online
 -- card charge, capture/decline, refund, get_public_* RPCs, guest checkout). This
@@ -1789,7 +1789,7 @@ $cron2$;
 --     a working money/RLS/auth path or needs an alert-channel / captcha decision.
 --     Left for review.
 --
---   -- PASS-2 (docs/SECURITY_AUDIT_PASS2_2026-06-11.md) — money/checkout-core:
+--   -- PASS-2 (docs/security/SECURITY_AUDIT_PASS2_2026-06-11.md) — money/checkout-core:
 --   * P1 (HIGH) — loyalty points awarded at PLACEMENT, never reversed on
 --     decline/abandon/refund => free-reward farming. FIX (staged): move
 --     awardOrderPoints OUT of the storefront place-order path; award server-side

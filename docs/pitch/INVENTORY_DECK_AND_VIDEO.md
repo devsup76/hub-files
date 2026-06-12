@@ -3,7 +3,7 @@
 > Drop-in copy for the VC deck and the short founder video. Covers the restaurant
 > **smart inventory** (built, next-phase launch) and the **Plate Economics / Margin
 > Radar** flagship (roadmap). Keep claims honest: inventory v1 is built & verified;
-> self-learning + margin radar are the roadmap vision. Full detail: `docs/RESTAURANT_INVENTORY.md`.
+> self-learning + margin radar are the roadmap vision. Full detail: `docs/architecture/RESTAURANT_INVENTORY.md`.
 > Created 2026-06-03.
 
 ---
@@ -65,5 +65,5 @@
 ## C. Status footnote (for internal honesty / Q&A prep)
 
 - **Built & verified (demo, next-phase launch):** AI recipe builder, auto-deplete on order completion, auto-86 to storefront, conversational stock AI. On branch `feat/restaurant-inventory`.
-- **Roadmap (designed, not built):** self-learning recipe calibration (§7) and Plate Economics / Margin Radar (§8) in `docs/RESTAURANT_INVENTORY.md`. Both ride additive schema on the v1 foundation — no rewrite.
+- **Roadmap (designed, not built):** self-learning recipe calibration (§7) and Plate Economics / Margin Radar (§8) in `docs/architecture/RESTAURANT_INVENTORY.md`. Both ride additive schema on the v1 foundation — no rewrite.
 - If asked "is the margin radar live?" → "The inventory engine and AI recipes are built; the predictive margin layer is our next build, and the data foundation for it already ships in v1." Keep it honest.

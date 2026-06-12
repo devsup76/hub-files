@@ -13,7 +13,7 @@
 > Work top-to-bottom; nothing here can break the running app (these are guards,
 > not behaviour changes) **except** where explicitly flagged "⚠️ test after".
 > Created 2026-06-11 (overnight hardening pass). Pair with `repo/docs/SECURITY.md`
-> (code-level fixes) and `docs/SECURITY_OVERNIGHT_RUN_THESE.sql` (the migrations).
+> (code-level fixes) and `docs/sql/SECURITY_OVERNIGHT_RUN_THESE.sql` (the migrations).
 
 ---
 
@@ -169,6 +169,6 @@ the open founder action.
 ## Cross-references
 
 - Code-level fixes (RLS, RPCs, CORS, errors, bounds): `repo/docs/SECURITY.md`
-- Migrations to run (incl. F43/F45/F46 from this pass): `docs/SECURITY_OVERNIGHT_RUN_THESE.sql`
-- Guest-checkout / anon-session design: `repo/docs/GUEST_CHECKOUT_DESIGN.md`
-- Audit findings + deferred items: `docs/AUDIT_FINDINGS_2026-06-09.md`
+- Migrations to run (incl. F43/F45/F46 from this pass): `docs/sql/SECURITY_OVERNIGHT_RUN_THESE.sql`
+- Guest-checkout / anon-session design: `repo/docs/architecture/GUEST_CHECKOUT_DESIGN.md`
+- Audit findings + deferred items: `docs/security/AUDIT_FINDINGS_2026-06-09.md`

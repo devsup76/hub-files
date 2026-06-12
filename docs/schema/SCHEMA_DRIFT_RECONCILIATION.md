@@ -1,7 +1,7 @@
 # Schema Drift Reconciliation — 2026-06-10
 
 > Source of truth for the repo↔live schema divergence found on `feat/storefront-platform` (worktree `repo-audit`) against the live DB `pmnyhbhtkcfoozkinieo`.
-> Built from three independent analyses (forward-drift / function-blast-radius / reverse-drift) cross-checked against the snapshots `docs/LIVE_SCHEMA_2026-06-10.txt` (516 cols / 40 tables) and `docs/LIVE_FUNCTIONS_2026-06-10.txt` (73 functions). Read-only; no migration has been run as part of writing this.
+> Built from three independent analyses (forward-drift / function-blast-radius / reverse-drift) cross-checked against the snapshots `docs/schema/LIVE_SCHEMA_2026-06-10.txt` (516 cols / 40 tables) and `docs/schema/LIVE_FUNCTIONS_2026-06-10.txt` (73 functions). Read-only; no migration has been run as part of writing this.
 
 ---
 
@@ -109,7 +109,7 @@ Treat the migration history as authoritative only after R1–R4 are captured (se
 
 ```sql
 -- 20260610080000_align_schema_drift.sql
--- Reconcile repo↔live drift (see docs/SCHEMA_DRIFT_RECONCILIATION.md). Idempotent + additive.
+-- Reconcile repo↔live drift (see docs/schema/SCHEMA_DRIFT_RECONCILIATION.md). Idempotent + additive.
 
 -- D2: OTP brute-force counter that owner-verify requires (decision: BACKFILL)
 ALTER TABLE public.organizations
@@ -177,7 +177,7 @@ process.exit(failed ? 1 : 0);
 1. **Apply the align migration** (`20260610080000_align_schema_drift.sql`) to live in the Supabase SQL editor — *after* pasting the three real `pg_get_functiondef` bodies into R2–R4. (Backfilling D2/D3 unblocks the two still-broken edge functions immediately.)
 2. **Redeploy `owner-verify` + `account-recover`** edge functions — no code change needed (the columns they expect now exist); just confirm they no longer 42703 (test `send_otp`/`verify_otp` and `lookup`/`verify`).
 3. **Confirm the hotfix `20260610070000` is the last-applied definition** of `get_public_storefront` / `get_member_org` / `get_order_by_id` on live (it sorts last; verify via `pg_get_functiondef` that none reference `phone_otp_attempts`/`receipt_token`). If an older masking migration was applied *after* the hotfix, re-run the hotfix.
-4. **Regenerate `types.ts`** + re-snapshot `docs/LIVE_SCHEMA_2026-06-10.txt` / `LIVE_FUNCTIONS_2026-06-10.txt` to reflect the now-aligned schema.
+4. **Regenerate `types.ts`** + re-snapshot `docs/schema/LIVE_SCHEMA_2026-06-10.txt` / `LIVE_FUNCTIONS_2026-06-10.txt` to reflect the now-aligned schema.
 5. **Land the smoke test + snapshot-diff gate** in CI (Gates 1 & 2) so the next drift fails the build, not prod.
 6. **Cleanup** the misleading `receipt_token` comment in `20260608020000:48`.
 
@@ -189,6 +189,6 @@ process.exit(failed ? 1 : 0);
 - Broke-in-prod refs: `20260609060000_rpc_mask_square_and_counters.sql:91,162,199`; `20260610060000_remask_get_order_by_id.sql:44`.
 - Authoritative hotfix (sorts last): `20260610070000_fix_drifted_rpc_columns.sql:62,118,143-149`.
 - Still-broken edge fns: `supabase/functions/owner-verify/index.ts:68,105,150,166-167,183` (D2); `supabase/functions/account-recover/index.ts:64,86,98,117,138` (D3).
-- Reverse-drift objects: `docs/LIVE_SCHEMA_2026-06-10.txt:234` (`orders.loyalty_awarded`); `docs/LIVE_FUNCTIONS_2026-06-10.txt:2,8,54` (`adjust_loyalty_points`, `award_order_loyalty_points`, `rls_auto_enable`).
+- Reverse-drift objects: `docs/schema/LIVE_SCHEMA_2026-06-10.txt:234` (`orders.loyalty_awarded`); `docs/schema/LIVE_FUNCTIONS_2026-06-10.txt:2,8,54` (`adjust_loyalty_points`, `award_order_loyalty_points`, `rls_auto_enable`).
 - Money functions verified clean: `20260608020000_c1_server_side_order_total.sql` (+ comment fix at `:48`); `20260609040000_respond_to_order_claim.sql:50`; `20260610040000_gmv_analytics_rpc.sql:88`; `20260610050000_order_refunds.sql:79-98,137,287`.
 - Missing tooling confirmed: no `.github/workflows/`, no smoke/diff scripts in `repo-audit`.

@@ -2,7 +2,7 @@
 -- SECURITY FIXES — RUN THESE on the LIVE Supabase project (pmnyhbhtkcfoozkinieo)
 -- =============================================================================
 -- Aggregated DB migrations from the 2026-06-11 security audit
--- (docs/SECURITY_AUDIT_2026-06-11.md). Each block is IDEMPOTENT / safe to re-run
+-- (docs/security/SECURITY_AUDIT_2026-06-11.md). Each block is IDEMPOTENT / safe to re-run
 -- and mirrors a numbered file in supabase/migrations/. Run the WHOLE file in the
 -- Supabase SQL editor; do NOT auto-apply. After running, deploy the edge functions
 -- listed at the end of each section.
@@ -393,7 +393,7 @@ TO anon, authenticated;
 -- #############################################################################
 
 -- =============================================================================
--- RLS & WRITE-GUARDS — 2026-06-11 security audit (docs/SECURITY_AUDIT_2026-06-11.md)
+-- RLS & WRITE-GUARDS — 2026-06-11 security audit (docs/security/SECURITY_AUDIT_2026-06-11.md)
 -- Area: rls-writeguards.  Closes F6, F7, F16, todo-6.4 PII scope, and the
 -- SECURITY-DEFINER search_path-hijack class.  STRICTLY ADDITIVE + IDEMPOTENT:
 -- only BEFORE-UPDATE guard triggers + a policy swap + ALTER FUNCTION SET
@@ -839,7 +839,7 @@ GRANT EXECUTE ON FUNCTION public.get_order_by_id(uuid) TO anon, authenticated;
 
 -- =============================================================================
 -- ABUSE / DoS / INVENTORY — 2026-06-11 security audit
--- (docs/SECURITY_AUDIT_2026-06-11.md). Area: abuse-dos. Closes F11, F12, F13.
+-- (docs/security/SECURITY_AUDIT_2026-06-11.md). Area: abuse-dos. Closes F11, F12, F13.
 -- =============================================================================
 -- STRICTLY ADDITIVE + IDEMPOTENT. No change to the working money flows (online
 -- card charge, capture/decline, refund, get_public_* RPCs, guest checkout). This

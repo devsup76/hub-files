@@ -193,7 +193,7 @@ compute, no servers, no GPUs, and no scaling work on our side.** It rides the sa
 turn a dial" model as everything else.
 
 > **Note:** Anthropic API keys for the AI edge functions must be set as Supabase function secrets
-> and rotated on the usual schedule — see the key-rotation list in `docs/SMS_ARCHITECTURE.md` ("Remaining: rotate exposed keys").
+> and rotated on the usual schedule — see the key-rotation list in `docs/architecture/SMS_ARCHITECTURE.md` ("Remaining: rotate exposed keys").
 
 ## Bottom line
 

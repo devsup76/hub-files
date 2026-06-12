@@ -2,7 +2,7 @@
 
 The committed Capacitor scaffold on `feat/native-app-platform`. It wraps the
 existing Vite/React `dist/` bundle into a native app — no UI rewrite. This is the
-"execute" half of `docs/NATIVE_APP_PLATFORM.md`; read that plan for the *why*
+"execute" half of `docs/architecture/NATIVE_APP_PLATFORM.md`; read that plan for the *why*
 (§3 architecture, §4 white-label compliance, §6 build pipeline, §10 deliverable list).
 
 ---
@@ -65,7 +65,7 @@ npm run build:merchant -- merchants/example.json
 node scripts/build-merchant-app.mjs merchants/example.json --platform android
 ```
 
-It injects the five build inputs (`docs/NATIVE_APP_PLATFORM.md` §6.1):
+It injects the five build inputs (`docs/architecture/NATIVE_APP_PLATFORM.md` §6.1):
 `VITE_FORCED_SLUG` (boots straight into the merchant storefront via the
 `forcedSlug()` seam wired into `App.tsx`'s root route), `CAP_APP_ID` / `CAP_APP_NAME`
 (read by `capacitor.config.ts`), the native redirect base, and (optionally) per-merchant
@@ -142,4 +142,4 @@ Push/FCM plugins, Stripe Terminal / Tap-to-Pay, deep-link association files
 (`apple-app-site-association`, `assetlinks.json`), Android hardware-back→router
 wiring, `@capacitor/preferences`-backed session store, fastlane lanes, and the
 `merchant_app_builds` table + dashboard credential-collection flow. These are
-listed in `docs/NATIVE_APP_PLATFORM.md` §3.2 / §6 / §9.
+listed in `docs/architecture/NATIVE_APP_PLATFORM.md` §3.2 / §6 / §9.

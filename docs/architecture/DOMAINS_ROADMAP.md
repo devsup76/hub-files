@@ -9,7 +9,7 @@ storefront.
 
 ## Tier 1 — `name.woahh.app` (free, default) — BUILT (infra pending)
 - Wildcard `*.woahh.app` → Cloudflare Pages; Universal SSL covers one level (single-label slugs).
-- Zero cost. Instant. See `docs/MERCHANT_ONBOARDING_RUNBOOK.md`.
+- Zero cost. Instant. See `docs/launch/MERCHANT_ONBOARDING_RUNBOOK.md`.
 
 ## Tier 2 — "Buy a domain through us" (managed, premium) — NOT built
 - We register the domain via **Cloudflare Registrar API** (at-cost) → lands in our CF →
