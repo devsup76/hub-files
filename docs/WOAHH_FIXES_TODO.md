@@ -20,6 +20,12 @@ after code verify (+ fixed a wrong-Supabase-client bug). Edge fn redeployed. Bui
 merged `869d676`. **Founder morning test pending** (real phone — Turnstile blocks headless).
 This closes #11 (single tick) + advances #15/#32.
 
+## 🔨 IN PROGRESS — overnight build 2026-06-12 (claude → branch `feat/founder-fixes-2026-06-12`)
+> Claimed so teammates don't double-up. **Staying off** #4/#26 (Adithya: `feat/sidebar-search-collapse`) + the landing (yieldarche: `new-landing`).
+> **Verified ALREADY DONE this audit (no work needed):** #18 free-trial banner (live `trial_ends_at` compute in `DashboardLayout`/`lib/tier.ts`), **[6.4]** customer-PII RLS (migration `20260611020000` dropped "Staff view customers").
+> **Building (preview-testable on the branch):** #28 chunk-reload · #19 pending-order urgency (flash + sound) · #22 add-to-cart feedback + qty · #23 KDS fulfillment lanes/filter · #27 staff receipt modal · #24 completed-order log + PIN-gated refunds + owner refund view · #31 reply-to settings field · #21-NOW storefront-edit lock + drop retail presets.
+> **Staged (needs founder deploy to test):** #30 one-email-on-confirm defaults (edge fn), #31 backend already sets Reply-To→contact_email.
+
 ## The list
 
 - [ ] **1. Nicer onboarding checklist — and no payments until ABN verified.** Rework the OnboardingChecklist into a clearer, nicer flow; hard-gate payment acceptance (online card + pay-at-venue config) until the merchant's ABN is verified.
@@ -40,7 +46,7 @@ This closes #11 (single tick) + advances #15/#32.
 - [x] **15. Checkout offers customer account before guest.** Flip the order: sign-in/create-account is the primary path, guest checkout secondary. *(Founder item 16.)* **✅ MERGED to `main` 2026-06-12 — live on prod.**
 - [x] **16. Smarter automatic usernames.** Auto-generated usernames get numeric suffixes (e.g. `priya`, `priya2`, `priya17`) instead of failing or producing ugly handles. *(Founder item 17.)* **✅ MERGED to `main` 2026-06-12 — live on prod.**
 - [x] **17. QR codes accessible without enabling dine-in.** A merchant should be able to generate/use QR codes even when dine-in is off. *(Founder item 18.)* **✅ MERGED to `main` 2026-06-12 — live on prod.**
-- [ ] **18. Fix the free-trial banner on accounts.** It's static — currently shows "30 days" regardless of reality (the actual trial is 60 days per `trial_ends_at`). Either remove the banner or make it compute live from the org's `trial_ends_at` (real days remaining, hide when not on `free_trial`). *(Added 2026-06-11.)*
+- [x] **18. Fix the free-trial banner on accounts. ✅ VERIFIED ALREADY IMPLEMENTED 2026-06-12** — `DashboardLayout` renders the banner only when `tier === 'free_trial'` and computes live days via `trialDaysLeft()` (`lib/tier.ts`: `ceil((trial_ends_at - now)/day)`); hidden for non-trial orgs + staff. No static "30 days". *(No code change needed.)* *(Added 2026-06-11.)*
 - [ ] **19. Fix the 7-minute auto-decline — it's not firing.** Orders in `awaiting_confirmation` count up forever instead of auto-declining at `settings.orders.confirmation_timeout_minutes` (default 7). Likely suspects: the `auto_decline_stale_orders()` pg_cron job not actually scheduled/enabled on live (`pmnyhbhtkcfoozkinieo`), or its call into `order-respond` failing auth — verify the cron exists, check its run history, and test an order through the full timeout. ⚠️ With online cards this is a money bug: manual-capture auths rely on the auto-decline to void — an order that never declines can leave a customer's hold dangling. **Plus UX:** escalate urgency on pending orders as the clock runs — flashing highlight on the order card as it ages toward timeout, and/or a repeating notification sound until accepted. *(Added 2026-06-11.)*
 - [x] **20. Customer-account model — ✅ DECIDED 2026-06-12: unified Woahh account.** Full locked spec incl. consent wording, cross-shop privacy rules, guest nudge placement: `docs/architecture/UNIFIED_CUSTOMER_AUTH.md`. Build started on `feat/unified-customer-auth`. Original framing: Map how the order-time account flow actually works today (guest anon-session checkout, magic-link sign-in, username lookup, `growthhub_profiles` + `merchant_connections` unified identity) and pick the model for now: (a) **one universal Woahh customer account** used across every merchant (the `growthhub_profiles` infra already exists and merges by email+phone — cross-merchant loyalty/orders hub), (b) per-merchant accounts (feels owned by the merchant, but fragments identity + re-consent each shop), or (c) keep guest-first with an optional account nudge. Decision interacts with #15 (account-before-guest ordering) and the Spam Act consent scoping (consent is per-merchant either way). Recommendation to evaluate: universal Woahh account, branded lightly per-merchant at checkout. *(Added 2026-06-11.)*
 
@@ -84,7 +90,7 @@ This closes #11 (single tick) + advances #15/#32.
 Not part of the active list above — pick up after it, or when a hard gate forces one.
 
 - **[6.2] Founding launch promo** — free subscription (1 yr / lifetime OPEN) + temporary zero commission for first N sign-ups; reconcile wording with existing founding terms; backend enforcement + sign-up code gating (old `-1.2`) still missing.
-- **[6.4] Restrict customer PII to owner + manager** — drop the `"Staff view customers"` RLS policy (client already gates; verify `current_org_id()` no longer covers staff for this).
+- **[6.4] Restrict customer PII to owner + manager — ✅ VERIFIED DONE 2026-06-12.** Migration `20260611020000` already DROPPED the `"Staff view customers"` RLS policy; the customers SELECT policy no longer covers lower staff roles. *(No code change needed.)*
 - **[6.6] Storefront platform — finish + ship** — wildcard `*.woahh.app` DNS/TLS + Pages custom domain (human step), template-picker dashboard page, per-merchant PWA icons. Items 5/7/8/9 above bite into this.
 - **[3.1] Hard separation of merchant vs customer auth identities** — routing split is done; DB-level separation pending.
 - **[4.2] In-person checkout: attach/invite customer for loyalty** at point of service.
