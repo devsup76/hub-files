@@ -78,8 +78,8 @@ bug live (claim fn used `customers.phone`, real col is `phone_number`). Then:
   cron (migration `20260612210000`), scoped to customers >24h, never owners/staff.
 - **LOW (enumeration oracle):** accepted by design — the cross-shop notice needs it;
   returns bool only, never merchant names.
-**To turn captcha ON:** set `VITE_TURNSTILE_SITE_KEY` (Pages build) + `TURNSTILE_SECRET_KEY`
-(edge secret) TOGETHER. Do before any real marketing push.
+**Captcha ENABLED 2026-06-12:** founder set `VITE_TURNSTILE_SITE_KEY` (Pages) + `TURNSTILE_SECRET_KEY`
+(edge secret); branch merged to `main`; edge enforcement confirmed live (tokenless + bogus-token → 403). Widget: Managed mode, hostname `woahh.app` (covers `*.woahh.app`).
 
 ## Risks accepted / deferred
 - SMS OTP at launch = per-send cost + fraud surface (mitigations above; revisit if abused).
