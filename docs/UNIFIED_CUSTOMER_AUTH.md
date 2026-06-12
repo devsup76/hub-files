@@ -66,6 +66,21 @@ them locked with "Sign in to unlock" → opens the auth dialog. (Did not exist b
 4. Staged next (small): guest follow-up email cron (opt-ins only), members-only promo
    storefront UI ("sign in to unlock"), Turnstile on the OTP endpoint pre-scale.
 
+## Security pass (live-tested 2026-06-12) — both risks FIXED
+End-to-end tested against the deployed fns (real signup→code→session, replay-block,
+rate-limit 429, lockout 429, table-locked, bool-only enumeration). Found+fixed one
+bug live (claim fn used `customers.phone`, real col is `phone_number`). Then:
+- **HIGH (email-bombing) — FIXED:** Turnstile gates signup + both code-sends
+  (`_shared/turnstile.ts`). Graceful: SKIPS until `TURNSTILE_SECRET_KEY` set, then
+  FAILS CLOSED. Proven live with Cloudflare test secrets (fail→403, pass+token→200,
+  no-token-while-set→403, unset→200).
+- **MEDIUM (unconfirmed litter) — FIXED:** `purge_unconfirmed_customers()` + daily
+  cron (migration `20260612210000`), scoped to customers >24h, never owners/staff.
+- **LOW (enumeration oracle):** accepted by design — the cross-shop notice needs it;
+  returns bool only, never merchant names.
+**To turn captcha ON:** set `VITE_TURNSTILE_SITE_KEY` (Pages build) + `TURNSTILE_SECRET_KEY`
+(edge secret) TOGETHER. Do before any real marketing push.
+
 ## Risks accepted / deferred
 - SMS OTP at launch = per-send cost + fraud surface (mitigations above; revisit if abused).
 - Single-tick consent relies on explicit wording — do not weaken the copy without re-review.
