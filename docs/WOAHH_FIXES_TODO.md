@@ -20,6 +20,11 @@ after code verify (+ fixed a wrong-Supabase-client bug). Edge fn redeployed. Bui
 merged `869d676`. **Founder morning test pending** (real phone — Turnstile blocks headless).
 This closes #11 (single tick) + advances #15/#32.
 
+## ⏰ FOUNDER — MORNING REVIEW QUEUE (durable reminder; a session-only cron `e30fb4c2` ~8am AEST also pings)
+> **Review + APPROVE/MERGE `feat/founder-fixes-2026-06-12`** — the overnight 9 fixes + security fixes + notify-button removal + order-number demo fix + the **iPad Kitchen-Orders card redesign**. Backend already deployed (migration `20260612210000` run + `refund-order` v20 + `order-notify` v31) → **only the merge remains**; the manager-refund-PIN interim gap closes on merge. Merge via GitHub or a clean checkout (the working tree is on `main` with the founder's `feat/merchant-previews-v2` / wingzhut work).
+> **🔶 GAP found 2026-06-13 (founder spotted):** the receipt **Email** button is NOT functional on live — `order-receipt-email` edge fn is written but **never deployed** (demo fakes success). Downstream is ready (`send-transactional-email` v29 + `order-receipt` template live). **Fix = deploy `order-receipt-email` (verify_jwt=true).** Pre-existing — the same Email option is on OrderStatus + the History log.
+> **Teammate branches (2026-06-13):** yieldarche `feat/cobalt-rebrand` (cobalt rebrand + landing + inline dashboard preview), Adithya `feat/sidebar-search-collapse` (sidebar #4/#26), pawit `feat/merchant-previews-v2` (Wingz Hut + Red Hot Chicken previews). `origin/main` still `869d676` (my branch merges clean).
+
 ## ✅ BUILT overnight 2026-06-12 (claude → branch `feat/founder-fixes-2026-06-12`, pushed for preview, NOT merged)
 > **Stayed off** #4/#26 (Adithya: `feat/sidebar-search-collapse`) + the landing (yieldarche: `new-landing`).
 > **Verified ALREADY DONE (no work needed):** #18 free-trial banner, **[6.4]** customer-PII RLS.
