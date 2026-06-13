@@ -38,6 +38,7 @@ This closes #11 (single tick) + advances #15/#32.
 > **2026-06-13 founder-review follow-ups (on the branch, `e74478d`):**
 > - Removed the manual **"Notify customer" Bell button** from the Orders (Kitchen Orders) cards (auto web-push on status change stays; #30 keeps the per-status email off).
 > - **Order numbers (#101+) confirmed ALREADY LIVE** — `orders.order_number` column + `trg_assign_order_number` trigger + `organizations.order_seq` + backfill all exist on `pmnyhbhtkcfoozkinieo` (so real orders show #101+). The founder was seeing the UUID because **demo mode** wasn't assigning one → fixed (demo now shows #101–#105). `RUN_ORDER_NUMBER.sql` in `docs/sql/` is therefore **spent (confirmed run)**. Follow-up: `types.ts` is stale (lacks `order_number`) — regen when convenient (cosmetic).
+> - **iPad redesign of the Kitchen Orders cards (`a84bf19`)** — removed the hover-revealed micro-icons (invisible on touch); each card now has a big one-tap PRIMARY "advance status" button + a single 44×44 "⋮" **OrderActionsMenu** consolidating Print docket / Receipt (view+print+PDF+email) / Request courier / Refund / Delete (delete now confirms first). All targets ≥44px, no hover. Design via a 3-proposal panel; verified at iPad landscape + portrait (Playwright). New `src/components/dashboard/OrderActionsMenu.tsx`. *(NOTE: built in a worktree on the branch — the founder's main tree is on `main` with `public/wingzhut/*.jpg` staged, left untouched.)*
 
 ## The list
 
