@@ -30,10 +30,10 @@ This closes #11 (single tick) + advances #15/#32.
 > - **Verified NOT-A-BUG:** AUTH-001 cross-org PIN (user_id UNIQUE), order-isolation, XSS (toast/cart/chunkReload).
 > - **Flagged follow-ups (LOW real-risk, NOT fixed tonight):** #21 storefront lock is client-side only — a merchant could bypass via direct RPC, but it's their OWN data (no cross-tenant/privilege escalation), so it's a feature-intent gap not a breach; server-side enforcement in `validate_storefront_config` is a deferred hardening. `contact_email` has no server-side format validation — but Resend treats `reply_to` as a structured field (no header injection), so worst case is a merchant typo'ing their own reply-to.
 >
-> **⚠️ FOUNDER — DEPLOY/RUN tomorrow to activate the staged backend** (everything else is live on the preview already):
-> 1. **Run migration** `supabase/migrations/20260612210000_security_audit_rls_owner_only.sql` (RLS owner-only).
-> 2. **Deploy edge fns:** `refund-order` (server-side PIN + the audit fix) and `order-notify` (#30 one-email defaults).
-> 3. *(staff-pin-login is unchanged — no deploy.)* Then merge the branch when you're happy.
+> **STAGED BACKEND — ✅ DEPLOYED/RUN 2026-06-13:**
+> 1. ✅ Migration `20260612210000_security_audit_rls_owner_only.sql` — **run on live by founder**.
+> 2. ✅ Edge fns deployed live: **`refund-order` v20** (server-side PIN + audit fix) + **`order-notify` v31** (#30 one-email defaults) — both `verify_jwt=true` preserved, smoke-tested (gateway-401 to no-auth, no crash).
+> 3. *(staff-pin-login unchanged — no deploy.)* **Remaining: merge `feat/founder-fixes-2026-06-12` → `main` when the founder is happy with the preview.**
 
 ## The list
 
