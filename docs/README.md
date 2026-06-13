@@ -47,7 +47,7 @@
 - [SECURITY_FIXES_RUN_THESE.sql](sql/SECURITY_FIXES_RUN_THESE.sql) — CRITICAL/HIGH from the 2026-06-11 audit (**founder side-quest: pending run**) — run FIRST.
 - [SECURITY_OVERNIGHT_RUN_THESE.sql](sql/SECURITY_OVERNIGHT_RUN_THESE.sql) — medium/low overnight fixes (run after the above).
 - [SECURITY_DEFECT_FIXES_RUN_THESE.sql](sql/SECURITY_DEFECT_FIXES_RUN_THESE.sql) — corrects 5 bugs introduced by an earlier security bundle.
-- [RUN_ORDER_NUMBER.sql](sql/RUN_ORDER_NUMBER.sql) — daily-resetting human-friendly order numbers (pending feature).
+- [RUN_ORDER_NUMBER.sql](sql/RUN_ORDER_NUMBER.sql) — daily-resetting human-friendly order numbers. **✅ CONFIRMED RUN on live 2026-06-13** (column + `trg_assign_order_number` trigger + `organizations.order_seq` + backfill all exist) — spent; safe to delete.
 - [SQUARE_SANDBOX_GOLIVE.sql](sql/SQUARE_SANDBOX_GOLIVE.sql) — test-bistro Square-sandbox seed/flip **+ the not-yet-run REVERT block** (needed before a real Stripe test order — READINESS gate B.10).
 
 ## `pitch/` · `business/` · `legal/` · `hardware/`

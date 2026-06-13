@@ -34,6 +34,10 @@ This closes #11 (single tick) + advances #15/#32.
 > 1. ✅ Migration `20260612210000_security_audit_rls_owner_only.sql` — **run on live by founder**.
 > 2. ✅ Edge fns deployed live: **`refund-order` v20** (server-side PIN + audit fix) + **`order-notify` v31** (#30 one-email defaults) — both `verify_jwt=true` preserved, smoke-tested (gateway-401 to no-auth, no crash).
 > 3. *(staff-pin-login unchanged — no deploy.)* **Remaining: merge `feat/founder-fixes-2026-06-12` → `main` when the founder is happy with the preview.**
+>
+> **2026-06-13 founder-review follow-ups (on the branch, `e74478d`):**
+> - Removed the manual **"Notify customer" Bell button** from the Orders (Kitchen Orders) cards (auto web-push on status change stays; #30 keeps the per-status email off).
+> - **Order numbers (#101+) confirmed ALREADY LIVE** — `orders.order_number` column + `trg_assign_order_number` trigger + `organizations.order_seq` + backfill all exist on `pmnyhbhtkcfoozkinieo` (so real orders show #101+). The founder was seeing the UUID because **demo mode** wasn't assigning one → fixed (demo now shows #101–#105). `RUN_ORDER_NUMBER.sql` in `docs/sql/` is therefore **spent (confirmed run)**. Follow-up: `types.ts` is stale (lacks `order_number`) — regen when convenient (cosmetic).
 
 ## The list
 
