@@ -20,6 +20,21 @@ after code verify (+ fixed a wrong-Supabase-client bug). Edge fn redeployed. Bui
 merged `869d676`. **Founder morning test pending** (real phone — Turnstile blocks headless).
 This closes #11 (single tick) + advances #15/#32.
 
+## ⏰ FOUNDER — MORNING 2026-06-14 (top priority; built overnight by claude)
+> **PR #10 is GREEN and one-click ready → review + merge:** https://github.com/devsup76/business-growth-hub/pull/10 (`feat/founder-fixes-2026-06-12` → main). All **6 required CI checks pass**; `mergeable_state=blocked` is ONLY the required 1 review. I did **not** admin-bypass (main now has the CI safety spine + branch protection; the PR touches a payments migration — human-led). Contains: the overnight founder-fixes set + the **#19 approval-card redesign** (30s red↔white flash, food-first hierarchy, line-item modifiers, a11y) + **payment-gated approval** (card orders surface for approval only AFTER the card is authorised) + the adversarial-review fixes.
+>
+> **🔴 RUN THIS SQL ON LIVE BEFORE ENABLING ONLINE CARDS** (the function half of migration `20260614120000` was run 2026-06-14; the CHECK was NOT widened — a 20-agent review caught it, verified `pending_allowed=false` on live. Without it every online-card order fails at creation):
+> ```sql
+> ALTER TABLE public.orders DROP CONSTRAINT IF EXISTS orders_payment_status_check;
+> ALTER TABLE public.orders ADD CONSTRAINT orders_payment_status_check
+>   CHECK (payment_status IN ('unpaid','pending','authorized','paid','pay_in_person','refunded','partially_refunded','failed','canceled'));
+> ```
+> Additive, zero-risk. (The committed migration file already includes it for fresh applies; live still needs it run.)
+>
+> **✅ Receipt Email button fixed:** `order-receipt-email` edge fn **deployed** (v1, ACTIVE, verify_jwt=true) — closes the 2026-06-13 gap below.
+> **⚠️ Deferred money-path hardening (only matters once cards are ON — review):** Stripe webhook-latency window (a `pending` order hidden until the hold lands; if the webhook is delayed past auto-decline timeout the order is swept — hold voided, no charge, but order lost); `void_my_unpaid_order` doesn't release a live Stripe hold for `pending`; `auto_decline` clock starts at created_at. Details in the PR #10 body.
+> **🔑 ROTATE** the `sbp_` Supabase PAT pasted in chat 2026-06-14 (used to verify the live function + deploy order-receipt-email).
+
 ## ⏰ FOUNDER — MORNING REVIEW QUEUE (durable reminder; a session-only cron `e30fb4c2` ~8am AEST also pings)
 > **Review + APPROVE/MERGE `feat/founder-fixes-2026-06-12`** — the overnight 9 fixes + security fixes + notify-button removal + order-number demo fix + the **iPad Kitchen-Orders card redesign**. Backend already deployed (migration `20260612210000` run + `refund-order` v20 + `order-notify` v31) → **only the merge remains**; the manager-refund-PIN interim gap closes on merge. Merge via GitHub or a clean checkout (the working tree is on `main` with the founder's `feat/merchant-previews-v2` / wingzhut work).
 > **🔶 GAP found 2026-06-13 (founder spotted):** the receipt **Email** button is NOT functional on live — `order-receipt-email` edge fn is written but **never deployed** (demo fakes success). Downstream is ready (`send-transactional-email` v29 + `order-receipt` template live). **Fix = deploy `order-receipt-email` (verify_jwt=true).** Pre-existing — the same Email option is on OrderStatus + the History log.
